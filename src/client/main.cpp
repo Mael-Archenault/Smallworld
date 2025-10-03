@@ -16,7 +16,7 @@ using namespace state;
 int main(int argc,char* argv[])
 {
 
-    cout << "Code compiled" << endl;
+    cout << "Code compiled succesfully and quickly" << endl;
 
     return 0;
 }
