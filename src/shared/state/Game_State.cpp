@@ -2,7 +2,10 @@
 
 namespace state {
 
-Game_State::Game_State() {
+Game_State::Game_State(int n_players) : n_players(n_players), round(0), map(Map(n_players)){
+    for (int i=0; i<n_players; i++ ) {
+        players.push_back(new Player(i));
+    }
 }
 
 void Game_State::gather_free_units(int player_id, int tribe_id) {
@@ -90,6 +93,10 @@ std::vector<Tribe*> Game_State::get_tribes_on_top() {
 }
 
 void Game_State::abandon_area(){}
+
+void Game_State::next_round () {
+    round++;
+}
 
 }
 
