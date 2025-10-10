@@ -2,8 +2,8 @@
 
 namespace state {
 
-Player::Player() {
-}
+Player::Player(const int id):id(id){
+};
 
 void Player::gather_free_units(int tribe_id) {
 }
