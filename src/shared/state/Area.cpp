@@ -3,14 +3,14 @@
 namespace state {
 
 Area::Area(int n_units, Area_Biome biome, std::vector<Area_Specialization> area_specialization)
-    : id(next_id),                
-      units_number(n_units),      
-      biome(biome),       
+    : units_number(n_units),
+      biome(biome),
       owner_tribe(nullptr),
-      area_specialization(area_specialization)
+      area_specialization(area_specialization),
+      id(next_id)
 {
     next_id++;
-    if (biome==state::Area_Biome::MOUNTAIN){
+    if (biome==state::Area_Biome::MOUNTAINS){
         special_tokens.push_back(state::Area_Special_Token::MOUNTAIN);
     }
     
@@ -36,7 +36,6 @@ int Area::get_conquest_price(Tribe& attacking_tribe) {
 }
 
     
-    
 
 void Area::deploy_units(int n_added_units) {
     units_number += n_added_units;
@@ -55,3 +54,4 @@ std::vector<Area*> Area::get_neighbors() {
 }
 
 }
+

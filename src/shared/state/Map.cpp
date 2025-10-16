@@ -1,4 +1,8 @@
 #include "Map.h"
+#include <iostream>
+#include <fstream>
+#include <json/json.h>
+
 
 namespace state {
 
@@ -13,8 +17,12 @@ Area& Map::get_area(int area_id) {
 }
 
 
-void load_from_json (std::string file_name){
-    "tqt on taff"
+void Map::load_from_json (std::string file_name){
+    std::ifstream file(file_name, std::ifstream::binary);
+    Json::Value root;
+    file >> root;  
+
+    std::cout << ": " << root["biomes"].asString() << std::endl;
 }
 
 }
