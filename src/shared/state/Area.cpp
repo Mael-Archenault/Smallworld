@@ -15,15 +15,16 @@ Area::Area(int n_units, Area_Biome biome, std::vector<Area_Specialization> area_
     }
     
 }
-
+int Area::next_id =0;
 
 
 int Area::gather_free_units() {
     
     if (units_number <= 1) 
         return 0;
+    int to_return = units_number - 1;
     units_number = 1;
-    return units_number-1;
+    return to_return;
 }
 
 int Area::get_conquest_price(Tribe& attacking_tribe) {

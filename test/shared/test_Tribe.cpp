@@ -5,12 +5,12 @@
 #include <iostream>
 
 #include "state/Tribe.h"
+using namespace state;
 
 
-
-class test_Tribe : public state::Tribe {
+class test_Tribe : public Tribe {
 public:
-    test_Tribe(state::Species_Description* species_description, state::Power_Description* power_description, std::vector<state::Area*> owned_areas) : Tribe(species_description, power_description) {
+    test_Tribe(Species_Description* species_description, Power_Description* power_description, std::vector<Area*> owned_areas) : Tribe(species_description, power_description) {
         this->owned_areas = owned_areas;
     }
 
@@ -29,7 +29,7 @@ public:
 #include <boost/test/unit_test.hpp>
 
 #include <state.h>
-using namespace state;
+
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
 {
@@ -38,19 +38,20 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
 
 BOOST_AUTO_TEST_CASE(TestExemple)
 {
-    state::Effects_Bundle species_effect = state::Effects_Bundle();
-    state::Species_Description * species_description = new state::Species_Description("test_Species",5,10,species_effect);
-    state::Effects_Bundle power_effect = state::Effects_Bundle();
-    state::Power_Description * power_description = new state::Power_Description("test_Power",4,power_effect);
+    Effects_Bundle species_effect = Dwarf_Effects_Bundle();
+    Species_Description * species_description = new Species_Description("test_Species",5,10,species_effect);
+    Effects_Bundle power_effect = (Effects_Bundle) Dwarf_Effects_Bundle();
+    Power_Description * power_description = new Power_Description("test_Power",4,power_effect);
 
-    Area_Biome a = Area_Biome();
-    std::vector<state::Area*> owned_areas;
-    state::Area * area1 = new state::Area(3, a.HILL,{});      //TODO once Area.cpp is ready
-    state::Area * area2 = new state::Area(3, a.HILL,{});
-    owned_areas.push_back(area1); owned_areas.push_back(area2);
+    std::vector<Area*> owned_areas;
+    Area * area1 = new Area(3, Area_Biome::HILL,{});
+    Area * area2 = new Area(3, Area_Biome::HILL,{});
+
+    owned_areas.push_back(area1);
     test_Tribe test_tribe = test_Tribe(species_description,power_description, owned_areas);
+    test_tribe.conquer(*area2,5,0);
 
-    BOOST_CHECK_EQUAL(test_tribe.test_gather_free_units(),4);
+    BOOST_CHECK_EQUAL(test_tribe.test_gather_free_units(),13);
     
 }
 
@@ -59,18 +60,18 @@ int main() {
     bool test_result = true ;
 
     //Scenario 1
-    state::Effects_Bundle species_effect = state::Effects_Bundle();
-    state::Species_Description * species_description = new state::Species_Description("test_Species",5,10,species_effect);
-    state::Effects_Bundle power_effect = state::Effects_Bundle();
-    state::Power_Description * power_description = new state::Power_Description("test_Power",4,power_effect);
+    Effects_Bundle species_effect = Effects_Bundle();
+    Species_Description * species_description = new Species_Description("test_Species",5,10,species_effect);
+    Effects_Bundle power_effect = Effects_Bundle();
+    Power_Description * power_description = new Power_Description("test_Power",4,power_effect);
 
-    std::vector<state::Area*> owned_areas;
-    state::Area * area1 = new state::Area();      //TODO once Area.cpp is ready
-    state::Area * area2 = new state::Area();
+    std::vector<Area*> owned_areas;
+    Area * area1 = new Area();
+    Area * area2 = new Area();
     owned_areas.push_back(area1); owned_areas.push_back(area2);
     test_Tribe test_tribe = test_Tribe(species_description,power_description, owned_areas);
 
-    if (test_tribe.test_gather_free_units() != 1) {     //TODO change "1" to the correct value based on the inputs to the areas
+    if (test_tribe.test_gather_free_units() != 1) {
         test_result = false;
     }
 
