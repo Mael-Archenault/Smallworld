@@ -1,4 +1,5 @@
 # List of test functions
+add_custom_test(Tribe)
 add_custom_test(species_description)
 add_custom_test(power_description)
 
