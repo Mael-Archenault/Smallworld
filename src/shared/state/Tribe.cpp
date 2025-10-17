@@ -8,7 +8,7 @@ Tribe::Tribe(Species_Description* species_description, Power_Description* power_
     in_decline = false;
     free_units_number = species_description->get_initial_units_number() + power_description->get_initial_units_number();
 }
-
+int Tribe::next_id =0;
 Species_Description* Tribe::get_species_description() {
     return species_description;
 }
