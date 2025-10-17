@@ -6316,7 +6316,7 @@
         <dia:point val="92.6932,14.4989"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="92.6432,14.4489;111.723,19.7489"/>
+        <dia:rectangle val="92.6432,14.4489;111.723,20.5489"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="92.6932,14.4989"/>
@@ -6325,7 +6325,7 @@
         <dia:real val="18.98"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="5.2000000000000002"/>
+        <dia:real val="6"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#Ratmen_Effects_Bundle#</dia:string>
@@ -6421,7 +6421,37 @@
       <dia:attribute name="operations">
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#apply_first_turn_effect#</dia:string>
+            <dia:string>#Ratmen_Effects_Bundle#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="stereotype">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="inheritance_type">
+            <dia:enum val="2"/>
+          </dia:attribute>
+          <dia:attribute name="query">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="parameters"/>
+        </dia:composite>
+        <dia:composite type="umloperation">
+          <dia:attribute name="name">
+            <dia:string>#apply_first_round_effect#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>#override#</dia:string>
@@ -6569,7 +6599,7 @@
         <dia:point val="83.3098,17.522"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="83.2598,16.5504;92.6929,18.372"/>
+        <dia:rectangle val="83.2598,16.672;92.6929,18.372"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -6577,8 +6607,8 @@
       <dia:attribute name="orth_points">
         <dia:point val="83.3098,17.522"/>
         <dia:point val="88.3764,17.522"/>
-        <dia:point val="88.3764,17.0989"/>
-        <dia:point val="92.6429,17.0989"/>
+        <dia:point val="88.3764,17.4989"/>
+        <dia:point val="92.6429,17.4989"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -6611,7 +6641,7 @@
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O10" connection="18"/>
-        <dia:connection handle="1" to="O24" connection="16"/>
+        <dia:connection handle="1" to="O24" connection="18"/>
       </dia:connections>
       <dia:childnode parent="O0"/>
     </dia:object>
@@ -6620,7 +6650,7 @@
         <dia:point val="92.8432,21.9808"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="92.7932,21.9308;111.873,27.2308"/>
+        <dia:rectangle val="92.7932,21.9308;111.873,28.0308"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="92.8432,21.9808"/>
@@ -6629,7 +6659,7 @@
         <dia:real val="18.98"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="5.2000000000000002"/>
+        <dia:real val="6"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#Giant_Effects_Bundle#</dia:string>
@@ -6725,7 +6755,37 @@
       <dia:attribute name="operations">
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#apply_first_turn_effect#</dia:string>
+            <dia:string>#Giant_Effects_Bundle#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="stereotype">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="visibility">
+            <dia:enum val="0"/>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="abstract">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="inheritance_type">
+            <dia:enum val="2"/>
+          </dia:attribute>
+          <dia:attribute name="query">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="class_scope">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="parameters"/>
+        </dia:composite>
+        <dia:composite type="umloperation">
+          <dia:attribute name="name">
+            <dia:string>#apply_first_round_effect#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>#override#</dia:string>
@@ -6873,7 +6933,7 @@
         <dia:point val="83.3098,17.522"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="83.2598,16.672;92.8429,24.6308"/>
+        <dia:rectangle val="83.2598,16.672;92.8429,25.0308"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -6881,8 +6941,8 @@
       <dia:attribute name="orth_points">
         <dia:point val="83.3098,17.522"/>
         <dia:point val="88.4514,17.522"/>
-        <dia:point val="88.4514,24.5808"/>
-        <dia:point val="92.7929,24.5808"/>
+        <dia:point val="88.4514,24.9808"/>
+        <dia:point val="92.7929,24.9808"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -6915,7 +6975,7 @@
       </dia:attribute>
       <dia:connections>
         <dia:connection handle="0" to="O10" connection="18"/>
-        <dia:connection handle="1" to="O26" connection="16"/>
+        <dia:connection handle="1" to="O26" connection="18"/>
       </dia:connections>
       <dia:childnode parent="O0"/>
     </dia:object>
