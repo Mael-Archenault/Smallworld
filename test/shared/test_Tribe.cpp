@@ -23,6 +23,38 @@ public:
     }
 };
 
+
+
+
+#include <boost/test/unit_test.hpp>
+
+#include <state.h>
+using namespace state;
+
+BOOST_AUTO_TEST_CASE(TestStaticAssert)
+{
+    BOOST_CHECK(1);
+}
+
+BOOST_AUTO_TEST_CASE(TestExemple)
+{
+    state::Effects_Bundle species_effect = state::Effects_Bundle();
+    state::Species_Description * species_description = new state::Species_Description("test_Species",5,10,species_effect);
+    state::Effects_Bundle power_effect = state::Effects_Bundle();
+    state::Power_Description * power_description = new state::Power_Description("test_Power",4,power_effect);
+
+    Area_Biome a = Area_Biome();
+    std::vector<state::Area*> owned_areas;
+    state::Area * area1 = new state::Area(3, a.HILL,{});      //TODO once Area.cpp is ready
+    state::Area * area2 = new state::Area(3, a.HILL,{});
+    owned_areas.push_back(area1); owned_areas.push_back(area2);
+    test_Tribe test_tribe = test_Tribe(species_description,power_description, owned_areas);
+
+    BOOST_CHECK_EQUAL(test_tribe.test_gather_free_units(),4);
+    
+}
+
+/*
 int main() {
     bool test_result = true ;
 
@@ -58,4 +90,4 @@ int main() {
     }
         std::cout << "Tribe tests failed !";
         return 1;
-}
+}*/
