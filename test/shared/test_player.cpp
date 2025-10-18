@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
     
     BOOST_CHECK_THROW(observer.get_conquest_prices(100), std::invalid_argument);
     BOOST_CHECK_THROW(observer.redeploy_units(100, 0,10), std::invalid_argument);
-    BOOST_CHECK_THROW(observer.conquer(100, area, 10, 2), std::invalid_argument);
+    BOOST_CHECK_THROW(observer.conquer(100, &area, 10, 2), std::invalid_argument);
 
 
     // methods testing
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
     observer.gather_free_units(1);
     BOOST_CHECK_EQUAL(observer.get_conquest_prices(1).size(), 0);
     observer.redeploy_units(1, 0, 10);
-    observer.conquer(1, area, 10, 2);
+    observer.conquer(1, &area, 10, 2);
     observer.get_rewards();
     BOOST_CHECK_EQUAL(observer.get_money(), 0);
   }
