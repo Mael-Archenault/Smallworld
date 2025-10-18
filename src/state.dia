@@ -88,6 +88,7 @@
       </dia:composite>
     </dia:attribute>
   </dia:diagramdata>
+  <dia:layer name="Background" visible="true" connectable="false"/>
   <dia:layer name="Background" visible="true" connectable="true" active="true">
     <dia:object type="UML - LargePackage" version="0" id="O0">
       <dia:attribute name="obj_pos">
@@ -1319,7 +1320,7 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#Area&amp;#</dia:string>
+            <dia:string>#Area*#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -1922,7 +1923,7 @@
                 <dia:string>#attacked_area#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#Area&amp;#</dia:string>
+                <dia:string>#Area*#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -3862,7 +3863,7 @@
                 <dia:string>#attacked_area#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#Area&amp;#</dia:string>
+                <dia:string>#Area*#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
