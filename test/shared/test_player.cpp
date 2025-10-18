@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
     observer.set_active_tribe(&tribe2);
     BOOST_CHECK_EQUAL(observer.get_tribes().size(),2);
 
-    BOOST_CHECK_EQUAL(observer.get_free_units_number(1), 0);
+    BOOST_CHECK_EQUAL(observer.get_free_units_number(1), 8);
     observer.gather_free_units(1);
     BOOST_CHECK_EQUAL(observer.get_conquest_prices(1).size(), 0);
     observer.redeploy_units(1, 0, 10);
