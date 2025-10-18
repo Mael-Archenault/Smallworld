@@ -67,8 +67,8 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units) {
 
     if (n_units > free_units_number) {
         throw std::invalid_argument("Error, sending more units than current free_units");
-        return;
     }
+
     attacked_area->set_owner_tribe(this);
     attacked_area->set_units_number(n_units);
     free_units_number-=n_units;
