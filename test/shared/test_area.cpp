@@ -37,7 +37,6 @@ public:
     std::vector<Area_Special_Token>& get_special_tokens() { return special_tokens; }
     Area_Biome& get_biome() { return biome; }
     std::vector<Area_Specialization>& get_area_specialization() { return area_specialization; }
-    std::vector<Area*>& get_neighbors() { return neighbors; }
     void set_neighbors(const std::vector<Area*>& n) { neighbors = n; }
     Tribe* get_owner_tribe() const {return owner_tribe;}
 
@@ -70,6 +69,11 @@ BOOST_AUTO_TEST_CASE(testarea)
     int free_units = area.gather_free_units();
     BOOST_CHECK_EQUAL(free_units, 5);
     BOOST_CHECK_EQUAL(area.get_units_number(), 1);
+
+    Area_Observer area_low(1, Area_Biome::FARM, specs);
+    int free_units_low = area_low.gather_free_units();
+    BOOST_CHECK_EQUAL(free_units_low, 0);
+    BOOST_CHECK_EQUAL(area_low.get_units_number(), 1);
 
     //test deploy_units
     area.deploy_units(4);
