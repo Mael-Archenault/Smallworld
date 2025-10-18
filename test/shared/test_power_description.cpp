@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
   BOOST_CHECK(1);
 }
 
-BOOST_AUTO_TEST_CASE(TestSpeciesDescription)
+BOOST_AUTO_TEST_CASE(TestPowerDescription)
 {
   {
     // testing initialization

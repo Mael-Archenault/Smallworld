@@ -4,7 +4,7 @@ namespace state {
 
 Game_State::Game_State(int n_players) : n_players(n_players), round(0), map(Map()){
     for (int i=0; i<n_players; i++ ) {
-        players.push_back(new Player(i));
+        players.push_back(new Player());
     }
 }
 
@@ -73,7 +73,7 @@ void Game_State::take_tribe_at_position(int position, int player_id) {
     for (auto* player : players) {
         if (player->id == player_id) {
             Tribe tribe = tribe_stack.take_tribe_at_position(position);
-            player->set_active_tribe(tribe);
+            player->set_active_tribe(&tribe);
             break;
         }
     }

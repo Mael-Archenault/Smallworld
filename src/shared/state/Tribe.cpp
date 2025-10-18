@@ -65,4 +65,11 @@ void Tribe::conquer(Area& attacked_area, int n_units, int dice_units) {
     attacked_area.set_units_number(n_units);
 }
 
+void Tribe::go_in_decline(){
+    in_decline = true;
+}
+
+int Tribe::get_rewards(){
+    return 0;
+}
 }
