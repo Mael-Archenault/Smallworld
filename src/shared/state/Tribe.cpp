@@ -74,6 +74,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units) {
     free_units_number-=n_units;
     owned_areas.push_back(attacked_area);
 }
+
 void Tribe::go_in_decline(){
     in_decline = true;
 }
