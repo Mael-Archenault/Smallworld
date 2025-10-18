@@ -11,8 +11,6 @@ Player::Player():id(next_id++) {
     tribes = std::vector<Tribe*>();
 }
 
-Player::Player(Player& other) = delete;
-
 void Player::gather_free_units(int tribe_id) {
 
     for(int i=0; i<tribes.size(); i++){
