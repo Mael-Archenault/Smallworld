@@ -34,13 +34,13 @@ std::vector<std::vector<int>> Tribe::get_conquest_prices() {
     std::vector<std::vector<int>> prices;
     for (auto area : owned_areas) {
         for (auto neighbor : area->get_neighbors()) {
-            if (neighbor->getOwner_tribe()!=this) {
+            // if (neighbor->getOwner_tribe()!=this) {
                 int price = neighbor->get_conquest_price(*this);
                 std::vector<int> labelled_price;
                 labelled_price.push_back(neighbor->id);
                 labelled_price.push_back(price);
                 prices.push_back(labelled_price);
-            }
+            // }
         }
     }
     return prices;
@@ -60,8 +60,8 @@ void Tribe::redeploy_units(int area_id, int n_added_units) {
     }
 }
 
-void Tribe::conquer(Area& attacked_area, int n_units, int dice_units) {
-    if (n_units<attacked_area.get_conquest_price(*this)){
+void Tribe::conquer(Area* attacked_area, int n_units, int dice_units) {
+    if (n_units<attacked_area->get_conquest_price(*this)){
         throw std::invalid_argument("Error, not enough units to conquer this area");
     }
 
@@ -69,10 +69,16 @@ void Tribe::conquer(Area& attacked_area, int n_units, int dice_units) {
         throw std::invalid_argument("Error, sending more units than current free_units");
         return;
     }
-    attacked_area.set_owner_tribe(this);
-    attacked_area.set_units_number(n_units);
+    attacked_area->set_owner_tribe(this);
+    attacked_area->set_units_number(n_units);
     free_units_number-=n_units;
-    owned_areas.push_back(&attacked_area);
+    owned_areas.push_back(attacked_area);
+}
+void Tribe::go_in_decline(){
+    in_decline = true;
 }
 
+int Tribe::get_rewards(){
+    return 0;
+}
 }
