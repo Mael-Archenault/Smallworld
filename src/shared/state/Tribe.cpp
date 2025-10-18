@@ -56,13 +56,13 @@ void Tribe::redeploy_units(int area_id, int n_added_units) {
     }
 }
 
-void Tribe::conquer(Area& attacked_area, int n_units, int dice_units) {
-    if (n_units<attacked_area.get_conquest_price(*this)){
+void Tribe::conquer(Area* attacked_area, int n_units, int dice_units) {
+    if (n_units<attacked_area->get_conquest_price(*this)){
         return;
     }
 
-    attacked_area.set_owner_tribe(this);
-    attacked_area.set_units_number(n_units);
+    attacked_area->set_owner_tribe(this);
+    attacked_area->set_units_number(n_units);
 }
 
 void Tribe::go_in_decline(){

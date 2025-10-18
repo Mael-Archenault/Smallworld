@@ -50,7 +50,7 @@ void Player::redeploy_units(int tribe_id, int area_id, int n_added_units) {
     throw std::invalid_argument("redeploy_unit:there is no tribe_id matching for this player");
 }
 
-void Player::conquer(int attacking_tribe_id, Area& attacked_area, int n_units, int dice_units){
+void Player::conquer(int attacking_tribe_id, Area* attacked_area, int n_units, int dice_units){
     for(int i=0; i<tribes.size(); i++){
         if(attacking_tribe_id == tribes[i]->id){
             tribes[i]->conquer(attacked_area, n_units, dice_units);

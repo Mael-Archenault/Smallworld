@@ -40,7 +40,7 @@ std::vector<std::vector<int>> Game_State::get_conquest_prices(int player_id, int
 }
 
 void Game_State::conquer(int attacking_player_id, int attacking_tribe_id, int attacked_area_id, int n_units, int dice_units) {
-    Area& attacked_area = map.get_area(attacked_area_id);
+    Area* attacked_area = map.get_area(attacked_area_id);
     for (auto* player : players) {
         if (player->id == attacking_player_id) {
             player->conquer(attacking_tribe_id, attacked_area, n_units, dice_units);

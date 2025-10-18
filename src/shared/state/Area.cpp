@@ -54,5 +54,8 @@ std::vector<Area*> Area::get_neighbors() {
     return neighbors;
 }
 
+void Area::add_neighbor(Area* neighbor) {
+    neighbors.push_back(neighbor);
+}
 }
 
