@@ -37,29 +37,30 @@ Présenter ici les packages de votre solution, ainsi que leurs dépendances.
 
 ## 2 Description et conception des états
 
-L'objectif de cette section est une description très fine des états dans le projet. Plusieurs niveaux de descriptions sont attendus. Le premier doit être général, afin que le lecteur puisse comprendre les éléments et principes en jeux. Le niveau suivant est celui de la conception logicielle. Pour ce faire, on présente à la fois un diagramme des classes, ainsi qu'un commentaire détaillé de ce diagramme. Indiquer l'utilisation de patron de conception sera très apprécié. Notez bien que les règles de changement d'état ne sont pas attendues dans cette section, même s'il n'est pas interdit d'illustrer de temps à autre des états par leurs possibles changements.
-
-
 ### 2.1 Description des états
 
 L’état global du jeu est centralisé dans la classe Game_State, qui contient toutes les informations nécessaires pour décrire la partie à un instant donné :
+
 - la carte (Map) contenant l’ensemble des informations sur les zones de la carte avec ses specificités ainsi que les troupes des joueurs,
 - la liste des joueurs (Player),
 - les tribus (combinaison d'espèce et de pouvoir) disponibles via une pile (Tribe_Stack),
 - des paramètres de gestion de tour comme le nombre de joueur actif ainsi que le nombre de rounds.
 
 Chaque Player représente un joueur de la partie et possède :
+
 - un identifiant unique,
 - un ensemble de tribus actives qu’il contrôle,
 - un compteur de points de victoire accumulés,
 - les méthodes associées à la conquête ou au déploiement d’unités.
 
 Une Tribe correspond à la combinaison d’une espèce et d’un pouvoir spécial, ce qui définit les capacités et bonus de la tribu. Chaque tribu possède :
+
 - un nombre d’unités disponibles,
 - des descriptions (Species_Description, Power_Description) déterminant ses effets,
 - des méthodes associé aux tribes comme go_in_decline et autre qui seront explicités plus tard.
 
 Les zones (Area) modélisent les régions de la carte. Elles contiennent :
+
 - un biome (Area_Biome) et éventuellement des spécial tokens (forteresse, tanière, etc.),
 - une liste de voisins, pour représenter les connexions de la carte,
 - un propriétaire (Tribe), ici il est important que le propriétaire soit une Tribe et non pas un Player car un Player peut avoir plusieurs Tribe et que ces Tribe peuvent s'attaquer mutuellement,
@@ -68,8 +69,9 @@ Les zones (Area) modélisent les régions de la carte. Elles contiennent :
 L’ensemble de ces zones est géré par la classe Map, qui stocke leur liste et permet le chargement depuis un fichier JSON (utilisé pour initialiser la carte).
 
 Enfin, les effets spéciaux sont gérés par la hiérarchie Effects_Bundle :
+
 - La classe abstraite Effects_Bundle définit une interface générique (apply_first_round_effect, apply_conquest_effect, etc.).
-- Des classes concrètes comme Dwarf_Effects_Bundle, Ratmen_Effects_Bundle ou Giant_Effects_Bundle héritent de cette interface pour appliquer des bonus spécifiques. Il est important de préciser que le diagralle UML actuel ne contient pas toutes les classes concrètes car chacune d'entre elles "viole" les règles du jeu ce qui complique leur implémentation.
+- Des classes concrètes comme Dwarf_Effects_Bundle, Ratmen_Effects_Bundle ou Giant_Effects_Bundle héritent de cette interface pour appliquer des bonus spécifiques. Il est important de préciser que le diagramme UML actuel ne contient pas toutes les classes concrètes car chacune d'entre-elles "viole" les règles du jeu ce qui complique leur implémentation.
 
 
 ### 2.2 Conception logicielle
@@ -89,7 +91,7 @@ L'architecture du système centralise l'état global du jeu dans la classe Game_
 
 Comme vu avec nos encadrants, l’architecture du module state est conçue pour être indépendante de l'engine.
 Les classes ne contiennent aucune logique d’affichage ni de physique pur du jeu ; elles ne stockent que des données et des états.
-L'intérêt de cette séparation est de ne pas exposer la structure interne de notre state dans le cas où ne serions amené à changer quelquechose, il ne faut pas que ces changements impactent la façon dont l'engine appele le state.
+L'intérêt de cette séparation est de ne pas exposer la structure interne de notre state dans le cas où ne serions amené à changer quelque chose, il ne faut pas que ces changements impactent la façon dont l'engine appele le state.
 Le module de rendu peut donc interagir avec cet état via des interfaces de lecture (ex. : positions des tribus, nombre d’unités sur chaque zone, propriétaire d’une zone, etc) sans altérer la logique du jeu.
 
 
@@ -98,6 +100,7 @@ Le module de rendu peut donc interagir avec cet état via des interfaces de lect
 
 Le moteur de jeu utilise le module state comme base de données dynamique.
 Il peut :
+
 - appeler les méthodes Game_State::conquer(), Player::redeploy_units(), ou Area::set_owner() pour faire évoluer la partie,
 - interroger l’état courant pour déterminer les actions possibles,
 - notifier le module de rendu pour mettre à jour l’affichage.
@@ -106,8 +109,7 @@ Cette conception permet une séparation claire entre la logique du jeu et les ac
 
 ### 2.5 Ressources
 
-Illustration 1: Diagramme des classes d'état
-<img width="1578" height="507" alt="image" src="https://github.com/user-attachments/assets/4a5a3bd5-7e49-4667-bf7e-7e8c7d1e2554" />
+![Diagramme des classes_d'état](./rapport/img/state.png)
 
 
 <!-- 
