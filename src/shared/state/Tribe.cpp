@@ -1,6 +1,7 @@
 #include "Tribe.h"
 
 #include <stdexcept>
+#include <unordered_set>
 
 namespace state {
 
@@ -30,14 +31,18 @@ int Tribe::get_free_units_number() {
 
 std::vector<std::vector<int>> Tribe::get_conquest_prices() {
     std::vector<std::vector<int>> prices;
-    for (int i=0; i<owned_areas.size(); i++) {
-        for (int j=0; j<owned_areas[i]->get_neighbors().size(); j++) {
-            Area* neighbor = owned_areas[i]->get_neighbors()[j];
+    std::unordered_set<int> seen;
+    prices.reserve(owned_areas.size() * 3);
+
+    for (Area* area : owned_areas) {
+        if (!area) continue;
+        for (Area* neighbor : area->get_neighbors()) {
+            if (!neighbor) continue;
+            int nid = neighbor->id;
+            if (seen.find(nid) != seen.end()) continue;
+            seen.insert(nid);
             int price = neighbor->get_conquest_price(*this);
-            std::vector<int> labelled_price;
-            labelled_price.push_back(neighbor->id);
-            labelled_price.push_back(price);
-            prices.push_back(labelled_price);
+            prices.push_back(std::vector<int>{nid, price});
         }
     }
     return prices;

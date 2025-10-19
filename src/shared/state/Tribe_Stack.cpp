@@ -108,23 +108,23 @@ Tribe_Stack::Tribe_Stack() {
         power_lists[random_value_species] = power_lists[species_to_stack];
         species_lists[species_to_stack] = switch_species;
         power_lists[species_to_stack] = switch_power;
-        stack.push_back(&tribe);
+        stack.push_back(tribe);
     }
 }
 
 Tribe* Tribe_Stack::take_tribe_at_position(int position){
-    if(position>seeable_stack_number){
+    if(position>=seeable_stack_number){
         throw std::out_of_range("Invalid tribe position");
     }
-    Tribe* tribe_out = stack[position];
+    Tribe* tribe_out = &stack[position];
     stack.erase(stack.begin() + position);
     return tribe_out;
 }
 
 std::vector<Tribe*> Tribe_Stack::get_tribes_on_top(){
     std::vector<Tribe*> seeable_Tribes;
-    for(int i=0;i<=seeable_stack_number;i++){
-        seeable_Tribes.push_back(stack[i]);
+    for(int i=0;i<seeable_stack_number;i++){
+        seeable_Tribes.push_back(&stack[i]);
     }
     return seeable_Tribes;
 }
