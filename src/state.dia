@@ -5851,13 +5851,13 @@
         <dia:point val="76.7417,2.7553"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="76.6917,2.7053;86.1017,8.0053"/>
+        <dia:rectangle val="76.6917,2.7053;85.7617,8.0053"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="76.7417,2.7553"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="9.3099999999999987"/>
+        <dia:real val="8.9700000000000006"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="5.2000000000000011"/>
@@ -7688,6 +7688,33 @@
         <dia:connection handle="0" to="O5" connection="40"/>
         <dia:connection handle="1" to="O21" connection="14"/>
       </dia:connections>
+      <dia:childnode parent="O0"/>
+    </dia:object>
+    <dia:object type="Standard - Image" version="0" id="O34">
+      <dia:attribute name="obj_pos">
+        <dia:point val="37.65,8.80789"/>
+      </dia:attribute>
+      <dia:attribute name="obj_bb">
+        <dia:rectangle val="37.65,8.80789;39.65,10.8079"/>
+      </dia:attribute>
+      <dia:attribute name="elem_corner">
+        <dia:point val="37.65,8.80789"/>
+      </dia:attribute>
+      <dia:attribute name="elem_width">
+        <dia:real val="2"/>
+      </dia:attribute>
+      <dia:attribute name="elem_height">
+        <dia:real val="2"/>
+      </dia:attribute>
+      <dia:attribute name="draw_border">
+        <dia:boolean val="false"/>
+      </dia:attribute>
+      <dia:attribute name="keep_aspect">
+        <dia:boolean val="true"/>
+      </dia:attribute>
+      <dia:attribute name="file">
+        <dia:string>##</dia:string>
+      </dia:attribute>
       <dia:childnode parent="O0"/>
     </dia:object>
   </dia:layer>
