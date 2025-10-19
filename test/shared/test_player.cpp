@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
         new state::Species_Description("TestSpecies", 5, 10, state::Effects_Bundle()),
         new state::Power_Description("TestPower", 3, state::Effects_Bundle())
     );
-    static state::Area area(10,state::Area_Biome::HILL, std::vector<state::Area_Specialization>());
+    static state::Area area(1,state::Area_Biome::HILL, std::vector<state::Area_Specialization>());
     Player_Observer observer(0);
 
     // testing initialization
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
     observer.gather_free_units(1);
     BOOST_CHECK_EQUAL(observer.get_conquest_prices(1).size(), 0);
     observer.redeploy_units(1, 0, 5);
-    observer.conquer(1, &area, 5, 2);
+    observer.conquer(1, &area, 3,0);
     observer.get_rewards();
     BOOST_CHECK_EQUAL(observer.get_money(), 0);
   }

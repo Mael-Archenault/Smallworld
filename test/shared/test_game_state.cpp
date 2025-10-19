@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         observer.take_tribe_at_position(0, 0);
         observer.gather_free_units(0,0);
         observer.get_free_units_number(0,0);
-        observer.get_conquest_prices(0,0);
+        std::vector<std::vector<int>> conquest_prices = observer.get_conquest_prices(0,0);
         observer.redeploy_units(0,0,0,0);
         observer.get_rewards(0);
         observer.go_in_decline(0);
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         
         observer.abandon_area();
         int dice_units = observer.roll_dice_for_bonus_units();
-        observer.conquer(0,0,0,10,dice_units);
+        observer.conquer(0,0,0,2,0);
 
         observer.next_round();
         BOOST_CHECK_EQUAL(observer.get_round(), 1);

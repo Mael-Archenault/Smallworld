@@ -10,7 +10,7 @@ using namespace state;
 
 class test_Tribe : public Tribe {
 public:
-    test_Tribe(Species_Description* species_description, Power_Description* power_description, std::vector<Area*> owned_areas) : Tribe(species_description, power_description) {
+    test_Tribe(int id, Species_Description* species_description, Power_Description* power_description, std::vector<Area*> owned_areas) : Tribe(id, species_description, power_description) {
         this->owned_areas = owned_areas;
     }
 
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(TestExemple)
     Area * area1 = new Area(3, Area_Biome::HILL,{});
     Area * area2 = new Area(1, Area_Biome::HILL,{});
 
-    test_Tribe test_tribe = test_Tribe(species_description,power_description, owned_areas);
+    test_Tribe test_tribe = test_Tribe(0,species_description,power_description, owned_areas);
 
     BOOST_CHECK_EQUAL(test_tribe.get_species_description(),species_description);
     BOOST_CHECK_EQUAL(test_tribe.get_power_description(),power_description);
