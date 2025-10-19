@@ -106,6 +106,8 @@ Tribe_Stack::Tribe_Stack() {
         switch_power = power_lists[random_value_power];
         species_lists[random_value_species] = species_lists[species_to_stack];
         power_lists[random_value_species] = power_lists[species_to_stack];
+        species_lists[species_to_stack] = switch_species;
+        power_lists[species_to_stack] = switch_power;
         stack.push_back(&tribe);
     }
 }
