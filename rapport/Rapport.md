@@ -69,18 +69,46 @@ L’ensemble de ces zones est géré par la classe Map, qui stocke leur liste et
 
 Enfin, les effets spéciaux sont gérés par la hiérarchie Effects_Bundle :
 - La classe abstraite Effects_Bundle définit une interface générique (apply_first_round_effect, apply_conquest_effect, etc.).
-- Des classes concrètes comme Dwarf_Effects_Bundle, Ratmen_Effects_Bundle ou Giant_Effects_Bundle héritent de cette interface pour appliquer des bonus spécifiques.
+- Des classes concrètes comme Dwarf_Effects_Bundle, Ratmen_Effects_Bundle ou Giant_Effects_Bundle héritent de cette interface pour appliquer des bonus spécifiques. Il est important de préciser que le diagralle UML actuel ne contient pas toutes les classes concrètes car chacune d'entre elles "viole" les règles du jeu ce qui complique leur implémentation.
 
 
 ### 2.2 Conception logicielle
-	
+
+Le diagramme UML présente l’architecture des classes du module state.
+L’organisation suit une approche orientée objet modulaire (plus que cruciale dans notre cas avec autant d'effet différent) :
+
+- Game_State joue le rôle de façade, offrant un point d’entrée unique pour manipuler l’état global du jeu.
+- Map et Area forment le modèle spatial, décrivant la topologie/état physique du monde.
+- Player et Tribe constituent le modèle des acteurs de ce monde, reliés entre eux par composition.
+- Species_Description, Power_Description et Effects_Bundle réalisent le modèle des caractéristiques et utilisent une hiérarchie d’héritage pour encapsuler les comportements spécifiques à chaque race ou pouvoir.
+
+L'architecture du système centralise l'état global du jeu dans la classe Game_State, qui regroupe toutes les informations essentielles pour décrire la partie à un moment donné ce qui en fait une facade qui sera utile pour la suite. La carte (Map) agrège plusieurs zones (Area) connectées entre elles, offrant ainsi une structure modulaire qui reflète la topologie du monde de jeu. Cette modulation potentielle est importante car la map n'est pas un objet fixé sans modification. Des special token venant de pouvoir de classe modifient cette map. La classe contient également la liste des joueurs (Player), ainsi que les tribus, qui combinent espèces et pouvoirs, accessibles via une pile (Tribe_Stack). En outre, des paramètres de gestion des tours, tels que le nombre de joueurs actifs et le nombre de rounds, sont également inclus, garantissant une interface pour la manipulation de l'état du jeu. La hiérarchie d'Effects_Bundle encapsule divers comportements d'effets appliqués aux tribus, permettant une flexibilité dans la gestion des capacités spécifiques comme vu précedemment.
+
+
 ### 2.3 Conception logicielle: extension pour le rendu
 
+Comme vu avec nos encadrants, l’architecture du module state est conçue pour être indépendante de l'engine.
+Les classes ne contiennent aucune logique d’affichage ni de physique pur du jeu ; elles ne stockent que des données et des états.
+L'intérêt de cette séparation est de ne pas exposer la structure interne de notre state dans le cas où ne serions amené à changer quelquechose, il ne faut pas que ces changements impactent la façon dont l'engine appele le state.
+Le module de rendu peut donc interagir avec cet état via des interfaces de lecture (ex. : positions des tribus, nombre d’unités sur chaque zone, propriétaire d’une zone, etc) sans altérer la logique du jeu.
+
+
+
 ### 2.4 Conception logicielle: extension pour le moteur de jeu
+
+Le moteur de jeu utilise le module state comme base de données dynamique.
+Il peut :
+- appeler les méthodes Game_State::conquer(), Player::redeploy_units(), ou Area::set_owner() pour faire évoluer la partie,
+- interroger l’état courant pour déterminer les actions possibles,
+- notifier le module de rendu pour mettre à jour l’affichage.
+
+Cette conception permet une séparation claire entre la logique du jeu et les actions du joueur qui par ailleurs rend le projet facilement testable via des tests unitaires.
 
 ### 2.5 Ressources
 
 Illustration 1: Diagramme des classes d'état
+<img width="1578" height="507" alt="image" src="https://github.com/user-attachments/assets/4a5a3bd5-7e49-4667-bf7e-7e8c7d1e2554" />
+
 
 <!-- 
 ## 3 Rendu: Stratégie et Conception
