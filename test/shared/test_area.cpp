@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(testarea)
     MockSpeciesDescription species1;
     MockPowerDescription power1;
 
-    Tribe tribe(&species1, &power1);
+    Tribe tribe(0,&species1, &power1);
 
     area.set_owner_tribe(&tribe);
     int price = area.get_conquest_price(tribe);

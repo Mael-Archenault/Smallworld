@@ -1,6 +1,10 @@
 #include "Tribe_Stack.h"
+#include <stdexcept>
 
 namespace state {
+
+
+// dummy implementation of Tribe_Stack for testing purpose
 
 Tribe_Stack::Tribe_Stack()
     {
@@ -19,7 +23,7 @@ Tribe* Tribe_Stack::take_tribe_at_position(int position) {
         stack.erase(stack.begin()+position);
         return tribe;
     }
-    return nullptr;
+    throw std::invalid_argument("take_tribe_at_position: position out of range");
 }
 
 std::vector<Tribe*> Tribe_Stack::get_tribes_on_top() {
