@@ -484,10 +484,6 @@ gen_class (umlclassnode *node)
         umlassoclist assoc = node->associations;
         while (assoc != NULL) {
             umlclassnode *ref;
-            if (assoc->name[0] != '\0')
-            {
-                add_setter_getter(node,assoc->key->name,assoc->name);
-            }
             assoc = assoc->next;
         }
     }
@@ -503,7 +499,6 @@ gen_class (umlclassnode *node)
                     umla = umla->next;
                     continue;
                 }
-                add_setter_getter(node,umla->key.type,umla->key.name);
                 
                 umla = umla->next;
             }
