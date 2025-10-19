@@ -54,27 +54,25 @@ BOOST_AUTO_TEST_CASE(TestExemple)
 
 
 
-    test_tribe.conquer(*area1,5,0);
-    BOOST_CHECK_THROW(test_tribe.conquer(*area2,1,0),std::invalid_argument);
-    BOOST_CHECK_THROW(test_tribe.conquer(*area2,10,0),std::invalid_argument);
+    test_tribe.conquer(area1,5,0);
+    BOOST_CHECK_THROW(test_tribe.conquer(area2,1,0),std::invalid_argument);
+    BOOST_CHECK_THROW(test_tribe.conquer(area2,10,0),std::invalid_argument);
 
 
-    test_tribe.conquer(*area2,3,0);
+    test_tribe.conquer(area2,3,0);
     BOOST_CHECK_EQUAL(test_tribe.get_free_units_number(),1);
 
-    // std::vector<std::vector<int>> conquest_prices = {};
-    // conquest_prices.emplace_back();
-    // conquest_prices.back().push_back(0);conquest_prices.back().push_back(7);
-    // conquest_prices.emplace_back();
-    // conquest_prices.back().push_back(1);conquest_prices.back().push_back(5);
-    //
-    Area * area1_1 = new Area(1,state::MOUNTAINS,{});
-    auto neighbours = std::vector<Area*>();
-    neighbours.push_back(area1_1);
-    neighbours.push_back(area2);
+     std::vector<std::vector<int>> conquest_prices = {};
+     conquest_prices.emplace_back();
+     conquest_prices.back().push_back(0);conquest_prices.back().push_back(7);
+     conquest_prices.emplace_back();
+     conquest_prices.back().push_back(1);conquest_prices.back().push_back(5);
 
-    area1->setNeighbors(neighbours);
-    //
+    Area * area1_1 = new Area(1,state::MOUNTAINS,{});
+    area1->add_neighbor(area1_1);
+    area1->add_neighbor(area2);
+
+
     auto conquest_prices_calculated = test_tribe.get_conquest_prices();
     //
     // BOOST_CHECK_EQUAL(conquest_prices.at(0).at(0),conquest_prices_calculated.at(0).at(0));
