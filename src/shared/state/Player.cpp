@@ -4,9 +4,7 @@
 
 namespace state {
 
-int Player::next_id = 0;
-
-Player::Player():id(next_id++) {
+Player::Player(int id):id(id) {
     money = 0;
     tribes = std::vector<Tribe*>();
 }
