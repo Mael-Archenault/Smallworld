@@ -9,3 +9,4 @@ src/**/*.h
 *.autosave
 tmp
 .env
+.vscode/
