@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wall -std=c++11 -pthread -g -g --coverage -g CMakeFiles/client.dir/main.cpp.o -o ../../bin/client  -lgcov libclient_static.a /usr/lib/x86_64-linux-gnu/libsfml-graphics.so.2.6.1 /usr/lib/x86_64-linux-gnu/libsfml-network.so.2.6.1 /usr/lib/x86_64-linux-gnu/libsfml-window.so.2.6.1 /usr/lib/x86_64-linux-gnu/libsfml-system.so.2.6.1 ../shared/libshared_static.a -lgcov 
