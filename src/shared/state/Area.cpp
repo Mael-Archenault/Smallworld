@@ -57,5 +57,16 @@ std::vector<Area*> Area::get_neighbors() {
 void Area::add_neighbor(Area* neighbor) {
     neighbors.push_back(neighbor);
 }
+void Area::add_special_token(Area_Special_Token token) {
+    special_tokens.push_back(token);
+}
+
+void Area::remove_special_token() {
+
+    special_tokens.clear();
+    special_tokens.push_back(Area_Special_Token::MOUNTAIN);
+}
+
+
 }
 
