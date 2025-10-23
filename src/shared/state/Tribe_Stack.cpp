@@ -3,7 +3,7 @@
 #include <random>
 #include <vector>
 #include <stdexcept>
-#include "Dwarf_Effects_Bundle.h"
+#include "Dwarves_Species.h"
 
 #define number_of_species 14
 #define number_of_powers 20
@@ -17,7 +17,7 @@ Tribe_Stack::Tribe_Stack() {
 
     // list of Species
     static std::vector<Species_Description*> species_lists;
-    static Dwarf_Effects_Bundle Dwarf_effect;
+    static Dwarves_Species Dwarf_effect;
     static Species_Description Amazons("Amazons",6,8,Dwarf_effect);
     species_lists.push_back(&Amazons);
     static Species_Description Dwarves("Dwarves",3,8,Dwarf_effect);
