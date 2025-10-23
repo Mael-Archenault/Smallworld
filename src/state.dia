@@ -6133,13 +6133,13 @@
         <dia:point val="74.8029,9.3727"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="74.7529,9.3227;93.8329,15.4227"/>
+        <dia:rectangle val="74.7529,9.3227;96.1429,15.4227"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="74.8029,9.3727"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="18.98"/>
+        <dia:real val="21.289999999999999"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="6"/>
@@ -6390,7 +6390,7 @@
                 <dia:string>#area#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#Area&amp;#</dia:string>
+                <dia:string>#const Area&amp;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
