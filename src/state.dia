@@ -6295,7 +6295,7 @@
         <dia:real val="6"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#Giant_Species#</dia:string>
+        <dia:string>#Giants_Species#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
