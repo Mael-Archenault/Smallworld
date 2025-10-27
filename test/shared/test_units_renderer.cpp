@@ -19,6 +19,7 @@ BOOST_AUTO_TEST_CASE(TestTribeRenderer)
     sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");
     renderer::Units_Renderer units_renderer;
     units_renderer.set_sprite("Dwarves");
+    units_renderer.set_units_number(15);
     units_renderer.scale(1.0f, 1.0f);
 
     while (window.isOpen())
