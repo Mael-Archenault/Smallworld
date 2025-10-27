@@ -1,32 +1,52 @@
 #include "Tribe_Renderer.h"
+#include <unordered_map>
+#include <fstream>
+#include <json/json.h>
+
+
+
+
 
 
 namespace renderer {
 
-    bool Tribe_Renderer::power_spritesheet_loaded = false;
-    bool Tribe_Renderer::species_spritesheet_loaded = false;
-
+    bool Tribe_Renderer::spritesheets_loaded = false;
     sf::Texture Tribe_Renderer::species_spritesheet;
     sf::Texture Tribe_Renderer::power_spritesheet;
 
+    std::unordered_map<std::string, std::pair<int, int>> Tribe_Renderer::power_spritesheet_indexing;
+    std::unordered_map<std::string, std::pair<int, int>> Tribe_Renderer::species_spritesheet_indexing;
+
     Tribe_Renderer::Tribe_Renderer(){
+        // loading the spritesheet and its indexing
+        if (!spritesheets_loaded) {
+            if (!species_spritesheet.loadFromFile("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/species_spritesheet_360x194.png")) {
+                throw std::runtime_error("Tribe_Renderer::set_species: Failed to load species spritesheet");
+            }
+            if (!power_spritesheet.loadFromFile("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/power_spritesheet_194x194.png")) {
+                throw std::runtime_error("Tribe_Renderer::set_species: Failed to load power spritesheet");
+            }
+
+            spritesheets_loaded = true;
+
+            species_spritesheet_indexing = open_indexing_file("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/species_spritesheet_indexing.json");
+            power_spritesheet_indexing = open_indexing_file("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/power_spritesheet_indexing.json");
+
+
+            set_sprite("Dwarves", "Berserk");
+
+        }
     };
 
 
     void Tribe_Renderer::set_sprite (std::string species_name, std::string power_name) {
         sf::Sprite species_sprite;
-        if (!species_spritesheet_loaded) {
-            if (!species_spritesheet.loadFromFile("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/species_card_360x194.png")) {
-                throw std::runtime_error("Tribe_Renderer::set_species: Failed to load species spritesheet");
-            }
-            species_spritesheet_loaded = true;
-        }
 
         int frameWidth = 360;
         int frameHeight = 194;
 
-        int frameX = 0; // third frame (0-based)
-        int frameY = 0; // second row
+        int frameX = species_spritesheet_indexing[species_name].second; 
+        int frameY = species_spritesheet_indexing[species_name].first;
 
         sf::IntRect speciesFrameRect(frameX * frameWidth, frameY * frameHeight, frameWidth, frameHeight);
 
@@ -36,18 +56,12 @@ namespace renderer {
 
 
         sf::Sprite power_sprite;
-        if (!power_spritesheet_loaded) {
-            if (!power_spritesheet.loadFromFile("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/powers_194x194.png")) {
-                throw std::runtime_error("Tribe_Renderer::set_power: Failed to load power spritesheet");
-            }
-            power_spritesheet_loaded = true;
-        }
 
         frameWidth = 194;
         frameHeight = 194;
 
-        frameX = 0; // first frame (0-based)
-        frameY = 0; // first row
+        frameX = power_spritesheet_indexing[power_name].second;
+        frameY = power_spritesheet_indexing[power_name].first;
 
         sf::IntRect powerFrameRect(frameX * frameWidth, frameY * frameHeight, frameWidth, frameHeight);
 
@@ -75,4 +89,30 @@ namespace renderer {
         window.draw(this->sprite);
     }
 
+
+    std::unordered_map<std::string, std::pair<int, int>> Tribe_Renderer::open_indexing_file(std::string file_name) {
+        std::unordered_map<std::string, std::pair<int, int>> indexing;
+
+
+        
+        std::ifstream file(file_name, std::ifstream::binary);
+        if (!file.is_open()) {
+            throw std::runtime_error("Cannot open file: " + file_name);
+        }
+
+        Json::Value root;
+        file >> root;
+        file.close();
+
+        const Json::Value& size = root["sprite_size"];
+        const Json::Value& frames  = root["frames"];
+
+        for (const auto& species_name : frames.getMemberNames()) {
+            std::string name = species_name;
+            int frame_x = frames[species_name][0].asInt();
+            int frame_y = frames[species_name][1].asInt();
+            indexing[name] = std::make_pair(frame_x, frame_y);
+        }
+        return indexing;
+    }
 };

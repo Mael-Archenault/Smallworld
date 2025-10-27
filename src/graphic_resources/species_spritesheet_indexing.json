@@ -1,0 +1,8 @@
+{
+  "sprite_size": [360,194],
+  "frames": {
+    "Ratmen":  [0,0],
+    "Giants":  [1,0],
+    "Dwarves":  [2,0]
+  }
+}

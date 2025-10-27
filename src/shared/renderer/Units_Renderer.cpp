@@ -5,7 +5,7 @@
 
 namespace renderer {
 
-    bool Units_Renderer::pawn_spritesheet_loaded = false;
+    bool Units_Renderer::spritesheets_loaded = false;
     
     sf::Texture Units_Renderer::pawn_spritesheet;
     std::unordered_map<std::string, std::pair<int, int>> Units_Renderer::spritesheet_indexing;
@@ -13,11 +13,11 @@ namespace renderer {
     Units_Renderer::Units_Renderer(){
 
         // loading the spritesheet and its indexing
-        if (!pawn_spritesheet_loaded) {
+        if (!spritesheets_loaded) {
             if (!pawn_spritesheet.loadFromFile("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/pawn_spritesheet_150x150.png")) {
                 throw std::runtime_error("Units_Renderer::set_species: Failed to load pawn spritesheet");
             }
-            pawn_spritesheet_loaded = true;
+            spritesheets_loaded = true;
 
            // loading json that contains the indexing
 

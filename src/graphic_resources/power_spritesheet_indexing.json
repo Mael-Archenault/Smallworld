@@ -1,0 +1,8 @@
+{
+  "sprite_size": [194,194],
+  "frames": {
+    "Bivouacking":  [0,0],
+    "Alchemist":  [0,1],
+    "Berserk":  [0,2]
+  }
+}
