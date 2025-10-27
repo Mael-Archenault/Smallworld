@@ -5,15 +5,13 @@ namespace renderer {
 
     Map_Renderer::Map_Renderer(std::string file_path, state::Map& map, sf::Vector2u window_size): map(map) {
         if (!this->texture.loadFromFile(file_path)) {
-            // Handle loading error
-            std::cout<<"Error loading map texture from " << file_path << std::endl;
-            throw std::runtime_error("Failed to load texture");
+            throw std::runtime_error("Map_Renderer constructor: Failed to load texture");
         }
         this->sprite.setTexture(this->texture);
-        // setting the size of the sprite, according to the window size
+        int border_size = 100;
         this->sprite.setScale(
-            static_cast<float>(window_size.x) / this->texture.getSize().x,
-            static_cast<float>(window_size.y) / this->texture.getSize().y
+            (static_cast<float>((window_size.x)-2*border_size)) / this->texture.getSize().x,
+            (static_cast<float>((window_size.y)-2*border_size)) / this->texture.getSize().y
         );
     }
 

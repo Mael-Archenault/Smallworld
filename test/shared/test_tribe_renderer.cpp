@@ -12,17 +12,14 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
   BOOST_CHECK(1);
 }
 
-BOOST_AUTO_TEST_CASE(TestMapRenderer)
+BOOST_AUTO_TEST_CASE(TestTribeRenderer)
 {
   {
-    // testing initialization
-    state::Map map;
-    std::string filepath = "/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/map_2580x2580.png";
-    
-    // opening a sfml window 
+
     sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");
-    renderer::Map_Renderer map_renderer(filepath, map, window.getSize());
-    // drawing a rectangle on it for 4 seconds
+    renderer::Tribe_Renderer tribe_renderer;
+    tribe_renderer.set_sprite("Dwarves", "Fortified");
+    tribe_renderer.scale(0.5f, 0.5f);
 
     while (window.isOpen())
     {
@@ -34,7 +31,7 @@ BOOST_AUTO_TEST_CASE(TestMapRenderer)
         }
 
         window.clear(sf::Color::Black);
-        map_renderer.render(window, sf::Vector2f(100,100));
+        tribe_renderer.render(window, sf::Vector2f(200,100));
         window.display();
     }
 

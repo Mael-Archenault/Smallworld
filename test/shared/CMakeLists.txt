@@ -7,4 +7,4 @@
 # add_custom_test(area)
 # add_custom_test(game_state)
 # add_custom_test(tribe_stack)
-add_custom_test(renderer)
+add_custom_test(tribe_renderer)
