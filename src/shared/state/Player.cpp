@@ -75,4 +75,12 @@ void Player::set_active_tribe(Tribe* tribe){
     tribes.push_back(tribe);
 }
 
+std::vector<Tribe*> Player::get_tribes() {
+    return tribes;
+}
+
+int Player::get_money() {
+    return money;
+}
+
 }

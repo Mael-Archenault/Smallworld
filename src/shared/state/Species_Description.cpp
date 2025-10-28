@@ -14,4 +14,9 @@ namespace state
     {
         return given_units_number;
     }
+
+    std::string Species_Description::get_name()
+    {
+        return name;
+    }
 }

@@ -15,4 +15,9 @@ namespace state
         return given_units_number;
     }
 
+    std::string Power_Description::get_name()
+    {
+        return name;
+    }
+
 }

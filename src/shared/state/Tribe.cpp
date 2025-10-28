@@ -81,4 +81,11 @@ void Tribe::go_in_decline(){
 int Tribe::get_rewards(){
     return 0;
 }
+
+std::string Tribe::get_species_name(){
+    return species_description->get_name();
+}
+std::string Tribe::get_power_name(){
+    return power_description->get_name();
+}
 }

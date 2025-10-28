@@ -80,6 +80,7 @@ namespace renderer {
 
     void Units_Renderer::scale (float scale_x, float scale_y) {
         this->sprite.setScale(scale_x, scale_y);
+        this->number.setScale(scale_x, scale_y);
     }
     void Units_Renderer::render (sf::RenderWindow& window, sf::Vector2f position) {
         this->sprite.setPosition(position);
