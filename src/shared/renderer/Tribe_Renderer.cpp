@@ -40,6 +40,14 @@ namespace renderer {
 
 
     void Tribe_Renderer::set_sprite (std::string species_name, std::string power_name) {
+        if (species_spritesheet_indexing.find(species_name) == species_spritesheet_indexing.end()) {
+            //throw std::runtime_error("Tribe_Renderer::set_sprite: Species name not found in indexing: " + species_name);
+            species_name = "Dwarves";
+        }
+        if (power_spritesheet_indexing.find(power_name) == power_spritesheet_indexing.end()) {
+            //throw std::runtime_error("Tribe_Renderer::set_sprite: Power name not found in indexing: " + power_name);
+            power_name = "Berserk";
+        }
         sf::Sprite species_sprite;
 
         int frameWidth = 360;
