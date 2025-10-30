@@ -51,7 +51,7 @@ namespace renderer {
             throw std::runtime_error("Units_Renderer::Units_Renderer: Failed to load font");
         }
         number.setFont(font);
-        number.setCharacterSize(64); // in pixels, not points!
+        number.setCharacterSize(24); // in pixels, not points!
         number.setFillColor(sf::Color::White);
         number.setStyle(sf::Text::Bold);
 
@@ -80,7 +80,7 @@ namespace renderer {
 
     void Units_Renderer::scale (float scale_x, float scale_y) {
         this->sprite.setScale(scale_x, scale_y);
-        this->number.setScale(scale_x, scale_y);
+        this->number.setCharacterSize(std::min(24*scale_x, 24*scale_y));
     }
     void Units_Renderer::render (sf::RenderWindow& window, sf::Vector2f position) {
         this->sprite.setPosition(position);

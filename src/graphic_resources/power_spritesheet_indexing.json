@@ -3,6 +3,24 @@
   "frames": {
     "Bivouacking":  [0,0],
     "Alchemist":  [0,1],
-    "Berserk":  [0,2]
+    "Berserk":  [0,2],
+    "Commando": [0,3],
+    "Diplomat": [1,0],
+    "Merchant": [1,1],
+    "Mounted": [1,2],
+    "Pillaging": [1,3],
+    "Seafaring": [2,0],
+    "Spirit": [2,1],
+    "Stout": [2,2],
+    "Swamp": [2,3],
+    "Hill": [3,0],
+    "Heroic": [3,1],
+    "Fortified": [3,2],
+    "Forest": [3,3],
+    "Flying": [4,0],
+    "Dragon Master": [4,1],
+    "Underworld": [4,2],
+    "Wealthy": [4,3],
+    "Blank": [5,0]
   }
 }

@@ -33,7 +33,7 @@ namespace renderer {
             power_spritesheet_indexing = open_indexing_file("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/power_spritesheet_indexing.json");
 
 
-            set_sprite("Dwarves", "Berserk");
+            //set_sprite("Dwarves", "Blank");
 
         }
     };
@@ -46,7 +46,7 @@ namespace renderer {
         }
         if (power_spritesheet_indexing.find(power_name) == power_spritesheet_indexing.end()) {
             //throw std::runtime_error("Tribe_Renderer::set_sprite: Power name not found in indexing: " + power_name);
-            power_name = "Berserk";
+            power_name = "Blank";
         }
         sf::Sprite species_sprite;
 
@@ -80,6 +80,7 @@ namespace renderer {
 
         this->texture.create(360+194, 194);
         this->texture.clear(sf::Color::Transparent);
+        
         power_sprite.setPosition(sf::Vector2f(0,0));
         this->texture.draw(power_sprite);
         species_sprite.setPosition(sf::Vector2f(power_sprite.getGlobalBounds().width-50,0));
@@ -92,7 +93,7 @@ namespace renderer {
     void Tribe_Renderer::scale (float scale_x, float scale_y) {
         this->sprite.setScale(scale_x, scale_y);
     }
-    void Tribe_Renderer::render (sf::RenderWindow& window, sf::Vector2f position) {
+    void Tribe_Renderer::render (sf::RenderTarget& window, sf::Vector2f position) {
         this->sprite.setPosition(position);
         window.draw(this->sprite);
     }

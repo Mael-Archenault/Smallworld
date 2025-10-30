@@ -9,6 +9,13 @@ Player::Player(int id):id(id) {
     tribes = std::vector<Tribe*>();
 }
 
+Player::~Player() {
+    for (Tribe* t : tribes) {
+        delete t;
+    }
+    tribes.clear();
+}
+
 void Player::gather_free_units(int tribe_id) {
 
     for(int i=0; i<tribes.size(); i++){
@@ -73,6 +80,9 @@ void Player::go_in_decline(){
 
 void Player::set_active_tribe(Tribe* tribe){
     tribes.push_back(tribe);
+    if (tribes.size()>3){
+        tribes.erase(tribes.begin()); // remove the oldest tribe if more than 3 
+    }
 }
 
 std::vector<Tribe*> Player::get_tribes() {

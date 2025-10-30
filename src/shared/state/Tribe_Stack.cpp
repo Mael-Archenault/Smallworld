@@ -3,6 +3,7 @@
 #include <random>
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
 #include "Dwarf_Effects_Bundle.h"
 
 #define number_of_species 14
@@ -13,10 +14,9 @@
 namespace state {
 
 Tribe_Stack::Tribe_Stack() {
-    stack = {};
+    stack.clear();
 
-    // list of Species
-    static std::vector<Species_Description*> species_lists;
+    std::vector<Species_Description*> species_lists;
     static Dwarf_Effects_Bundle Dwarf_effect;
     static Species_Description Amazons("Amazons",6,8,Dwarf_effect);
     species_lists.push_back(&Amazons);
@@ -48,7 +48,7 @@ Tribe_Stack::Tribe_Stack() {
     species_lists.push_back(&Wizards);
 
     //list of Power
-    static std::vector<Power_Description*> power_lists;
+    std::vector<Power_Description*> power_lists;
     static Power_Description Alchemist("Alchemist",4,Dwarf_effect);
     power_lists.push_back(&Alchemist);
     static Power_Description Berserk("Berserk",4,Dwarf_effect);
@@ -59,9 +59,9 @@ Tribe_Stack::Tribe_Stack() {
     power_lists.push_back(&Commando);
     static Power_Description Diplomat("Diplomat",5,Dwarf_effect);
     power_lists.push_back(&Diplomat);
-    static Power_Description Dragon_Master("Dragon_Master",5,Dwarf_effect);
+    static Power_Description Dragon_Master("Dragon Master",5,Dwarf_effect);
     power_lists.push_back(&Dragon_Master);
-    static Power_Description Fiying("Fiying",5,Dwarf_effect);
+    static Power_Description Fiying("Flying",5,Dwarf_effect);
     power_lists.push_back(&Fiying);
     static Power_Description Forest("Forest",4,Dwarf_effect);
     power_lists.push_back(&Forest);
@@ -90,40 +90,51 @@ Tribe_Stack::Tribe_Stack() {
     static Power_Description Wealthy("Wealthy",4,Dwarf_effect);
     power_lists.push_back(&Wealthy);
 
-    //build of the stack
-    Species_Description* switch_species = nullptr;
-    Power_Description*   switch_power  = nullptr;
-    std::random_device rd_species;
-    std::random_device rd_power;
-    int random_value_species = 0;
-    int random_value_power = 0;
-    for(int species_to_stack=number_of_species;species_to_stack>0;species_to_stack--){
-        random_value_species = rd_species() % number_of_species;
-        random_value_power = rd_power() % number_of_powers;
-        int id = number_of_species - species_to_stack;
-        Tribe tribe(id,species_lists[random_value_species], power_lists[random_value_power]);
-        switch_species = species_lists[random_value_species];
-        switch_power = power_lists[random_value_power];
-        species_lists[random_value_species] = species_lists[species_to_stack];
-        power_lists[random_value_species] = power_lists[species_to_stack];
-        species_lists[species_to_stack] = switch_species;
-        power_lists[species_to_stack] = switch_power;
+    // build of the stack: pair each species with a unique power (no duplicates)
+    std::random_device rd;
+    std::mt19937 rng(rd());
+
+    // shuffle species and powers independently
+    std::shuffle(species_lists.begin(), species_lists.end(), rng);
+    std::shuffle(power_lists.begin(), power_lists.end(), rng);
+
+    // Pair the first 'number_of_species' species with the first same number of powers
+    for (int i = 0; i < number_of_species; i++) {
+        Tribe tribe(i, species_lists[i], power_lists[i]);
         stack.push_back(tribe);
+    }
+
+    //verifying that there is no double of power in the stack
+
+    for (size_t i = 0; i < stack.size(); ++i) {
+        for (size_t j = i + 1; j < stack.size(); ++j) {
+            if (stack[i].get_power_name() == stack[j].get_power_name()) {
+                throw std::runtime_error("Tribe Stack Initialization Error: Duplicate power found in the stack: " + stack[i].get_power_name());
+            }
+        }
     }
 }
 
 Tribe* Tribe_Stack::take_tribe_at_position(int position){
-    if(position>=seeable_stack_number){
-        throw std::out_of_range("Invalid tribe position");
+    if (stack.empty()) {
+        throw std::out_of_range("Tribe Stack: No tribes left in the stack");
     }
-    Tribe* tribe_out = &stack[position];
+
+    if(position>=static_cast<int>(stack.size()) || position<0 || position>=seeable_stack_number){
+        throw std::out_of_range("Tribe Stack: Invalid tribe position");
+    }
+    // Copy the tribe into a heap-allocated object and return that pointer.
+    // Returning a pointer to an element inside `stack` and then erasing
+    // that element would invalidate the pointer (undefined behaviour).
+    Tribe tribe_copy = stack[position];
     stack.erase(stack.begin() + position);
+    Tribe* tribe_out = new Tribe(tribe_copy);
     return tribe_out;
 }
 
 std::vector<Tribe*> Tribe_Stack::get_tribes_on_top(){
     std::vector<Tribe*> seeable_Tribes;
-    for(int i=0;i<seeable_stack_number;i++){
+    for(size_t i = 0; i < std::min(static_cast<size_t>(seeable_stack_number), stack.size()); ++i){
         seeable_Tribes.push_back(&stack[i]);
     }
     return seeable_Tribes;

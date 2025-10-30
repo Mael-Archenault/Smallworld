@@ -7,7 +7,7 @@ Game_State::Game_State(int n_players) : n_players(n_players), round(0), map(Map(
     for (int i=0; i<n_players; i++ ) {
         players.push_back(Player(i));
     }
-
+    current_player = &players[0];
     tribe_stack = Tribe_Stack();
 }
 
@@ -109,6 +109,18 @@ void Game_State::abandon_area(){}
 
 void Game_State::next_round () {
     round++;
+}
+
+Map& Game_State::get_map() {
+    return map;
+}
+
+Tribe_Stack& Game_State::get_tribe_stack() {
+    return tribe_stack;
+}
+
+Player& Game_State::get_current_player() {
+    return *current_player;
 }
 
 }

@@ -30,18 +30,37 @@ namespace renderer {
     }
 
     void Tribe_Stack_Renderer::render(sf::RenderWindow& window) {
+        sf::Vector2u window_size = window.getSize();
         std::vector<state::Tribe*> top_tribes = stack.get_tribes_on_top();
+
+
+        float section_width = window_size.x/6;
+        float section_height = window_size.y*5/6;
+
+        float card_set_width = section_width*3/4;
+        float card_set_height = section_height/6;
         for (size_t i = 0; i < top_tribes.size(); ++i) {
             tribes[i]->set_sprite(top_tribes[i]->get_species_name(), top_tribes[i]->get_power_name());
-            tribes[i]->scale(0.5f, 0.5f);
-            sf::Vector2f tribe_position = position + sf::Vector2f(0.0f, i*110.f);
+            float scaling_factor = std::min(card_set_width/500, card_set_height/194);
+            tribes[i]->scale(scaling_factor, scaling_factor);
+
+            sf::Vector2f tribe_position = position + sf::Vector2f(0.0f, i*card_set_height);
             tribes[i]->render(window, tribe_position);
 
-            prices[i].setPosition(tribe_position + sf::Vector2f(300.f, 40.f));
+            prices[i].setPosition(tribe_position + sf::Vector2f(section_width*7/8, card_set_height/2-prices[i].getCharacterSize()/2));
             window.draw(prices[i]);
+            
+            // drawing the species name (temporary)
+            sf::Text species_name_text;
+            species_name_text.setFont(font);
+            species_name_text.setString(top_tribes[i]->get_power_name() + " - " + top_tribes[i]->get_species_name());
+            species_name_text.setCharacterSize(24);
+            species_name_text.setFillColor(sf::Color::White);
+            species_name_text.setPosition(tribe_position);
+            window.draw(species_name_text);
         }
     }
 
 
 
-} // namespace renderer
+} 
