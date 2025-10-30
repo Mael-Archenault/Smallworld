@@ -1,4 +1,5 @@
 #include "Player_Area_Renderer.h"
+#include "graphic_resources_dir.h"
 
 namespace renderer {
 
@@ -7,7 +8,7 @@ namespace renderer {
     : player(player), position(0.f, 0.f), angle(0)
   {
     // Load font
-    if (!font.loadFromFile("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/arial.ttf")) {
+    if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/arial.ttf")) {
       // Handle error
     }
 

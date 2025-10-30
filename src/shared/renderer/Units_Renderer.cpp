@@ -1,4 +1,5 @@
 #include "Units_Renderer.h"
+#include "graphic_resources_dir.h"
 #include <unordered_map>
 #include <fstream>
 #include <json/json.h>
@@ -14,14 +15,14 @@ namespace renderer {
 
         // loading the spritesheet and its indexing
         if (!spritesheets_loaded) {
-            if (!pawn_spritesheet.loadFromFile("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/pawn_spritesheet_150x150.png")) {
+            if (!pawn_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/pawn_spritesheet_150x150.png")) {
                 throw std::runtime_error("Units_Renderer::set_species: Failed to load pawn spritesheet");
             }
             spritesheets_loaded = true;
 
            // loading json that contains the indexing
 
-            std::string file_name = "/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/pawn_spritesheet_indexing.json";
+            std::string file_name = std::string(RESOURCE_DIR) + "/pawn_spritesheet_indexing.json";
             std::ifstream file(file_name, std::ifstream::binary);
             if (!file.is_open()) {
                 throw std::runtime_error("Cannot open file: " + file_name);
@@ -47,7 +48,7 @@ namespace renderer {
 
 
         set_sprite("lost_tribe");
-        if (!font.loadFromFile("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/arial.ttf")) {
+        if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/arial.ttf")) {
             throw std::runtime_error("Units_Renderer::Units_Renderer: Failed to load font");
         }
         number.setFont(font);

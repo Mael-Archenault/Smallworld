@@ -1,4 +1,5 @@
 #include "Tribe_Stack_Renderer.h"
+#include "graphic_resources_dir.h"
 #include <state.h>
 
 
@@ -6,7 +7,7 @@ namespace renderer {
 
     Tribe_Stack_Renderer::Tribe_Stack_Renderer(state::Tribe_Stack& tribe_stack) : stack(tribe_stack)  {
         // Load font
-        if (!font.loadFromFile("/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/arial.ttf")) {
+        if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/arial.ttf")) {
             throw std::runtime_error("Tribe Stack Renderer: Failed to load font");
         }
 

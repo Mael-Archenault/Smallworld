@@ -1,0 +1,4 @@
+#pragma once
+
+/* Generated at configure time. Use RESOURCE_DIR to build paths to graphic assets. */
+#define RESOURCE_DIR "@RESOURCE_DIR@"

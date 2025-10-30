@@ -6,6 +6,7 @@
 
 
 #include <SFML/Graphics.hpp>
+#include "graphic_resources_dir.h"
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
 {
@@ -17,7 +18,7 @@ BOOST_AUTO_TEST_CASE(TestMapRenderer)
   {
     // testing initialization
     state::Map map;
-    std::string filepath = "/home/mael-archenault/Desktop/Smallworld/src/graphic_resources/map_2580x2580.png";
+  std::string filepath = std::string(RESOURCE_DIR) + "/map_2580x2580.png";
     
     // opening a sfml window 
     sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");

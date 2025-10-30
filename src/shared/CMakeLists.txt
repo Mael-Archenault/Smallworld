@@ -16,7 +16,12 @@ add_dependencies(${lib_shared_target} generate-headers)
 target_include_directories(${lib_shared_target} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${jsoncpp_include_dir}
+  ${CMAKE_BINARY_DIR}/generated
   )
+
+# Ensure graphic resources are copied before building the shared library so
+# runtime code that expects RESOURCE_DIR or relative paths will find assets.
+add_dependencies(${lib_shared_target} copy_graphics)
 
 # vim: set sw=2 sts=2 et:
 

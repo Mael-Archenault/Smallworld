@@ -123,6 +123,21 @@ add_subdirectory(src/shared)
 add_subdirectory(src/client)
 #add_subdirectory(src/server)
 
+# Configure a header containing the resource directory so C++ code can
+# reference graphic assets portably (no hard-coded /home/... paths).
+set(RESOURCE_DIR "${CMAKE_BINARY_DIR}/graphic_resources")
+configure_file(${CMAKE_SOURCE_DIR}/src/graphic_resources_dir.h.in
+               ${CMAKE_BINARY_DIR}/generated/graphic_resources_dir.h @ONLY)
+
+# Copy graphic resources into the build tree so executables/tests can open them
+# using RESOURCE_DIR or relative paths from the build directory.
+add_custom_target(copy_graphics ALL
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${PROJECT_SOURCE_DIR}/src/graphic_resources
+    ${CMAKE_BINARY_DIR}/graphic_resources
+  COMMENT "Copying graphic resources into build directory"
+)
+
 # Rapport generation
 add_subdirectory(rapport)
 
