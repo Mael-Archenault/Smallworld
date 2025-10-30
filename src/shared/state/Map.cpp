@@ -46,8 +46,8 @@ void Map::load_from_json (std::string file_name){
         // biome
         std::string biome_str = biomes[key][0].asString();
         Area_Biome biome;
-        if (biome_str == "HILL") biome = Area_Biome::HILL;
-        else if (biome_str == "MOUNTAINS") biome = Area_Biome::MOUNTAINS;
+        if (biome_str == "Hill") biome = Area_Biome::HILL;
+        else if (biome_str == "Mountains") biome = Area_Biome::MOUNTAINS;
 
         // specializations
         std::vector<Area_Specialization> specializations;

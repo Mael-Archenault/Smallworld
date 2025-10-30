@@ -25,11 +25,12 @@ namespace renderer {
       file >> root;
       file.close();
 
+      area_positions.resize(map.get_display_infos().size());
       for (const auto& area_id_str : root.getMemberNames()) {
         int area_id = std::stoi(area_id_str);
         float x = root[area_id_str][0].asFloat();
         float y = root[area_id_str][1].asFloat();
-        area_positions.push_back(sf::Vector2f(x, y));
+        area_positions.at(area_id) = sf::Vector2f(x, y);
       }
 
     }
