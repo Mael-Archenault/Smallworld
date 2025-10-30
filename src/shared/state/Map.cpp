@@ -2,11 +2,13 @@
 #include <iostream>
 #include <fstream>
 #include <json/json.h>
+#include "resources_dir.h"
 
 
 namespace state {
 
-Map::Map() {
+Map::Map(std::string name): name(name) {
+    load_from_json(std::string(RESOURCE_DIR) + "/maps/" + name + "/data.json");
 }
 
 Area* Map::get_area(int area_id) {
@@ -60,8 +62,7 @@ void Map::load_from_json (std::string file_name){
         int unit_count = units[key].asInt();
 
         // create the area
-        Area area(id, biome, specializations);
-        area.deploy_units(unit_count);
+        Area area(id,unit_count, biome, specializations);
 
         this->areas.push_back(area);
     }
@@ -77,6 +78,18 @@ void Map::load_from_json (std::string file_name){
         }
         this->area_connections.push_back(connections);
     }
+}
+
+std::vector<std::tuple<int,std::string, int>> Map::get_display_infos () {
+    std::vector<std::tuple<int,std::string, int>> display_infos;
+    for (auto& area : this->areas) {
+        display_infos.emplace_back(area.id, area.get_owner_tribe_name(), area.get_units_number());
+    }
+    return display_infos;
+}
+
+std::string Map::get_name () {
+    return this->name;
 }
 
 }

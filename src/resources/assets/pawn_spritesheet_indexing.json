@@ -1,5 +1,5 @@
 {
-  "sprite_size": { "width": 255, "height": 255 },
+  "sprite_size": { "width": 150, "height": 150 },
   "frames": {
     "Amazons":  [0,0],
     "Dwarves":  [0,1],
@@ -15,6 +15,6 @@
     "Orcs": [1,3],
     "Trolls":  [1,4],
     "Wizards":  [1,5],
-    "lost_tribe":  [1,6]
+    "Lost Tribe":  [1,6]
   }
 }

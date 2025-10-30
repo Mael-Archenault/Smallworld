@@ -1,5 +1,5 @@
 #include "Player_Area_Renderer.h"
-#include "graphic_resources_dir.h"
+#include "resources_dir.h"
 
 namespace renderer {
 

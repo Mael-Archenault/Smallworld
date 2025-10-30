@@ -2,20 +2,18 @@
 
 namespace state {
 
-Area::Area(int n_units, Area_Biome biome, std::vector<Area_Specialization> area_specialization)
-    : units_number(n_units),
+Area::Area(int id, int n_units, Area_Biome biome, std::vector<Area_Specialization> area_specialization)
+    : id(id),
+      units_number(n_units),
       biome(biome),
       owner_tribe(nullptr),
-      area_specialization(area_specialization),
-      id(next_id)
+      area_specialization(area_specialization)
 {
-    next_id++;
     if (biome==state::Area_Biome::MOUNTAINS){
         special_tokens.push_back(state::Area_Special_Token::MOUNTAIN);
     }
     
 }
-int Area::next_id =0;
 
 
 int Area::gather_free_units() {
@@ -56,6 +54,18 @@ std::vector<Area*> Area::get_neighbors() {
 
 void Area::add_neighbor(Area* neighbor) {
     neighbors.push_back(neighbor);
+}
+
+int Area::get_units_number() {
+    return units_number;
+}
+
+std::string Area::get_owner_tribe_name() {
+    if (owner_tribe == nullptr) {
+        return "Lost Tribe";
+    } else {
+        return owner_tribe->get_species_name();
+    }
 }
 }
 

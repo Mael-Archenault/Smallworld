@@ -125,16 +125,16 @@ add_subdirectory(src/client)
 
 # Configure a header containing the resource directory so C++ code can
 # reference graphic assets portably (no hard-coded /home/... paths).
-set(RESOURCE_DIR "${CMAKE_BINARY_DIR}/graphic_resources")
-configure_file(${CMAKE_SOURCE_DIR}/src/graphic_resources_dir.h.in
-               ${CMAKE_BINARY_DIR}/generated/graphic_resources_dir.h @ONLY)
+set(RESOURCE_DIR "${CMAKE_BINARY_DIR}/resources")
+configure_file(${CMAKE_SOURCE_DIR}/src/resources_dir.h.in
+               ${CMAKE_BINARY_DIR}/generated/resources_dir.h @ONLY)
 
 # Copy graphic resources into the build tree so executables/tests can open them
 # using RESOURCE_DIR or relative paths from the build directory.
 add_custom_target(copy_graphics ALL
   COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/src/graphic_resources
-    ${CMAKE_BINARY_DIR}/graphic_resources
+    ${PROJECT_SOURCE_DIR}/src/resources
+    ${CMAKE_BINARY_DIR}/resources
   COMMENT "Copying graphic resources into build directory"
 )
 

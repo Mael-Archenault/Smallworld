@@ -1,5 +1,5 @@
 #include "Tribe_Stack_Renderer.h"
-#include "graphic_resources_dir.h"
+#include "resources_dir.h"
 #include <state.h>
 
 

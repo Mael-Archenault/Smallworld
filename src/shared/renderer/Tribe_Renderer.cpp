@@ -1,5 +1,5 @@
 #include "Tribe_Renderer.h"
-#include "graphic_resources_dir.h"
+#include "resources_dir.h"
 #include <unordered_map>
 #include <fstream>
 #include <json/json.h>

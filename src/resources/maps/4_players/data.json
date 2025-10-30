@@ -8,8 +8,8 @@
       "5": ["HILL"],
       "6": ["FOREST"],
       "7": ["MOUNTAIN"],
-      "8": ["STAMP"],
-      "9": ["STAMP"],
+      "8": ["SWAMP"],
+      "9": ["SWAMP"],
       "10": ["FOREST"],
       "11": ["MOUNTAIN"],
       "12": ["FOREST"],
@@ -19,17 +19,17 @@
       "16": ["HILL"],
       "17": ["MOUNTAIN"],
       "18": ["MOUNTAIN"],
-      "19": ["STAMP"],
+      "19": ["SWAMP"],
       "20": ["FOREST"],
       "21": ["FARM"],
       "22": ["FARM"],
       "23": ["WATER"],
       "24": ["MOUNTAIN"],
       "25": ["FARM"],
-      "26": ["STAMP"],
+      "26": ["SWAMP"],
       "27": ["HILL"],
       "28": ["FOREST"],
-      "29": ["STAMP"]
+      "29": ["SWAMP"]
     },
   "specializations": {
       "0": [],
@@ -64,8 +64,8 @@
       "29": ["CAVERN"]
   },
     "units": {
-      "0": 0,
-      "1": 0,
+      "0": 10,
+      "1": 5,
       "2": 0,
       "3": 0,
       "4": 0,

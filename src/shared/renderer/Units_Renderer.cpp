@@ -1,5 +1,5 @@
 #include "Units_Renderer.h"
-#include "graphic_resources_dir.h"
+#include "resources_dir.h"
 #include <unordered_map>
 #include <fstream>
 #include <json/json.h>
@@ -15,14 +15,14 @@ namespace renderer {
 
         // loading the spritesheet and its indexing
         if (!spritesheets_loaded) {
-            if (!pawn_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/pawn_spritesheet_150x150.png")) {
+            if (!pawn_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/assets/pawn_spritesheet.png")) {
                 throw std::runtime_error("Units_Renderer::set_species: Failed to load pawn spritesheet");
             }
             spritesheets_loaded = true;
 
            // loading json that contains the indexing
 
-            std::string file_name = std::string(RESOURCE_DIR) + "/pawn_spritesheet_indexing.json";
+            std::string file_name = std::string(RESOURCE_DIR) + "/assets/pawn_spritesheet_indexing.json";
             std::ifstream file(file_name, std::ifstream::binary);
             if (!file.is_open()) {
                 throw std::runtime_error("Cannot open file: " + file_name);
@@ -47,12 +47,12 @@ namespace renderer {
 
 
 
-        set_sprite("lost_tribe");
-        if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/arial.ttf")) {
+        set_sprite("Lost Tribe");
+        if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf")) {
             throw std::runtime_error("Units_Renderer::Units_Renderer: Failed to load font");
         }
         number.setFont(font);
-        number.setCharacterSize(24); // in pixels, not points!
+        number.setCharacterSize(42); // in pixels, not points!
         number.setFillColor(sf::Color::White);
         number.setStyle(sf::Text::Bold);
 
@@ -81,7 +81,7 @@ namespace renderer {
 
     void Units_Renderer::scale (float scale_x, float scale_y) {
         this->sprite.setScale(scale_x, scale_y);
-        this->number.setCharacterSize(std::min(24*scale_x, 24*scale_y));
+        this->number.setCharacterSize(std::min(42*scale_x, 42*scale_y));
     }
     void Units_Renderer::render (sf::RenderWindow& window, sf::Vector2f position) {
         this->sprite.setPosition(position);

@@ -3,7 +3,7 @@
 
 namespace state {
 
-Game_State::Game_State(int n_players) : n_players(n_players), round(0), map(Map()){
+Game_State::Game_State(int n_players) : n_players(n_players), round(0), map(Map("4_players")){
     for (int i=0; i<n_players; i++ ) {
         players.push_back(Player(i));
     }
