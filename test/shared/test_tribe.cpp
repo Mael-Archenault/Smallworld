@@ -18,7 +18,7 @@ public:
         gather_free_units();
         return free_units_number;
     }
-    std::vector<std::vector<int>> test_get_conquest_prices() {
+    std::vector<std::pair<int, int>> test_get_conquest_prices() {
         return get_conquest_prices();
     }
 };

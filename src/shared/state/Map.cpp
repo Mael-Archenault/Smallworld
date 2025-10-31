@@ -39,7 +39,8 @@ void Map::load_from_json (std::string file_name){
 
     this->areas.clear();
     this->areas.reserve(biomes.size());
-    
+    this->area_connections.clear();
+    this->area_connections.reserve(biomes.size());
     std::vector<std::pair<int, std::string>> id_keys;
     for (const auto& key : biomes.getMemberNames()) {
         id_keys.emplace_back(std::stoi(key), key);
@@ -83,10 +84,13 @@ void Map::load_from_json (std::string file_name){
         this->areas.emplace_back(id, unit_count, biome, specializations);
 
         // relations (neighbors)
+        std::vector<int> connections;
         for (const auto& neighbor_id_val : rels[key]) {
             int neighbor_id = neighbor_id_val.asInt();
             this->areas.back().add_neighbor(&this->areas[neighbor_id]);
+            connections.push_back(neighbor_id);
         }
+        this->area_connections.push_back(connections);
     }
 }
 
