@@ -11,32 +11,21 @@
 
 namespace renderer {
 
-    bool Tribe_Renderer::spritesheets_loaded = false;
-    sf::Texture Tribe_Renderer::species_spritesheet;
-    sf::Texture Tribe_Renderer::power_spritesheet;
-
-    std::unordered_map<std::string, std::pair<int, int>> Tribe_Renderer::power_spritesheet_indexing;
-    std::unordered_map<std::string, std::pair<int, int>> Tribe_Renderer::species_spritesheet_indexing;
-
     Tribe_Renderer::Tribe_Renderer(){
         // loading the spritesheet and its indexing
-        if (!spritesheets_loaded) {
-            if (!species_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/assets/species_spritesheet.png")) {
-                throw std::runtime_error("Tribe_Renderer::set_species: Failed to load species spritesheet");
-            }
-            if (!power_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/assets/power_spritesheet.png")) {
-                throw std::runtime_error("Tribe_Renderer::set_species: Failed to load power spritesheet");
-            }
-
-            spritesheets_loaded = true;
-
-            species_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/species_spritesheet_indexing.json");
-            power_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/power_spritesheet_indexing.json");
-
-
-            //set_sprite("Dwarves", "Blank");
-
+       
+        if (!species_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/assets/species_spritesheet.png")) {
+            throw std::runtime_error("Tribe_Renderer::set_species: Failed to load species spritesheet");
         }
+        if (!power_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/assets/power_spritesheet.png")) {
+            throw std::runtime_error("Tribe_Renderer::set_species: Failed to load power spritesheet");
+        }
+
+        species_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/species_spritesheet_indexing.json");
+        power_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/power_spritesheet_indexing.json");
+
+
+        
     };
 
 

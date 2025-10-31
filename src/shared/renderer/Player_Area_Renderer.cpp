@@ -30,19 +30,10 @@ namespace renderer {
     free_units_title.setFillColor(sf::Color::White);
     
     tribes_title.setFont(font);
-    tribes_title.setString("Tribes:");
+    tribes_title.setString("tribe_renderers:");
     tribes_title.setCharacterSize(14);
     tribes_title.setFillColor(sf::Color::White);
-
-    // Initialize tribe renderers
-    std::vector<state::Tribe*> player_tribes = player.get_tribes();
-    tribes.reserve(player_tribes.size());
-    for (int i = 0; i < player_tribes.size(); i++) {
-      auto renderer = std::make_unique<Tribe_Renderer>();
-      renderer->set_sprite(player_tribes[i]->get_species_name(), player_tribes[i]->get_power_name());
-      tribes.push_back(std::move(renderer));
-    }
-  }
+  } 
 
   void Player_Area_Renderer::render (sf::RenderWindow& window) {
 
@@ -74,9 +65,6 @@ namespace renderer {
     tribes_title.setPosition(position.x + section_width*3/4 - tribes_title.getGlobalBounds().width/2, position.y + header_size/2 - tribes_title.getGlobalBounds().height/2);
     window.draw(tribes_title);
 
-
-
-
     // Money value
 
     money_value.setString(std::to_string(player.get_money()));
@@ -97,34 +85,31 @@ namespace renderer {
         free_units_renderer.render(window, sf::Vector2f(position.x + section_width/4+ section_width/8 - 150*scaling_factor/2, position.y + header_size + body_size/2 - 75*scaling_factor), true);
     }
 
-    // Render tribes
+    // Render tribe_renderers
+    int n_tribes = player_tribes.size();
     
-    tribes.clear();
-    for (int i = 0; i < player_tribes.size(); i++) {
-      auto renderer = std::make_unique<Tribe_Renderer>();
-      renderer->set_sprite(player_tribes[player_tribes.size()-1-i]->get_species_name(), player_tribes[player_tribes.size()-1-i]->get_power_name());
-      tribes.push_back(std::move(renderer));
-    }
-    
-    if (tribes.empty()) {
+    if (n_tribes == 0) {
       return;
     }
-    if (tribes.size() >= 1) {
+    if (n_tribes >= 1) {
       float scaling_factor = std::min((section_width/4)/500, body_size/194);
-      tribes[0]->scale(scaling_factor, scaling_factor);
-      tribes[0]->render(window, sf::Vector2f(position.x + section_width/2 + section_width/8 - (500*scaling_factor)/2, position.y + header_size + body_size/2 - (194*scaling_factor)/2));
+      tribe_renderer.set_sprite(player_tribes[n_tribes-1]->get_species_name(), player_tribes[n_tribes-1]->get_power_name());
+      tribe_renderer.scale(scaling_factor, scaling_factor);
+      tribe_renderer.render(window, sf::Vector2f(position.x + section_width/2 + section_width/8 - (500*scaling_factor)/2, position.y + header_size + body_size/2 - (194*scaling_factor)/2));
     }
 
-    if (tribes.size() >= 2) {
+    if (n_tribes >= 2) {
       float scaling_factor = std::min((section_width/4)/500, (body_size*2/3)/194);
-      tribes[1]->scale(scaling_factor, scaling_factor);
-      tribes[1]->render(window, sf::Vector2f(position.x + section_width*3/4 + section_width/8 - (500*scaling_factor)/2, position.y + header_size + body_size/3 - (194*scaling_factor)/2));
+      tribe_renderer.set_sprite(player_tribes[n_tribes-2]->get_species_name(), player_tribes[n_tribes-2]->get_power_name());
+      tribe_renderer.scale(scaling_factor, scaling_factor);
+      tribe_renderer.render(window, sf::Vector2f(position.x + section_width*3/4 + section_width/8 - (500*scaling_factor)/2, position.y + header_size + body_size/3 - (194*scaling_factor)/2));
     }
 
-    if (tribes.size() >= 3) {
+    if (n_tribes >= 3) {
       float scaling_factor = std::min((section_width/4)/500, (body_size*2/3)/194);
-      tribes[2]->scale(scaling_factor, scaling_factor);
-      tribes[2]->render(window, sf::Vector2f(position.x + section_width*3/4 + section_width/8- (500*scaling_factor)/2, position.y + header_size + body_size*2/3 - (194*scaling_factor)/2));
+      tribe_renderer.set_sprite(player_tribes[n_tribes-3]->get_species_name(), player_tribes[n_tribes-3]->get_power_name());
+      tribe_renderer.scale(scaling_factor, scaling_factor);
+      tribe_renderer.render(window, sf::Vector2f(position.x + section_width*3/4 + section_width/8- (500*scaling_factor)/2, position.y + header_size + body_size*2/3 - (194*scaling_factor)/2));
     }
     
   }

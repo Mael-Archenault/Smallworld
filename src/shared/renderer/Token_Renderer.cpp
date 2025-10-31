@@ -41,21 +41,13 @@ namespace renderer {
             spritesheet_indexing[name] = std::make_pair(frame_x, frame_y);
         }
 
-
-
-
-
-
-        set_sprite("Lost Tribe");
         if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf")) {
             throw std::runtime_error("Token_Renderer::Token_Renderer: Failed to load font");
         }
         number.setFont(font);
-        number.setCharacterSize(42); // in pixels, not points!
+        number.setCharacterSize(42);
         number.setFillColor(sf::Color::White);
         number.setStyle(sf::Text::Bold);
-
-        number.setString("x0");
     };
 
 
@@ -69,7 +61,6 @@ namespace renderer {
 
         sf::IntRect frameRect(frameX * frameWidth, frameY * frameHeight, frameWidth, frameHeight);
 
-        // assign texture and rect to the sprite (ensure the texture outlives the sprite in real code)
         sprite.setTexture(spritesheet);
         sprite.setTextureRect(frameRect);
 
