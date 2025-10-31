@@ -43,6 +43,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 
                 if (event.type == sf::Event::KeyPressed) {
                     if (event.key.code == sf::Keyboard::Space) {
+                        state.go_in_decline(0);
                         state.take_tribe_at_position(0,0); 
                     }
                 }

@@ -1,5 +1,6 @@
 #include "Area.h"
 #include <random>
+#include <stdexcept>
 
 namespace state {
 
@@ -61,12 +62,11 @@ int Area::get_units_number() {
     return units_number;
 }
 
-std::string Area::get_owner_tribe_name() {
+Tribe* Area::get_owner_tribe() {
     if (owner_tribe == nullptr) {
-        return "Lost Tribe";
-    } else {
-        return owner_tribe->get_species_name();
+        return new Tribe(-1, new Species_Description("Lost Tribe", 0, 0, Effects_Bundle()), new Power_Description("No Power", 0, Effects_Bundle()));
     }
+    return owner_tribe;
 }
 
 std::vector<Area_Special_Token>& Area::get_special_tokens() {

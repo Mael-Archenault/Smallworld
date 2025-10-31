@@ -89,4 +89,8 @@ namespace renderer {
     float Token_Renderer::get_sprite_height() {
         return (float)sprite_height;
     }
+
+    void Token_Renderer::color (sf::Color color_tint) {
+        this->sprite.setColor(color_tint);
+    }
 };

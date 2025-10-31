@@ -88,4 +88,8 @@ std::string Tribe::get_species_name(){
 std::string Tribe::get_power_name(){
     return power_description->get_name();
 }
+
+bool Tribe::is_in_decline(){
+    return in_decline;
+}
 }

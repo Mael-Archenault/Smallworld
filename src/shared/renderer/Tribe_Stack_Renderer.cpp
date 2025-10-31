@@ -41,7 +41,7 @@ namespace renderer {
         float card_set_width = section_width*3/4;
         float card_set_height = section_height/6;
         for (size_t i = 0; i < top_tribes.size(); ++i) {
-            tribes[i]->set_sprite(top_tribes[i]->get_species_name(), top_tribes[i]->get_power_name());
+            tribes[i]->set_sprite(top_tribes[i]->get_species_name(), top_tribes[i]->get_power_name(), false);
             float scaling_factor = std::min(card_set_width/500, card_set_height/194);
             tribes[i]->scale(scaling_factor, scaling_factor);
 

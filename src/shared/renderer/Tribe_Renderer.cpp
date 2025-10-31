@@ -29,7 +29,7 @@ namespace renderer {
     };
 
 
-    void Tribe_Renderer::set_sprite (std::string species_name, std::string power_name) {
+    void Tribe_Renderer::set_sprite (std::string species_name, std::string power_name, bool in_decline) {
         if (species_spritesheet_indexing.find(species_name) == species_spritesheet_indexing.end()) {
             //throw std::runtime_error("Tribe_Renderer::set_sprite: Species name not found in indexing: " + species_name);
             species_name = "Dwarves";
@@ -78,6 +78,11 @@ namespace renderer {
 
         this->texture.display();
         this->sprite.setTexture(this->texture.getTexture());
+        if (in_decline) {
+            this->sprite.setColor(sf::Color(39, 224, 245));
+        } else {
+            this->sprite.setColor(sf::Color(255,255,255));
+        }
     }
 
     void Tribe_Renderer::scale (float scale_x, float scale_y) {

@@ -116,9 +116,16 @@ namespace renderer
       // units pawns
       if (areas[i].get_units_number() != 0)
       {
+        state::Tribe* owner_tribe = areas[i].get_owner_tribe();
         units_renderer.set_number(areas[i].get_units_number());
         units_renderer.scale(scaling_factor, scaling_factor);
-        units_renderer.set_sprite(areas[i].get_owner_tribe_name());
+        units_renderer.set_sprite(owner_tribe->get_species_name());
+
+        if (owner_tribe->is_in_decline()) {
+          units_renderer.color(sf::Color(39, 224, 245));
+        } else {
+          units_renderer.color(sf::Color(255,255,255));
+        }
         units_renderer.render(window, area_position, true);
       }
     }

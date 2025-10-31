@@ -80,7 +80,7 @@ void Player::go_in_decline(){
 
 void Player::set_active_tribe(Tribe* tribe){
     tribes.push_back(tribe);
-    if (tribes.size()>3){
+    if (tribes.size()>2){
         tribes.erase(tribes.begin()); // remove the oldest tribe if more than 3 
     }
 }

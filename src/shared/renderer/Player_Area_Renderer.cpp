@@ -93,24 +93,26 @@ namespace renderer {
     }
     if (n_tribes >= 1) {
       float scaling_factor = std::min((section_width/4)/500, body_size/194);
-      tribe_renderer.set_sprite(player_tribes[n_tribes-1]->get_species_name(), player_tribes[n_tribes-1]->get_power_name());
+      tribe_renderer.set_sprite(player_tribes[n_tribes-1]->get_species_name(), player_tribes[n_tribes-1]->get_power_name(), false);
       tribe_renderer.scale(scaling_factor, scaling_factor);
       tribe_renderer.render(window, sf::Vector2f(position.x + section_width/2 + section_width/8 - (500*scaling_factor)/2, position.y + header_size + body_size/2 - (194*scaling_factor)/2));
     }
 
     if (n_tribes >= 2) {
       float scaling_factor = std::min((section_width/4)/500, (body_size*2/3)/194);
-      tribe_renderer.set_sprite(player_tribes[n_tribes-2]->get_species_name(), player_tribes[n_tribes-2]->get_power_name());
+      tribe_renderer.set_sprite(player_tribes[n_tribes-2]->get_species_name(), player_tribes[n_tribes-2]->get_power_name(), true);
       tribe_renderer.scale(scaling_factor, scaling_factor);
       tribe_renderer.render(window, sf::Vector2f(position.x + section_width*3/4 + section_width/8 - (500*scaling_factor)/2, position.y + header_size + body_size/3 - (194*scaling_factor)/2));
     }
 
-    if (n_tribes >= 3) {
-      float scaling_factor = std::min((section_width/4)/500, (body_size*2/3)/194);
-      tribe_renderer.set_sprite(player_tribes[n_tribes-3]->get_species_name(), player_tribes[n_tribes-3]->get_power_name());
-      tribe_renderer.scale(scaling_factor, scaling_factor);
-      tribe_renderer.render(window, sf::Vector2f(position.x + section_width*3/4 + section_width/8- (500*scaling_factor)/2, position.y + header_size + body_size*2/3 - (194*scaling_factor)/2));
-    }
+    // to do when the ghouls power will be implemented
+    
+    // if (n_tribes >= 3) {
+    //   float scaling_factor = std::min((section_width/4)/500, (body_size*2/3)/194);
+    //   tribe_renderer.set_sprite(player_tribes[n_tribes-3]->get_species_name(), player_tribes[n_tribes-3]->get_power_name(), true);
+    //   tribe_renderer.scale(scaling_factor, scaling_factor);
+    //   tribe_renderer.render(window, sf::Vector2f(position.x + section_width*3/4 + section_width/8- (500*scaling_factor)/2, position.y + header_size + body_size*2/3 - (194*scaling_factor)/2));
+    // }
     
   }
 
