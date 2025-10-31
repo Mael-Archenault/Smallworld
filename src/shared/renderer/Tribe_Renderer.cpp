@@ -21,17 +21,17 @@ namespace renderer {
     Tribe_Renderer::Tribe_Renderer(){
         // loading the spritesheet and its indexing
         if (!spritesheets_loaded) {
-            if (!species_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/species_spritesheet_360x194.png")) {
+            if (!species_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/assets/species_spritesheet.png")) {
                 throw std::runtime_error("Tribe_Renderer::set_species: Failed to load species spritesheet");
             }
-            if (!power_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/power_spritesheet_194x194.png")) {
+            if (!power_spritesheet.loadFromFile(std::string(RESOURCE_DIR) + "/assets/power_spritesheet.png")) {
                 throw std::runtime_error("Tribe_Renderer::set_species: Failed to load power spritesheet");
             }
 
             spritesheets_loaded = true;
 
-            species_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/species_spritesheet_indexing.json");
-            power_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/power_spritesheet_indexing.json");
+            species_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/species_spritesheet_indexing.json");
+            power_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/power_spritesheet_indexing.json");
 
 
             //set_sprite("Dwarves", "Blank");

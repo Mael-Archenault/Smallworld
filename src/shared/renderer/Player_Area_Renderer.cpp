@@ -5,10 +5,10 @@ namespace renderer {
 
   /// Constructor
   Player_Area_Renderer::Player_Area_Renderer (state::Player& player)
-    : player(player), position(0.f, 0.f), angle(0)
+    : player(player), position(0.f, 0.f), angle(0), free_units_renderer("pawn")
   {
     // Load font
-    if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/arial.ttf")) {
+    if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf")) {
       // Handle error
     }
 
@@ -89,12 +89,12 @@ namespace renderer {
     std::vector<state::Tribe*> player_tribes = player.get_tribes();
 
     if (!player_tribes.empty()) {
-        int free_units_number = player.get_free_units_number(player_tribes[0]->id);
+        int free_units_number = player.get_free_units_number(player_tribes[player_tribes.size()-1]->id);
         float scaling_factor = std::min((section_width/5)/150, body_size/150);
-        free_units.scale(scaling_factor, scaling_factor);
-        free_units.set_sprite(player_tribes[0]->get_species_name());
-        free_units.set_units_number(free_units_number);
-        free_units.render(window, sf::Vector2f(position.x + section_width/4+ section_width/8 - 150*scaling_factor/2, position.y + header_size + body_size/2 - 75*scaling_factor));
+        free_units_renderer.scale(scaling_factor, scaling_factor);
+        free_units_renderer.set_sprite(player_tribes[player_tribes.size()-1]->get_species_name());
+        free_units_renderer.set_number(free_units_number);
+        free_units_renderer.render(window, sf::Vector2f(position.x + section_width/4+ section_width/8 - 150*scaling_factor/2, position.y + header_size + body_size/2 - 75*scaling_factor), true);
     }
 
     // Render tribes

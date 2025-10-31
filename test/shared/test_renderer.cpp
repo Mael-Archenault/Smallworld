@@ -22,10 +22,6 @@ BOOST_AUTO_TEST_CASE(TestGameState)
     {
         state::Game_State state(1);
 
-        state.take_tribe_at_position(0,0);
-        // state.take_tribe_at_position(1,0);
-        // state.take_tribe_at_position(2,0);
-
         sf::RenderWindow window(sf::VideoMode(1720,820), "Renderer Test", sf::Style::Titlebar | sf::Style::Close);
         renderer::Renderer renderer(state, window.getSize());
 

@@ -7,7 +7,7 @@ namespace renderer {
 
     Tribe_Stack_Renderer::Tribe_Stack_Renderer(state::Tribe_Stack& tribe_stack) : stack(tribe_stack)  {
         // Load font
-        if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/arial.ttf")) {
+        if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf")) {
             throw std::runtime_error("Tribe Stack Renderer: Failed to load font");
         }
 

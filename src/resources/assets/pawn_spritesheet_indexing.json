@@ -1,5 +1,5 @@
 {
-  "sprite_size": { "width": 150, "height": 150 },
+  "sprite_size": [150, 150],
   "frames": {
     "Amazons":  [0,0],
     "Dwarves":  [0,1],

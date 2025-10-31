@@ -48,6 +48,11 @@ void Map::load_from_json (std::string file_name){
         Area_Biome biome;
         if (biome_str == "Hill") biome = Area_Biome::HILL;
         else if (biome_str == "Mountains") biome = Area_Biome::MOUNTAINS;
+        else if (biome_str == "Forest") biome = Area_Biome::FOREST;
+        else if (biome_str == "Swamp") biome = Area_Biome::SWAMP;
+        else if (biome_str == "Farm") biome = Area_Biome::FARM;
+        else if (biome_str == "Water") biome = Area_Biome::WATER;
+        else throw std::runtime_error("Unknown biome type: " + biome_str);
 
         // specializations
         std::vector<Area_Specialization> specializations;
@@ -60,6 +65,7 @@ void Map::load_from_json (std::string file_name){
 
         // unit count
         int unit_count = units[key].asInt();
+
 
         // create the area
         Area area(id,unit_count, biome, specializations);
@@ -80,16 +86,12 @@ void Map::load_from_json (std::string file_name){
     }
 }
 
-std::vector<std::tuple<int,std::string, int>> Map::get_display_infos () {
-    std::vector<std::tuple<int,std::string, int>> display_infos;
-    for (auto& area : this->areas) {
-        display_infos.emplace_back(area.id, area.get_owner_tribe_name(), area.get_units_number());
-    }
-    return display_infos;
-}
-
 std::string Map::get_name () {
     return this->name;
+}
+
+std::vector<Area>& Map::get_areas () {
+    return this->areas;
 }
 
 }
