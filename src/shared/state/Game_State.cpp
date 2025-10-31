@@ -31,7 +31,7 @@ int Game_State::get_free_units_number(int player_id, int tribe_id) {
     throw std::invalid_argument("get_free_units_number: Player id not found");
 }
 
-std::vector<std::vector<int>> Game_State::get_conquest_prices(int player_id, int tribe_id) {
+std::vector<std::pair<int, int>> Game_State::get_conquest_prices(int player_id, int tribe_id) {
     std::vector<std::vector<int>> result;
     for (int i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {

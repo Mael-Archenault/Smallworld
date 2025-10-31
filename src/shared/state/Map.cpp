@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <json/json.h>
+#include <algorithm>
 #include "resources_dir.h"
 
 
@@ -36,12 +37,19 @@ void Map::load_from_json (std::string file_name){
     const Json::Value& units  = root["units"];
     const Json::Value& rels   = root["relations"];
 
-    // assume Map has std::vector<Area> areas;
     this->areas.clear();
-
-    // iterate through keys (0, 1, 2, ...)
+    this->areas.reserve(biomes.size());
+    
+    std::vector<std::pair<int, std::string>> id_keys;
     for (const auto& key : biomes.getMemberNames()) {
-        int id = std::stoi(key);
+        id_keys.emplace_back(std::stoi(key), key);
+    }
+
+    std::sort(id_keys.begin(), id_keys.end(), [](const auto& a, const auto& b){ return a.first < b.first; });
+
+    for (const auto& ik : id_keys) {
+        int id = ik.first;
+        const std::string& key = ik.second;
 
         // biome
         std::string biome_str = biomes[key][0].asString();
@@ -71,23 +79,14 @@ void Map::load_from_json (std::string file_name){
         // unit count
         int unit_count = units[key].asInt();
 
+        // create the area in-place (avoids using deleted assignment)
+        this->areas.emplace_back(id, unit_count, biome, specializations);
 
-        // create the area
-        Area area(id,unit_count, biome, specializations);
-
-        this->areas.push_back(area);
-    }
-
-    // now handle relations
-    for (const auto& key : rels.getMemberNames()) {
-        int id = std::stoi(key);
-        std::vector<int> connections;
-        for (const auto& rel_id_json : rels[key]) {
-            int rel_id = rel_id_json.asInt();
-            this->areas[id].add_neighbor(&this->areas[rel_id]);
-            connections.push_back(rel_id);
+        // relations (neighbors)
+        for (const auto& neighbor_id_val : rels[key]) {
+            int neighbor_id = neighbor_id_val.asInt();
+            this->areas.back().add_neighbor(&this->areas[neighbor_id]);
         }
-        this->area_connections.push_back(connections);
     }
 }
 

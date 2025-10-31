@@ -35,7 +35,7 @@ int Player::get_free_units_number(int tribe_id) {
     throw std::invalid_argument("get_free_units_number:there is no tribe_id matching for this player :" + std::to_string(tribe_id));
 }
 
-std::vector<std::vector<int>> Player::get_conquest_prices(int tribe_id) {
+std::vector<std::pair<int, int>> Player::get_conquest_prices(int tribe_id) {
     for(int i=0; i<tribes.size(); i++){
         if(tribe_id == tribes[i]->id){
             return tribes[i]->get_conquest_prices();

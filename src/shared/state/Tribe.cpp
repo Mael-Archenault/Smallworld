@@ -29,8 +29,8 @@ int Tribe::get_free_units_number() {
     return free_units_number;
 }
 
-std::vector<std::vector<int>> Tribe::get_conquest_prices() {
-    std::vector<std::vector<int>> prices;
+std::vector<std::pair<int, int>> Tribe::get_conquest_prices() {
+    std::vector<std::pair<int, int>> prices;
     std::unordered_set<int> seen;
     prices.reserve(owned_areas.size() * 3);
 
@@ -38,11 +38,12 @@ std::vector<std::vector<int>> Tribe::get_conquest_prices() {
         if (!area) continue;
         for (Area* neighbor : area->get_neighbors()) {
             if (!neighbor) continue;
+            if (neighbor->get_owner_tribe() == this) continue;
             int nid = neighbor->id;
             if (seen.find(nid) != seen.end()) continue;
             seen.insert(nid);
             int price = neighbor->get_conquest_price(*this);
-            prices.push_back(std::vector<int>{nid, price});
+            prices.push_back(std::pair<int, int>{nid, price});
         }
     }
     return prices;
