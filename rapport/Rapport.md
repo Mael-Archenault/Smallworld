@@ -145,9 +145,6 @@ Avant de rendre l'objet sur une fenêtre de rendu, on peut changer ce qu'il repr
 
 Il est aussi possible d'ajouter un nombre sur le côté de l'affichage du pion pour représenter le nombre d'unités présentes sur la zone.
 
-| ![Affichage de pions](./img/pawn_renderer_example.png) | ![Affichage de special tokens](./img/special_token_renderer_example.png) | ![Affichage de area specialization](./img/area_specialization_renderer_example.png) |
-|---|---|---|
-
 ### Tribe Renderer  
 
 Cette classe est responsable du rendu des tribes. Une tribe est affichée grâce à deux cartes:
@@ -157,7 +154,6 @@ Cette classe est responsable du rendu des tribes. Une tribe est affichée grâce
 
 Ce moteur de rendu est capable de rendre l'ensemble des deux cartes (en les fixant l'une par rapport à l'autre).
 
-![Affichage d'une tribu](./img/tribe_renderer_example.png)
 
 
 ### Map Renderer  
@@ -168,8 +164,6 @@ La carte de jeu est stockée sous la forme d'une image associée avec un fichier
 Le rendu de la carte se fait en deux étapes:
 - on affiche l'image de la carte
 - on affiche les unités et les special tokens sur chaque zone grâce à la classe Token_Renderer
-
-![Affichage de la carte de jeu](./img/map_renderer_example.png)
 
 ### Player Area Renderer  
 
@@ -182,7 +176,6 @@ Trois choses sont affichées par ce moteur de rendu:
 - les unités libres du joueur
 - les tribus que le joueur possède (dont celles en déclin)
 
-![Affichage de la main du joueur](./img/player_area_renderer_example.png)
 
 
 ### Tribe Stack Renderer  
