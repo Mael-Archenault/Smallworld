@@ -58,9 +58,14 @@ void Map::load_from_json (std::string file_name){
         std::vector<Area_Specialization> specializations;
         for (const auto& s : specs[key]) {
             std::string s_str = s.asString();
-            if (s_str == "MAGIC_REGION")
+            if (s_str == "Magic Region")
                 specializations.push_back(Area_Specialization::MAGIC_REGION);
-            // add others as needed
+            else if (s_str == "Cavern")
+                specializations.push_back(Area_Specialization::CAVERN);
+            else if (s_str == "Mine")
+                specializations.push_back(Area_Specialization::MINE);
+            else
+                throw std::runtime_error("Unknown specialization type: " + s_str);
         }
 
         // unit count

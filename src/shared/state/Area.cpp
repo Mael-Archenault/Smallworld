@@ -71,5 +71,9 @@ std::string Area::get_owner_tribe_name() {
 std::vector<Area_Special_Token>& Area::get_special_tokens() {
     return special_tokens;
 }
+
+std::vector<Area_Specialization>& Area::get_area_specialization() {
+    return area_specialization;
+}
 }
 
