@@ -50,15 +50,6 @@ namespace renderer {
 
             prices[i].setPosition(tribe_position + sf::Vector2f(section_width*7/8, card_set_height/2-prices[i].getCharacterSize()/2));
             window.draw(prices[i]);
-            
-            // drawing the species name (temporary)
-            sf::Text species_name_text;
-            species_name_text.setFont(font);
-            species_name_text.setString(top_tribes[i]->get_power_name() + " - " + top_tribes[i]->get_species_name());
-            species_name_text.setCharacterSize(24);
-            species_name_text.setFillColor(sf::Color::White);
-            species_name_text.setPosition(tribe_position);
-            window.draw(species_name_text);
         }
     }
 

@@ -1,12 +1,14 @@
-# Projet Logiciel Transversal: SmallWorld
 
+
+# Projet Logiciel Transversal: SmallWorld
 ---
 
 #### Julien METZELARD – Tarek TALSI – Maël ARCHENAULT – Victor MOREL
 
 ---
 
-![Illustration sur la boite du jeu](./rapport/img/game_illustration.jpg)
+![Illustration sur la boite du jeu](./img/game_illustration.jpg)
+
 
 
 ## 1 Objectif
@@ -21,7 +23,8 @@ Le jeu choisi est un jeu de stratégie en tour par tour. Pour gagner, les joueur
 
 SmallWorld se joue grâce à un plateau représentant une carte de territoires, et des pions faisant office de troupes. Lorsque son tour arrive, le joueur doit attaquer les territoires de ses adversaires afin de conquérir un maximum de terrain. A la fin de son tour, il reçoit autant d'argent que de terrains qu'il possède.
 
-![Plateau de jeu SmallWorld](./rapport/img/map.jpg)
+![Plateau de jeu SmallWorld](./img/map.jpg)
+
 
 
 À ces mécaniques de bases s'ajoutent des systèmes de pouvoirs. Chaque joueur choisit une "espèce" pour ses troupes ainsi qu'un "pouvoir". Les combinaisons espèce/pouvoir sont définies de manière aléatoire. Chaque espèce a un effet différent, de même pour les pouvoirs. Cela peut aller d'un bonus de troupes lors d'un attaque à un bonus de récompense à la fin du tour. Les pouvoirs sont très variés.
@@ -109,26 +112,139 @@ Cette conception permet une séparation claire entre la logique du jeu et les ac
 
 ### 2.5 Ressources
 
-![Diagramme des classes_d'état](./rapport/img/state.png)
+![Diagramme des classes_d'état](./img/state.png)
 
 
-<!-- 
+ 
 ## 3 Rendu: Stratégie et Conception
-Présentez ici la stratégie générale que vous comptez suivre pour rendre un état. Cela doit tenir compte des problématiques de synchronisation entre les changements d'états et la vitesse d'affichage à l'écran. Puis, lorsque vous serez rendu à la partie client/serveur, expliquez comment vous aller gérer les problèmes liés à la latence. Après cette description, présentez la conception logicielle. Pour celle-ci, il est fortement recommandé de former une première partie indépendante de toute librairie graphique, puis de présenter d'autres parties qui l'implémente pour une librairie particulière. Enfin, toutes les classes de la première partie doivent avoir pour unique dépendance les classes d'état de la section précédente.
-
 ### 3.1 Stratégie de rendu d'un état
+
+Le jeu possède différentes structures assez différentes à afficher:
+- **la carte de jeu** : Map
+- **les pions posés sur les territoires** : Units, Special_Tokens, etc ...
+- **la pioche d'espèce** : Tribe_Stack
+- **la main du joueur** : Money, Free_Units, Tribes
+
+Pour afficher ces différentes structures, nous avons choisi de créer une classe Renderer qui va s'occuper de tout le rendu graphique du jeu. Cette classe va utiliser la bibliothèque SFML pour afficher les différentes structures du jeu.
+
+Chaque structure va avoir une classe dédiée à son affichage. Cela permettra une meilleure organisation du code et une meilleure réutilisabilité.
 
 ### 3.2 Conception logicielle
 
+Voici une description des classes principales utilisées pour le rendu:
+
+### Token_Renderer  
+
+Cette classe est responsable du rendu des tokens (unités, special tokens, area_specialization) sur la carte. C'est une brique de base utilisée dans d'autres classes de rendu (Map_Renderer et Player_Area_Renderer)
+
+Avant de rendre l'objet sur une fenêtre de rendu, on peut changer ce qu'il représente:
+
+- pour des pions: l'espèce sur le pion
+- pour des special_tokens: le type de special_tokens
+- pour des area_specialization: le type d'area_specialization
+
+Il est aussi possible d'ajouter un nombre sur le côté de l'affichage du pion pour représenter le nombre d'unités présentes sur la zone.
+
+| ![Affichage de pions](./img/pawn_renderer_example.png) | ![Affichage de special tokens](./img/special_token_renderer_example.png) | ![Affichage de area specialization](./img/area_specialization_renderer_example.png) |
+|---|---|---|
+
+### Tribe Renderer  
+
+Cette classe est responsable du rendu des tribes. Une tribe est affichée grâce à deux cartes:
+
+- une carte de pouvoir
+- une carte d'espèce
+
+Ce moteur de rendu est capable de rendre l'ensemble des deux cartes (en les fixant l'une par rapport à l'autre).
+
+![Affichage d'une tribu](./img/tribe_renderer_example.png)
+
+
+### Map Renderer  
+
+Cette classe est responsable du rendu de la carte de jeu. Elle utilise la classe Token_Renderer pour afficher les unités et les special tokens sur chaque zone de la carte.
+
+La carte de jeu est stockée sous la forme d'une image associée avec un fichier json représentant les positions des différentes zones.
+Le rendu de la carte se fait en deux étapes:
+- on affiche l'image de la carte
+- on affiche les unités et les special tokens sur chaque zone grâce à la classe Token_Renderer
+
+![Affichage de la carte de jeu](./img/map_renderer_example.png)
+
+### Player Area Renderer  
+
+Cette classe est responsable du rendu de la main d'un joueur donné. Elle utilise la classe Token_Renderer pour afficher les unités que le joueur possède dans sa main. De même la classe Tribe_Renderer est utilisée pour afficher les tribes que le joueur possède.
+
+La classe Player_Area_Renderer possède une référence vers la Map qu'elle affiche.
+
+Trois choses sont affichées par ce moteur de rendu:
+- l'argent du joueur
+- les unités libres du joueur
+- les tribus que le joueur possède (dont celles en déclin)
+
+![Affichage de la main du joueur](./img/player_area_renderer_example.png)
+
+
+### Tribe Stack Renderer  
+
+Cette classe est responsable du rendu de la pioche d'espèces. Elle utilise la classe Tribe_Renderer pour afficher les tribus disponibles dans la pioche.
+
+La classe Tribe_Stack_Renderer possède une référence vers la Tribe_Stack qu'elle affiche.
+
+Ce moteur de rendu afficher les 6 tribus de la pioche auquel le joueur a accès. Il ajoute à leur côté le prix de retrait de la tribu.
+
+### Renderer  
+
+Cette classe est responsable du rendu global du jeu. Elle utilise les différentes classes de rendu pour afficher l'état actuel du jeu.
+
+
 ### 3.3 Conception logicielle: extension pour les animations
+
+Pas d'animations implémentées.
+
 
 ### 3.4 Ressources
 
+L'ensemble des ressources est stockée sous forme de spritesheet. Les classe s'occupent ensuite de d'afficher seulement une partie rognée de la spritesheet. Pour cela, elles s'aident de fichier nommes "indexing" qui leur indiquent où trouver chaque sprite dans la spritesheet.
+
+![Exemple de spritesheet](./img/pawn_spritesheet.png)
+
+
+Exemple de fichier de type "indexing"
+
+```json
+{
+  "sprite_size": [150, 150],
+  "frames": {
+    "Amazons":  [0,0],
+    "Dwarves":  [0,1],
+    "Elves":  [0,2],
+    "Ghouls": [0,3],
+    "Ratmen":  [0,4],
+    "Skeletons":  [0,5],
+    "Sorcerers":  [0,6],
+    "Tritons":  [0,7],
+    "Giants":  [1,0],
+    "Halflings":  [1,1],
+    "Humans":  [1,2]    ,
+    "Orcs": [1,3],
+    "Trolls":  [1,4],
+    "Wizards":  [1,5],
+    "Lost Tribe":  [1,6]
+  }
+}
+```
+
 ### 3.5 Exemple de rendu
 
-Illustration 2: Diagramme de classes pour le rendu
+A l'aide de la classe Renderer, il est possible de rendre l'état complet du jeu.
 
-## 4 Règles de changement d'états et moteur de jeu
+![Exemple de rendu complet](./img/full_renderer_example.png)
+
+
+![Diagramme de classes du module de rendu](./img/renderer.png)
+
+<!-- ## 4 Règles de changement d'états et moteur de jeu
 Dans cette section, il faut présenter les événements qui peuvent faire passer d'un état à un autre. Il faut également décrire les aspects liés au temps, comme la chronologie des événements et les aspects de synchronisation. Une fois ceci présenté, on propose une conception logicielle pour pouvoir mettre en œuvre ces règles, autrement dit le moteur de jeu.
 
 ### 4.1 Horloge globale

@@ -17,8 +17,8 @@ BOOST_AUTO_TEST_CASE(TestTribeRenderer)
   {
 
     sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");
-    renderer::Token_Renderer token_renderer("pawn");
-    token_renderer.set_sprite("Tritons");
+    renderer::Token_Renderer token_renderer("area_specialization");
+    token_renderer.set_sprite("Cavern");
     token_renderer.set_number(15);
     token_renderer.scale(1.0f, 1.0f);
 
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(TestTribeRenderer)
         }
 
         window.clear(sf::Color::Black);
-        token_renderer.render(window, sf::Vector2f(200,100), true);
+        token_renderer.render(window, sf::Vector2f(200,100), false);
         window.display();
     }
 
