@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(TestPowerDescription)
 
     BOOST_CHECK_EQUAL(observer.get_initial_units_number(), 5);
     std::vector<state::Area_Specialization> area_specs;
-    state::Area area(10, state::Area_Biome::HILL, area_specs);
+    state::Area area(0,10, state::Area_Biome::HILL, area_specs);
     // bonus reward not implemented yet so it should return 0
     BOOST_CHECK_EQUAL(observer.get_bonus_rewards(area), 0);
 

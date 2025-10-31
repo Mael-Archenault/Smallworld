@@ -6,7 +6,6 @@ namespace state {
 
 Player::Player(int id):id(id) {
     money = 0;
-    tribes = std::vector<Tribe*>();
 }
 
 Player::~Player() {
@@ -24,7 +23,7 @@ void Player::gather_free_units(int tribe_id) {
             return;
         }
     }
-    throw std::invalid_argument("gather_free_units:there is no tribe_id matching for this player");
+    throw std::invalid_argument("gather_free_units:there is no tribe_id matching for this player :" + std::to_string(tribe_id));
 }
 
 int Player::get_free_units_number(int tribe_id) {
@@ -33,7 +32,7 @@ int Player::get_free_units_number(int tribe_id) {
             return tribes[i]->get_free_units_number();
         }
     }
-    throw std::invalid_argument("get_free_units_number:there is no tribe_id matching for this player");
+    throw std::invalid_argument("get_free_units_number:there is no tribe_id matching for this player :" + std::to_string(tribe_id));
 }
 
 std::vector<std::vector<int>> Player::get_conquest_prices(int tribe_id) {
@@ -79,6 +78,7 @@ void Player::go_in_decline(){
 }
 
 void Player::set_active_tribe(Tribe* tribe){
+
     tribes.push_back(tribe);
     if (tribes.size()>2){
         tribes.erase(tribes.begin()); // remove the oldest tribe if more than 3 

@@ -30,8 +30,8 @@ public:
 
 class Area_Observer : public Area {
 public:
-    Area_Observer(int n_units, Area_Biome biome, std::vector<Area_Specialization> area_spec)
-        : Area(n_units, biome, area_spec) {}
+    Area_Observer(int id, int n_units, Area_Biome biome, std::vector<Area_Specialization> area_spec)
+        : Area(id, n_units, biome, area_spec) {}
 
     int& get_units_number() { return units_number; }
     std::vector<Area_Special_Token>& get_special_tokens() { return special_tokens; }
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(testarea)
 {   
 
     std::vector<Area_Specialization> specs = {Area_Specialization::MINE,Area_Specialization::MAGIC_REGION};
-    Area_Observer area(6, Area_Biome::MOUNTAINS, specs);
+    Area_Observer area(0, 6, Area_Biome::MOUNTAINS, specs);
 
     //test biome
     BOOST_CHECK_EQUAL(static_cast<int>(area.get_biome()), static_cast<int>(Area_Biome::MOUNTAINS));
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(testarea)
     BOOST_CHECK_EQUAL(free_units, 5);
     BOOST_CHECK_EQUAL(area.get_units_number(), 1);
 
-    Area_Observer area_low(1, Area_Biome::FARM, specs);
+    Area_Observer area_low(1,1, Area_Biome::FARM, specs);
     int free_units_low = area_low.gather_free_units();
     BOOST_CHECK_EQUAL(free_units_low, 0);
     BOOST_CHECK_EQUAL(area_low.get_units_number(), 1);
@@ -86,9 +86,9 @@ BOOST_AUTO_TEST_CASE(testarea)
 
     
     //test get_neighbors
-    Area_Observer area1(3, Area_Biome::HILL, specs);
-    Area_Observer area2(2, Area_Biome::MOUNTAINS, specs);
-    Area_Observer area3(5, Area_Biome::FARM, specs);
+    Area_Observer area1(2,3, Area_Biome::HILL, specs);
+    Area_Observer area2(3,2, Area_Biome::MOUNTAINS, specs);
+    Area_Observer area3(4,5, Area_Biome::FARM, specs);
 
     std::vector<Area*> neighbors = {&area2, &area3};
     area1.set_neighbors(neighbors);

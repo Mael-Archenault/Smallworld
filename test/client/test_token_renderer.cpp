@@ -17,10 +17,10 @@ BOOST_AUTO_TEST_CASE(TestTribeRenderer)
   {
 
     sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");
-    renderer::Token_Renderer units_renderer;
-    units_renderer.set_sprite("Tritons");
-    units_renderer.set_units_number(15);
-    units_renderer.scale(1.0f, 1.0f);
+    renderer::Token_Renderer token_renderer("pawn");
+    token_renderer.set_sprite("Tritons");
+    token_renderer.set_number(15);
+    token_renderer.scale(1.0f, 1.0f);
 
     while (window.isOpen())
     {
@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_CASE(TestTribeRenderer)
         }
 
         window.clear(sf::Color::Black);
-        units_renderer.render(window, sf::Vector2f(200,100));
+        token_renderer.render(window, sf::Vector2f(200,100), true);
         window.display();
     }
 

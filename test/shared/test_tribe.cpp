@@ -44,8 +44,8 @@ BOOST_AUTO_TEST_CASE(TestExemple)
     Power_Description * power_description = new Power_Description("test_Power",4,power_effect);
 
     std::vector<Area*> owned_areas;
-    Area * area1 = new Area(3, Area_Biome::HILL,{});
-    Area * area2 = new Area(1, Area_Biome::HILL,{});
+    Area * area1 = new Area(0,3, Area_Biome::HILL,{});
+    Area * area2 = new Area(1,1, Area_Biome::HILL,{});
 
     test_Tribe test_tribe = test_Tribe(0,species_description,power_description, owned_areas);
 
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(TestExemple)
      conquest_prices.emplace_back();
      conquest_prices.back().push_back(1);conquest_prices.back().push_back(5);
 
-    Area * area1_1 = new Area(1,state::MOUNTAINS,{});
+    Area * area1_1 = new Area(2,1,state::MOUNTAINS,{});
     area1->add_neighbor(area1_1);
     area1->add_neighbor(area2);
 

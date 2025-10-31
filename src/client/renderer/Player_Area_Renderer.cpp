@@ -30,7 +30,7 @@ namespace renderer {
     free_units_title.setFillColor(sf::Color::White);
     
     tribes_title.setFont(font);
-    tribes_title.setString("tribe_renderers:");
+    tribes_title.setString("Tribes:");
     tribes_title.setCharacterSize(14);
     tribes_title.setFillColor(sf::Color::White);
   } 

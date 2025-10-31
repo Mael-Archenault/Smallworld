@@ -21,17 +21,17 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
   {
     
     // instanciating useful classes
-    static state::Tribe tribe0(
+    state::Tribe* tribe0 = new state::Tribe(
       0,
       new state::Species_Description("TestSpecies", 5, 10, state::Effects_Bundle()),
       new state::Power_Description("TestPower", 3, state::Effects_Bundle())
     );
-    static state::Tribe tribe1(
+    state::Tribe* tribe1 = new state::Tribe(
         1,
         new state::Species_Description("TestSpecies", 5, 10, state::Effects_Bundle()),
         new state::Power_Description("TestPower", 3, state::Effects_Bundle())
     );
-    static state::Area area(1,state::Area_Biome::HILL, std::vector<state::Area_Specialization>());
+    static state::Area area(0,1,state::Area_Biome::HILL, std::vector<state::Area_Specialization>());
     Player_Observer observer(0);
 
     // testing initialization
@@ -51,11 +51,11 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
 
 
     // methods testing
-    observer.set_active_tribe(&tribe0); 
+    observer.set_active_tribe(tribe0); 
     BOOST_CHECK_EQUAL(observer.get_tribes().size(),1);
     observer.go_in_decline();
     
-    observer.set_active_tribe(&tribe1);
+    observer.set_active_tribe(tribe1);
     BOOST_CHECK_EQUAL(observer.get_tribes().size(),2);
 
     BOOST_CHECK_EQUAL(observer.get_free_units_number(1), 8);

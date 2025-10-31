@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(TestTribeRenderer)
 
     sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");
     renderer::Tribe_Renderer tribe_renderer;
-    tribe_renderer.set_sprite("Giants", "Alchemist");
+    tribe_renderer.set_sprite("Giants", "Alchemist", false);
     tribe_renderer.scale(0.5f, 0.5f);
 
     while (window.isOpen())
