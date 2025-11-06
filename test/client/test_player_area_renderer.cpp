@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(TestPlayerAreaRenderer)
         new state::Power_Description("Bivouacking", 3, state::Effects_Bundle())
     );
 
-    static state::Area area(0,1,state::Area_Biome::HILL, std::vector<state::Area_Specialization>());
+    static state::Area area(0,1,state::Area_Biome::HILL, std::vector<state::Area_Specialization>(), false);
     state::Player player(0);
 
     player.set_active_tribe(tribe0);

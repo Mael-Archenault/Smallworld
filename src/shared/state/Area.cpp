@@ -44,6 +44,9 @@ void Area::deploy_units(int n_added_units) {
 }
 
 void Area::set_owner_tribe(Tribe* new_owner_tribe) {
+    if (owner_tribe != nullptr){
+        owner_tribe->remove_from_owned_areas(this);
+    }
     owner_tribe = new_owner_tribe;
 }
 
@@ -76,6 +79,10 @@ std::vector<Area_Special_Token>& Area::get_special_tokens() {
 
 std::vector<Area_Specialization>& Area::get_area_specialization() {
     return area_specialization;
+}
+
+void Area::clear_units(){
+    units_number = 0;
 }
 }
 

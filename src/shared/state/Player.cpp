@@ -67,6 +67,9 @@ void Player::go_in_decline(){
     
     if (active_tribe != nullptr) {
         active_tribe->go_in_decline();
+        if (tribe_in_decline != nullptr){
+            tribe_in_decline->remove_from_map();
+        }
         tribe_in_decline = active_tribe;
         active_tribe = nullptr;
         return;

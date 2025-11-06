@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <unordered_set>
+#include <algorithm>
 
 #include "Game_State.h"
 #include "Map.h"
@@ -102,4 +103,17 @@ std::string Tribe::get_power_name(){
 bool Tribe::is_in_decline(){
     return in_decline;
 }
+
+
+void Tribe::remove_from_map(){
+    std::vector<Area*> copy(owned_areas);
+    for (auto& area: copy){
+        area->set_owner_tribe(nullptr);
+        area->clear_units();
+    }
+}
+void Tribe::remove_from_owned_areas(Area* area){
+    owned_areas.erase(std::find(owned_areas.begin(), owned_areas.end(), area));
+}
+
 }

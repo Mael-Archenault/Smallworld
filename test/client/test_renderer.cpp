@@ -17,10 +17,6 @@ BOOST_AUTO_TEST_CASE(Test_Renderer)
 
         sf::RenderWindow window(sf::VideoMode(1720,820), "Renderer Test", sf::Style::Titlebar | sf::Style::Close);
         renderer::Renderer renderer(state, window.getSize());
-
-        state.take_tribe_at_position(0,0);
-        int tribe_id = 0;
-        state.conquer(0, 7, 2, 0);
         
         
         sf::View view = window.getDefaultView(); // store your base view
@@ -43,7 +39,6 @@ BOOST_AUTO_TEST_CASE(Test_Renderer)
                     if (event.key.code == sf::Keyboard::Space) {
                         state.go_in_decline(0);
                         state.take_tribe_at_position(0,0);
-                        tribe_id ++;
                     }
                     if (event.key.code == sf::Keyboard::N) {
                         std::vector<std::pair<int, int>> prices = state.get_conquest_prices(0);
@@ -57,7 +52,8 @@ BOOST_AUTO_TEST_CASE(Test_Renderer)
                             return;
                         }
 
-                        std::pair<int, int> area_to_attack = attackable_areas[0];
+                        //take random attackable area
+                        std::pair<int, int> area_to_attack = attackable_areas[std::rand() % attackable_areas.size()];
                         state.conquer(0, area_to_attack.first,area_to_attack.second,0);
                     }
                 }
