@@ -17,7 +17,6 @@ namespace renderer
       throw std::runtime_error("Map_Renderer constructor: Failed to load texture :" + file_path);
     }
     this->sprite.setTexture(this->texture);
-    float border_size = ((float)window_size.x) / 4;
 
     // loading the positions
     std::string positions_file = std::string(RESOURCE_DIR) + "/maps/" + map.get_name() + "/positions.json";
@@ -56,7 +55,7 @@ namespace renderer
 
     std::vector<state::Area> areas = map.get_areas();
 
-    for (int i = 0; i < areas.size(); i++)
+    for (size_t i=0; i < areas.size(); i++)
     {
       sf::Vector2f area_position = map_position + area_positions[areas[i].id] * scaling_factor;
 
@@ -65,7 +64,7 @@ namespace renderer
       std::vector<state::Area_Specialization> specializations = areas[i].get_area_specialization();
       if (specializations.size() != 0)
       {
-        for (int j = 0; j < specializations.size(); j++)
+        for (size_t j = 0; j < specializations.size(); j++)
         {
           area_specialization_renderer.scale(scaling_factor, scaling_factor);
           if (specializations[j] == state::Area_Specialization::CAVERN)
@@ -87,7 +86,7 @@ namespace renderer
       std::vector<state::Area_Special_Token> tokens = areas[i].get_special_tokens();
       if (tokens.size() != 0)
       {
-        for (int j = 0; j < tokens.size(); j++)
+        for (size_t j = 0; j < tokens.size(); j++)
         {
           special_tokens_renderer.scale(scaling_factor, scaling_factor);
           if (tokens[j] == state::Area_Special_Token::MOUNTAIN)

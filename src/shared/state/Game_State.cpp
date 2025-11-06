@@ -12,7 +12,7 @@ Game_State::Game_State(int n_players) : n_players(n_players), round(0), map(Map(
 }
 
 void Game_State::gather_free_units(int player_id) {
-    for (int i=0; i<players.size(); i++) {
+    for (size_t i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
             players[i].gather_free_units();
             return;
@@ -22,8 +22,7 @@ void Game_State::gather_free_units(int player_id) {
 }
 
 int Game_State::get_free_units_number(int player_id) {
-    int result;
-    for (int i=0; i<players.size(); i++) {
+    for (size_t i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
             return players[i].get_free_units_number();
         }
@@ -33,7 +32,7 @@ int Game_State::get_free_units_number(int player_id) {
 
 std::vector<std::pair<int, int>> Game_State::get_conquest_prices(int player_id) {
     std::vector<std::vector<int>> result;
-    for (int i=0; i<players.size(); i++) {
+    for (size_t i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
             return players[i].get_conquest_prices(&map);
         }
@@ -43,7 +42,7 @@ std::vector<std::pair<int, int>> Game_State::get_conquest_prices(int player_id) 
 
 void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_units, int dice_units) {
     Area* attacked_area = map.get_area(attacked_area_id);
-    for (int i=0; i<players.size(); i++) {
+    for (size_t i=0; i<players.size(); i++) {
         if (players[i].id == attacking_player_id) {
             players[i].conquer(attacked_area, n_units, dice_units);
             return;
@@ -61,7 +60,7 @@ int Game_State::roll_dice_for_bonus_units() {
 }
 
 void Game_State::redeploy_units(int player_id, int area_id, int n_added_units) {
-    for (int i=0; i<players.size(); i++) {
+    for (size_t i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
             players[i].redeploy_units(area_id, n_added_units);
             return;
@@ -71,7 +70,7 @@ void Game_State::redeploy_units(int player_id, int area_id, int n_added_units) {
 }
 
 void Game_State::get_rewards(int player_id) {
-    for (int i=0; i<players.size(); i++) {
+    for (size_t i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
             players[i].get_rewards();
             return;
@@ -81,7 +80,7 @@ void Game_State::get_rewards(int player_id) {
 }
 
 void Game_State::take_tribe_at_position(int position, int player_id) {
-    for (int i=0; i<players.size(); i++) {
+    for (size_t i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
             Tribe* tribe = tribe_stack.take_tribe_at_position(position);
             players[i].set_active_tribe(tribe);
@@ -92,7 +91,7 @@ void Game_State::take_tribe_at_position(int position, int player_id) {
 }
 
 void Game_State::go_in_decline(int player_id) {
-    for (int i=0; i<players.size(); i++) {
+    for (size_t i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
             players[i].go_in_decline();
             return;

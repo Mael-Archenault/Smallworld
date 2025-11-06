@@ -31,8 +31,7 @@ namespace renderer {
         const Json::Value& size = root["sprite_size"];
         const Json::Value& frames  = root["frames"];
 
-        sprite_width = size[0].asInt();
-        sprite_height = size[1].asInt();
+        sprite_size = std::make_pair(size[0].asInt(),size[1].asInt());
 
         for (const auto& species_name : frames.getMemberNames()) {
             std::string name = species_name;
@@ -53,8 +52,8 @@ namespace renderer {
 
     void Token_Renderer::set_sprite (std::string name) {
 
-        int frameWidth = sprite_width;
-        int frameHeight = sprite_height;
+        int frameWidth = sprite_size.first;
+        int frameHeight = sprite_size.second;
 
         int frameX = spritesheet_indexing[name].second;
         int frameY = spritesheet_indexing[name].first;
@@ -84,10 +83,10 @@ namespace renderer {
     }
 
     float Token_Renderer::get_sprite_width() {
-        return (float)sprite_width;
+        return (float)sprite_size.first;
     }
     float Token_Renderer::get_sprite_height() {
-        return (float)sprite_height;
+        return (float)sprite_size.second;
     }
 
     void Token_Renderer::color (sf::Color color_tint) {

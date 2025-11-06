@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(TribeStack_take_invalid_high_throws)
 BOOST_AUTO_TEST_CASE(TribeStack_take_valid_positions_no_throw_and_nonnull)
 {
     state::Tribe_Stack ts;
-    for (int i = 0; i <= 6; ++i) {
+    for (size_t i=0; i <= 6; ++i) {
         BOOST_CHECK_NO_THROW({
             state::Tribe* p = ts.take_tribe_at_position(0); // always take from front to avoid shifting issues
             BOOST_CHECK(p != nullptr);

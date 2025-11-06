@@ -24,7 +24,7 @@ Power_Description* Tribe::get_power_description() {
 }
 
 void Tribe::gather_free_units() {
-    for (int i=0; i<owned_areas.size(); i++) {
+    for (size_t i=0; i<owned_areas.size(); i++) {
         // Remove all units except one from each area and add them to free_units_number
         free_units_number = free_units_number + owned_areas[i]->gather_free_units();
     }
@@ -35,11 +35,11 @@ int Tribe::get_free_units_number() {
 }
 
 
-
 std::vector<std::pair<int, int>> Tribe::get_conquest_prices(Map* map) {
     if (owned_areas.size() == 0) {
         return map->get_starting_points_prices(*this,false /*species_description.can_start_anywhere();*/);
     }
+
     std::vector<std::pair<int, int>> prices;
     std::unordered_set<int> seen;
     prices.reserve(owned_areas.size() * 3);
@@ -61,24 +61,25 @@ std::vector<std::pair<int, int>> Tribe::get_conquest_prices(Map* map) {
 
 void Tribe::redeploy_units(int area_id, int n_added_units) {
     if (n_added_units > free_units_number){
-        throw std::invalid_argument("Error, sending more units than current free_units");
+        throw std::invalid_argument("redeploy_units: not enough free units to redeploy.");
     }
     // Find the area by ID
-    for (int i=0; i<owned_areas.size(); i++) {
+    for (size_t i=0; i<owned_areas.size(); i++) {
         if (owned_areas[i]->id == area_id) {
             owned_areas[i]->deploy_units(n_added_units);
             free_units_number -= n_added_units;
             return;
         }
     }
+    throw std::invalid_argument("redeploy_units: area_id not found in owned_areas");
 }
 
 void Tribe::conquer(Area* attacked_area, int n_units, int dice_units) {
     if (n_units<attacked_area->get_conquest_price(*this)){
-        throw std::invalid_argument("Error, not enough units to conquer this area");
+        throw std::invalid_argument("conquer: not enough units to conquer the area.");
     }
     if (n_units > free_units_number) {
-        throw std::invalid_argument("Error, sending more units than current free units.");
+        throw std::invalid_argument("conquer: not enough free units to conquer the area.");
     }
     attacked_area->set_owner_tribe(this);
     attacked_area->set_units_number(n_units);
@@ -113,6 +114,9 @@ void Tribe::remove_from_map(){
     }
 }
 void Tribe::remove_from_owned_areas(Area* area){
+    if (std::find(owned_areas.begin(), owned_areas.end(), area) == owned_areas.end()) {
+        throw std::invalid_argument("Tribe : remove_from_owned_areas: area not owned by the tribe");
+    }
     owned_areas.erase(std::find(owned_areas.begin(), owned_areas.end(), area));
 }
 

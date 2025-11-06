@@ -30,15 +30,13 @@ public:
 
 class Area_Observer : public Area {
 public:
-    Area_Observer(int id, int n_units, Area_Biome biome, std::vector<Area_Specialization> area_spec)
-        : Area(id, n_units, biome, area_spec) {}
+    Area_Observer(int id, int n_units, Area_Biome biome, std::vector<Area_Specialization> area_spec, bool is_border)
+        : Area(id, n_units, biome, area_spec, is_border) {}
 
-    int& get_units_number() { return units_number; }
-    std::vector<Area_Special_Token>& get_special_tokens() { return special_tokens; }
     Area_Biome& get_biome() { return biome; }
-    std::vector<Area_Specialization>& get_area_specialization() { return area_specialization; }
     void set_neighbors(const std::vector<Area*>& n) { neighbors = n; }
     Tribe* get_owner_tribe() const {return owner_tribe;}
+    bool get_is_border() {return is_border; }
 
 };
 
@@ -51,29 +49,35 @@ BOOST_AUTO_TEST_CASE(testarea)
 {   
 
     std::vector<Area_Specialization> specs = {Area_Specialization::MINE,Area_Specialization::MAGIC_REGION};
-    Area_Observer area(0, 6, Area_Biome::MOUNTAINS, specs);
+    Area_Observer area(0, 6, Area_Biome::MOUNTAINS, specs, false);
 
-    //test biome
+    //test initialization
+    BOOST_CHECK_EQUAL(area.id, 0);
     BOOST_CHECK_EQUAL(static_cast<int>(area.get_biome()), static_cast<int>(Area_Biome::MOUNTAINS));
 
-    //test specialization
     auto tokens = area.get_area_specialization();
     BOOST_CHECK_EQUAL(tokens.size(), 2);
     BOOST_CHECK_EQUAL(tokens[0],Area_Specialization::MINE);
     BOOST_CHECK_EQUAL(tokens[1],Area_Specialization::MAGIC_REGION);
 
-    //test getUnits_number
     BOOST_CHECK_EQUAL(area.get_units_number(), 6);
+
+    BOOST_CHECK_EQUAL(area.get_is_border(), false);
+
+
+    BOOST_CHECK_EQUAL(area.get_special_tokens().size(),1);
+    BOOST_CHECK_EQUAL(area.get_special_tokens().at(0), Area_Special_Token::MOUNTAIN);
+    BOOST_CHECK_EQUAL(area.get_area_specialization().size(), 2);
+    BOOST_CHECK_EQUAL(area.get_area_specialization().at(0), Area_Specialization::MINE);
+    BOOST_CHECK_EQUAL(area.get_area_specialization().at(1), Area_Specialization::MAGIC_REGION);
+
 
     //test gather_free_units
     int free_units = area.gather_free_units();
     BOOST_CHECK_EQUAL(free_units, 5);
     BOOST_CHECK_EQUAL(area.get_units_number(), 1);
-
-    Area_Observer area_low(1,1, Area_Biome::FARM, specs);
-    int free_units_low = area_low.gather_free_units();
-    BOOST_CHECK_EQUAL(free_units_low, 0);
-    BOOST_CHECK_EQUAL(area_low.get_units_number(), 1);
+    free_units += area.gather_free_units();
+    BOOST_CHECK_EQUAL(free_units, 5);
 
     //test deploy_units
     area.deploy_units(4);
@@ -85,18 +89,15 @@ BOOST_AUTO_TEST_CASE(testarea)
     BOOST_CHECK_EQUAL(area.get_units_number(), 10);
 
     
-    //test get_neighbors
-    Area_Observer area1(2,3, Area_Biome::HILL, specs);
-    Area_Observer area2(3,2, Area_Biome::MOUNTAINS, specs);
-    Area_Observer area3(4,5, Area_Biome::FARM, specs);
+    //test neighbors
+    Area neighbor(2,3, Area_Biome::HILL, specs, false);
+    area.add_neighbor(&neighbor);
+    
 
-    std::vector<Area*> neighbors = {&area2, &area3};
-    area1.set_neighbors(neighbors);
-
-    std::vector<Area*> ret_neighbors = area1.get_neighbors();
-    BOOST_CHECK_EQUAL(ret_neighbors.size(), 2);
-    BOOST_CHECK(ret_neighbors[0] == &area2);
-    BOOST_CHECK(ret_neighbors[1] == &area3);
+    std::vector<Area*> ret_neighbors = area.get_neighbors();
+    BOOST_CHECK_EQUAL(ret_neighbors.size(), 1);
+    BOOST_CHECK(ret_neighbors.at(0) == &neighbor);
+    
 
 
     //test set_owner_tribe

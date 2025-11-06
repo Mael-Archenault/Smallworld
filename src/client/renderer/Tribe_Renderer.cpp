@@ -21,9 +21,8 @@ namespace renderer {
             throw std::runtime_error("Tribe_Renderer::set_species: Failed to load power spritesheet");
         }
 
-        species_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/species_spritesheet_indexing.json");
-        power_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/power_spritesheet_indexing.json");
-
+        species_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/species_spritesheet_indexing.json", "species");
+        power_spritesheet_indexing = open_indexing_file(std::string(RESOURCE_DIR) + "/assets/power_spritesheet_indexing.json", "power");
 
         
     };
@@ -94,7 +93,7 @@ namespace renderer {
     }
 
 
-    std::unordered_map<std::string, std::pair<int, int>> Tribe_Renderer::open_indexing_file(std::string file_name) {
+    std::unordered_map<std::string, std::pair<int, int>> Tribe_Renderer::open_indexing_file(std::string file_name, std::string spritesheet_type) {
         std::unordered_map<std::string, std::pair<int, int>> indexing;
 
 
@@ -110,6 +109,12 @@ namespace renderer {
 
         const Json::Value& size = root["sprite_size"];
         const Json::Value& frames  = root["frames"];
+
+        if (spritesheet_type == "species") {
+            species_sprite_size = std::make_pair(size[0].asInt(),size[1].asInt());
+        } else if (spritesheet_type == "power") {
+            power_sprite_size = std::make_pair(size[0].asInt(),size[1].asInt());
+        }
 
         for (const auto& species_name : frames.getMemberNames()) {
             std::string name = species_name;

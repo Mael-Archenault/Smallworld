@@ -13,7 +13,7 @@ Map::Map(std::string name): name(name) {
 }
 
 Area* Map::get_area(int area_id) {
-    for (int i=0; i<areas.size(); i++){
+    for (size_t i=0; i<areas.size(); i++){
         if (area_id==areas[i].id)
         return &areas[i];
     }

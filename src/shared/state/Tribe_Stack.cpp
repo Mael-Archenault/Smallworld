@@ -99,19 +99,9 @@ Tribe_Stack::Tribe_Stack() {
     std::shuffle(power_lists.begin(), power_lists.end(), rng);
 
     // Pair the first 'number_of_species' species with the first same number of powers
-    for (int i = 0; i < number_of_species; i++) {
+    for (size_t i=0; i < number_of_species; i++) {
         Tribe tribe(i, species_lists[i], power_lists[i]);
         stack.push_back(tribe);
-    }
-
-    //verifying that there is no double of power in the stack
-
-    for (size_t i = 0; i < stack.size(); ++i) {
-        for (size_t j = i + 1; j < stack.size(); ++j) {
-            if (stack[i].get_power_name() == stack[j].get_power_name()) {
-                throw std::runtime_error("Tribe Stack Initialization Error: Duplicate power found in the stack: " + stack[i].get_power_name());
-            }
-        }
     }
 }
 
@@ -123,9 +113,6 @@ Tribe* Tribe_Stack::take_tribe_at_position(int position){
     if(position>=static_cast<int>(stack.size()) || position<0 || position>=seeable_stack_number){
         throw std::out_of_range("Tribe Stack: Invalid tribe position");
     }
-    // Copy the tribe into a heap-allocated object and return that pointer.
-    // Returning a pointer to an element inside `stack` and then erasing
-    // that element would invalidate the pointer (undefined behaviour).
     Tribe tribe_copy = stack[position];
     stack.erase(stack.begin() + position);
     Tribe* tribe_out = new Tribe(tribe_copy);
