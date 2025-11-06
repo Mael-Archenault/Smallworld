@@ -36,6 +36,7 @@ void Map::load_from_json (std::string file_name){
     const Json::Value& specs  = root["specializations"];
     const Json::Value& units  = root["units"];
     const Json::Value& rels   = root["relations"];
+    const Json::Value& borders = root["borders"];
 
     this->areas.clear();
     this->areas.reserve(biomes.size());
@@ -80,8 +81,12 @@ void Map::load_from_json (std::string file_name){
         // unit count
         int unit_count = units[key].asInt();
 
+        // is_border
+        bool is_border = borders[key].asBool();
+
+
         // create the area in-place (avoids using deleted assignment)
-        this->areas.emplace_back(id, unit_count, biome, specializations);
+        this->areas.emplace_back(id, unit_count, biome, specializations, is_border);
 
         // relations (neighbors)
         std::vector<int> connections;
@@ -102,7 +107,7 @@ std::vector<Area>& Map::get_areas () {
     return this->areas;
 }
 
-std::vector<std::pair<int, int> > Map::get_borders(Tribe& tribe, bool can_start_anywhere) {
+std::vector<std::pair<int, int> > Map::get_starting_points_prices(Tribe& tribe, bool can_start_anywhere) {
     std::vector<std::pair<int, int>> ret = std::vector<std::pair<int, int>>();
 
     for (Area& area : this->areas) {
@@ -111,6 +116,7 @@ std::vector<std::pair<int, int> > Map::get_borders(Tribe& tribe, bool can_start_
             ret.push_back(pair);
         }
     }
+    return ret;
 }
 
 

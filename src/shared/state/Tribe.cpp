@@ -37,7 +37,7 @@ int Tribe::get_free_units_number() {
 
 std::vector<std::pair<int, int>> Tribe::get_conquest_prices(Map* map) {
     if (owned_areas.size() == 0) {
-        map->get_borders(*this,false /*species_description.can_start_anywhere();*/);
+        return map->get_starting_points_prices(*this,false /*species_description.can_start_anywhere();*/);
     }
     std::vector<std::pair<int, int>> prices;
     std::unordered_set<int> seen;

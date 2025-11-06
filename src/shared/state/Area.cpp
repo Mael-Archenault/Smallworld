@@ -4,12 +4,13 @@
 
 namespace state {
 
-Area::Area(int id, int n_units, Area_Biome biome, std::vector<Area_Specialization> area_specialization)
+Area::Area(int id, int n_units, Area_Biome biome, std::vector<Area_Specialization> area_specialization, bool is_border)
     : id(id),
       units_number(n_units),
       biome(biome),
       owner_tribe(nullptr),
-      area_specialization(area_specialization)
+      area_specialization(area_specialization),
+      is_border(is_border)
 {
     if (biome==state::Area_Biome::MOUNTAINS){
         special_tokens.push_back(state::Area_Special_Token::MOUNTAIN);

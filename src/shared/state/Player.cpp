@@ -29,9 +29,9 @@ int Player::get_free_units_number() {
     throw std::invalid_argument("get_free_units_number:there is no active tribe for this player");
 }
 
-std::vector<std::pair<int, int>> Player::get_conquest_prices() {
+std::vector<std::pair<int, int>> Player::get_conquest_prices(Map* map) {
     if (active_tribe != nullptr) {
-        return active_tribe->get_conquest_prices();
+        return active_tribe->get_conquest_prices(map);
     }
     throw std::invalid_argument("get_conquest_prices:there is no tribe_id matching for this player");
 }
