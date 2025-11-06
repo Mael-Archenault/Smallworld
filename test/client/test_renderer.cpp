@@ -4,20 +4,13 @@
 #include <renderer.h>
 #include <fstream>
 
-std::string json_data = R"({
-  "biomes": { "0": ["MOUNTAIN"], "1": ["HILL"], "2": ["HILL"] },
-  "specializations": { "0": [], "1": [], "2": ["MAGIC_REGION"] },
-  "units": { "0": 0, "1": 0, "2": 0 },
-  "relations": { "0": [1], "1": [0, 2], "2": [1] }
-})";
-
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
 {
     BOOST_CHECK(1);
 }
 
-BOOST_AUTO_TEST_CASE(TestGameState)
+BOOST_AUTO_TEST_CASE(Test_Renderer)
 {
     {
         state::Game_State state(1);
@@ -27,7 +20,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 
         state.take_tribe_at_position(0,0);
         int tribe_id = 0;
-        state.conquer(0, 0, 7, 2, 0);
+        state.conquer(0, 7, 2, 0);
         
         
         sf::View view = window.getDefaultView(); // store your base view
@@ -53,10 +46,10 @@ BOOST_AUTO_TEST_CASE(TestGameState)
                         tribe_id ++;
                     }
                     if (event.key.code == sf::Keyboard::N) {
-                        std::vector<std::pair<int, int>> prices = state.get_conquest_prices(0,0);
+                        std::vector<std::pair<int, int>> prices = state.get_conquest_prices(0);
                         std::vector<std::pair<int, int>> attackable_areas;
                         for (const auto& price_info : prices) {
-                           if (price_info.second <= state.get_free_units_number(0,0)) {
+                           if (price_info.second <= state.get_free_units_number(0)) {
                                attackable_areas.push_back(price_info);
                            }
                         }
@@ -65,7 +58,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
                         }
 
                         std::pair<int, int> area_to_attack = attackable_areas[0];
-                        state.conquer(0, 0, area_to_attack.first,area_to_attack.second,0);
+                        state.conquer(0, area_to_attack.first,area_to_attack.second,0);
                     }
                 }
                 

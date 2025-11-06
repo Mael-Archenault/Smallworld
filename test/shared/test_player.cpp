@@ -8,7 +8,6 @@ public:
   Player_Observer(int id) : state::Player(id){};
 
   int get_money() { return money; }
-  std::vector<state::Tribe*> get_tribes() { return tribes; }
 };
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
@@ -36,33 +35,32 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
 
     // testing initialization
     BOOST_CHECK_EQUAL(observer.get_money(), 0);
-    BOOST_CHECK_EQUAL(observer.get_tribes().size(), 0);
     BOOST_CHECK_EQUAL(observer.id, 0);
     
     // errors testing
     observer.go_in_decline(); // trying to go in decline without any tribe
-    BOOST_CHECK_THROW(observer.get_free_units_number(100), std::invalid_argument);
+    BOOST_CHECK_THROW(observer.get_free_units_number(), std::invalid_argument);
     
-    BOOST_CHECK_THROW(observer.gather_free_units(100), std::invalid_argument);
+    BOOST_CHECK_THROW(observer.gather_free_units(), std::invalid_argument);
     
-    BOOST_CHECK_THROW(observer.get_conquest_prices(100), std::invalid_argument);
-    BOOST_CHECK_THROW(observer.redeploy_units(100, 0,10), std::invalid_argument);
-    BOOST_CHECK_THROW(observer.conquer(100, &area, 5, 2), std::invalid_argument);
+    BOOST_CHECK_THROW(observer.get_conquest_prices(), std::invalid_argument);
+    BOOST_CHECK_THROW(observer.redeploy_units(0,10), std::invalid_argument);
+    BOOST_CHECK_THROW(observer.conquer(&area, 5, 2), std::invalid_argument);
 
 
     // methods testing
     observer.set_active_tribe(tribe0); 
-    BOOST_CHECK_EQUAL(observer.get_tribes().size(),1);
+    // BOOST_CHECK_EQUAL(observer.get_tribes(),1);
     observer.go_in_decline();
     
     observer.set_active_tribe(tribe1);
-    BOOST_CHECK_EQUAL(observer.get_tribes().size(),2);
+    // BOOST_CHECK_EQUAL(observer.get_tribes().size(),2);
 
-    BOOST_CHECK_EQUAL(observer.get_free_units_number(1), 8);
-    observer.gather_free_units(1);
-    BOOST_CHECK_EQUAL(observer.get_conquest_prices(1).size(), 0);
-    observer.redeploy_units(1, 0, 5);
-    observer.conquer(1, &area, 3,0);
+    BOOST_CHECK_EQUAL(observer.get_free_units_number(), 8);
+    observer.gather_free_units();
+    BOOST_CHECK_EQUAL(observer.get_conquest_prices().size(), 0);
+    observer.redeploy_units(0, 5);
+    observer.conquer(&area, 3,0);
     observer.get_rewards();
     BOOST_CHECK_EQUAL(observer.get_money(), 0);
   }

@@ -11,41 +11,41 @@ Game_State::Game_State(int n_players) : n_players(n_players), round(0), map(Map(
     tribe_stack = Tribe_Stack();
 }
 
-void Game_State::gather_free_units(int player_id, int tribe_id) {
+void Game_State::gather_free_units(int player_id) {
     for (int i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
-            players[i].gather_free_units(tribe_id);
+            players[i].gather_free_units();
             return;
         }
     } 
     throw std::invalid_argument("gather_free_units: Player id not found");
 }
 
-int Game_State::get_free_units_number(int player_id, int tribe_id) {
+int Game_State::get_free_units_number(int player_id) {
     int result;
     for (int i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
-            return players[i].get_free_units_number(tribe_id);
+            return players[i].get_free_units_number();
         }
     }
     throw std::invalid_argument("get_free_units_number: Player id not found");
 }
 
-std::vector<std::pair<int, int>> Game_State::get_conquest_prices(int player_id, int tribe_id) {
+std::vector<std::pair<int, int>> Game_State::get_conquest_prices(int player_id) {
     std::vector<std::vector<int>> result;
     for (int i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
-            return players[i].get_conquest_prices(tribe_id);
+            return players[i].get_conquest_prices();
         }
     }
     throw std::invalid_argument("get_conquest_prices: Player id not found");
 }
 
-void Game_State::conquer(int attacking_player_id, int attacking_tribe_id, int attacked_area_id, int n_units, int dice_units) {
+void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_units, int dice_units) {
     Area* attacked_area = map.get_area(attacked_area_id);
     for (int i=0; i<players.size(); i++) {
         if (players[i].id == attacking_player_id) {
-            players[i].conquer(attacking_tribe_id, attacked_area, n_units, dice_units);
+            players[i].conquer(attacked_area, n_units, dice_units);
             return;
         }
     }
@@ -60,10 +60,10 @@ int Game_State::roll_dice_for_bonus_units() {
     return possible_values[random_index];
 }
 
-void Game_State::redeploy_units(int player_id, int tribe_id, int area_id, int n_added_units) {
+void Game_State::redeploy_units(int player_id, int area_id, int n_added_units) {
     for (int i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
-            players[i].redeploy_units(tribe_id, area_id, n_added_units);
+            players[i].redeploy_units(area_id, n_added_units);
             return;
         }
     }

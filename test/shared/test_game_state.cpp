@@ -26,11 +26,11 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         Game_State_Observer observer(1);
 
         // error_testing
-        BOOST_CHECK_THROW(observer.gather_free_units(100, 0), std::invalid_argument);
-        BOOST_CHECK_THROW(observer.get_free_units_number(100, 0), std::invalid_argument);
-        BOOST_CHECK_THROW(observer.get_conquest_prices(100, 0), std::invalid_argument);
-        BOOST_CHECK_THROW(observer.conquer(100, 100, 0, 10, 2), std::invalid_argument);
-        BOOST_CHECK_THROW(observer.redeploy_units(100, 0, 0, 5), std::invalid_argument);
+        BOOST_CHECK_THROW(observer.gather_free_units(100), std::invalid_argument);
+        BOOST_CHECK_THROW(observer.get_free_units_number(100), std::invalid_argument);
+        BOOST_CHECK_THROW(observer.get_conquest_prices(100), std::invalid_argument);
+        BOOST_CHECK_THROW(observer.conquer(100, 100, 10, 2), std::invalid_argument);
+        BOOST_CHECK_THROW(observer.redeploy_units(100, 0, 5), std::invalid_argument);
         BOOST_CHECK_THROW(observer.get_rewards(100), std::invalid_argument);
         BOOST_CHECK_THROW(observer.go_in_decline(100), std::invalid_argument);
         BOOST_CHECK_THROW(observer.take_tribe_at_position(0, 100), std::invalid_argument);
@@ -45,21 +45,21 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 
 
         std::vector<state::Tribe*> available_tribes = observer.get_tribes_on_top();
-        int tribe_id = available_tribes[0]->id;
         observer.take_tribe_at_position(0, 0);
-        observer.gather_free_units(0,tribe_id);
-        // observer.get_free_units_number(0,tribe_id);
-        // std::vector<std::vector<int>> conquest_prices = observer.get_conquest_prices(0,tribe_id);
-        // observer.redeploy_units(0,tribe_id,0,0);
-        // observer.get_rewards(0);
-        // observer.go_in_decline(0);
+        observer.gather_free_units(0);
+        observer.get_free_units_number(0);
+        std::vector<std::pair<int, int>> conquest_prices = observer.get_conquest_prices(0);
+        observer.redeploy_units(0,0,0);
+        observer.get_rewards(0);
+        observer.go_in_decline(0);
         
-        // observer.abandon_area();
-        // int dice_units = observer.roll_dice_for_bonus_units();
-        // observer.conquer(0,tribe_id,0,3,0);
+        observer.take_tribe_at_position(0, 0);
+        observer.abandon_area();
+        int dice_units = observer.roll_dice_for_bonus_units();
+        observer.conquer(0,0,3,0);
 
-        // observer.next_round();
-        // BOOST_CHECK_EQUAL(observer.get_round(), 1);
+        observer.next_round();
+        BOOST_CHECK_EQUAL(observer.get_round(), 1);
        
 
 

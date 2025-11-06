@@ -74,33 +74,30 @@ namespace renderer {
 
 
     // Free units
-    std::vector<state::Tribe*> player_tribes = player.get_tribes();
+    std::pair<state::Tribe*, state::Tribe*> player_tribes = player.get_tribes();
 
-    if (!player_tribes.empty()) {
-        int free_units_number = player.get_free_units_number(player_tribes[player_tribes.size()-1]->id);
+    if (player_tribes.first != nullptr) {
+        int free_units_number = player.get_free_units_number();
         float scaling_factor = std::min((section_width/5)/150, body_size/150);
         free_units_renderer.scale(scaling_factor, scaling_factor);
-        free_units_renderer.set_sprite(player_tribes[player_tribes.size()-1]->get_species_name());
+        free_units_renderer.set_sprite(player_tribes.first->get_species_name());
         free_units_renderer.set_number(free_units_number);
         free_units_renderer.render(window, sf::Vector2f(position.x + section_width/4+ section_width/8 - 150*scaling_factor/2, position.y + header_size + body_size/2 - 75*scaling_factor), true);
     }
 
     // Render tribe_renderers
-    int n_tribes = player_tribes.size();
     
-    if (n_tribes == 0) {
-      return;
-    }
-    if (n_tribes >= 1) {
+   
+    if (player_tribes.first != nullptr) {
       float scaling_factor = std::min((section_width/4)/500, body_size/194);
-      tribe_renderer.set_sprite(player_tribes[n_tribes-1]->get_species_name(), player_tribes[n_tribes-1]->get_power_name(), false);
+      tribe_renderer.set_sprite(player_tribes.first->get_species_name(), player_tribes.first->get_power_name(), false);
       tribe_renderer.scale(scaling_factor, scaling_factor);
       tribe_renderer.render(window, sf::Vector2f(position.x + section_width/2 + section_width/8 - (500*scaling_factor)/2, position.y + header_size + body_size/2 - (194*scaling_factor)/2));
     }
 
-    if (n_tribes >= 2) {
+    if (player_tribes.second != nullptr) {
       float scaling_factor = std::min((section_width/4)/500, (body_size*2/3)/194);
-      tribe_renderer.set_sprite(player_tribes[n_tribes-2]->get_species_name(), player_tribes[n_tribes-2]->get_power_name(), true);
+      tribe_renderer.set_sprite(player_tribes.second->get_species_name(), player_tribes.second->get_power_name(), true);
       tribe_renderer.scale(scaling_factor, scaling_factor);
       tribe_renderer.render(window, sf::Vector2f(position.x + section_width*3/4 + section_width/8 - (500*scaling_factor)/2, position.y + header_size + body_size/3 - (194*scaling_factor)/2));
     }
