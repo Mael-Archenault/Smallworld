@@ -1,6 +1,8 @@
 #include "Area.h"
 #include <random>
 #include <stdexcept>
+#include "Species_Description.h"
+#include "Power_Description.h"
 
 namespace state {
 
@@ -64,7 +66,7 @@ int Area::get_units_number() {
 
 Tribe* Area::get_owner_tribe() {
     if (owner_tribe == nullptr) {
-        return new Tribe(-1, new Species_Description("Lost Tribe", 0, 0, Effects_Bundle()), new Power_Description("No Power", 0, Effects_Bundle()));
+        return new Tribe(-1, new Species_Description("Lost Tribe", 0, 0), new Power_Description("No Power", 0));
     }
     return owner_tribe;
 }
@@ -76,5 +78,14 @@ std::vector<Area_Special_Token>& Area::get_special_tokens() {
 std::vector<Area_Specialization>& Area::get_area_specialization() {
     return area_specialization;
 }
+
+
+Area_Biome Area::get_biome(){
+    return biome;
 }
 
+void Area::set_special_tokens(Area_Special_Token special_token){
+    special_tokens.push_back(special_token);
+}
+
+}

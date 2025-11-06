@@ -1,4 +1,7 @@
 #include "Tribe.h"
+#include "Effects_Bundle.h"
+#include "Species_Description.h"
+#include "Power_Description.h"
 
 #include <stdexcept>
 #include <unordered_set>
@@ -10,6 +13,7 @@ Tribe::Tribe(int id,Species_Description* species_description, Power_Description*
     in_decline = false;
     free_units_number = species_description->get_initial_units_number() + power_description->get_initial_units_number();
 }
+
 Species_Description* Tribe::get_species_description() {
     return species_description;
 }
@@ -57,6 +61,8 @@ void Tribe::redeploy_units(int area_id, int n_added_units) {
     for (int i=0; i<owned_areas.size(); i++) {
         if (owned_areas[i]->id == area_id) {
             owned_areas[i]->deploy_units(n_added_units);
+            species_description->apply_additional_defense(owned_areas[i]);
+            power_description->apply_additional_defense(owned_areas[i]);
             free_units_number -= n_added_units;
             return;
         }
@@ -80,7 +86,11 @@ void Tribe::go_in_decline(){
     in_decline = true;
 }
 int Tribe::get_rewards(){
-    return 0;
+    int reward = 0;
+    for(Area* area : owned_areas){
+        reward += 1 + species_description->get_bonus_rewards(area) + power_description->get_bonus_rewards(area);
+    }
+    return reward;
 }
 
 std::string Tribe::get_species_name(){
