@@ -1,0 +1,40 @@
+{
+  "Species": [
+    "Amazons",
+    "Dwarves",
+    "Elves",
+    "Ghouls",
+    "Giants",
+    "Halflings",
+    "Humans",
+    "Orcs",
+    "Ratmen",
+    "Skeletons",
+    "Sorcerers",
+    "Tritons",
+    "Trolls",
+    "Wizards"
+  ],
+  "powers": [
+    "Alchemist",
+    "Berserk",
+    "Bivouacking",
+    "Commando",
+    "Diplomat",
+    "DragonMaster",
+    "Flying",
+    "Forest",
+    "Fortified",
+    "Heroic",
+    "Hill",
+    "Merchant",
+    "Mounted",
+    "Pillaging",
+    "Seafaring",
+    "Spirit",
+    "Stout",
+    "Swamp",
+    "Underworld",
+    "Wealthy"
+  ]
+}
