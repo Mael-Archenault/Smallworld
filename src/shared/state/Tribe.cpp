@@ -1,7 +1,11 @@
 #include "Tribe.h"
+#include "Area_Biome.h"
 
 #include <stdexcept>
 #include <unordered_set>
+
+#include "Game_State.h"
+#include "Map.h"
 
 namespace state {
 
@@ -29,7 +33,12 @@ int Tribe::get_free_units_number() {
     return free_units_number;
 }
 
-std::vector<std::pair<int, int>> Tribe::get_conquest_prices() {
+
+
+std::vector<std::pair<int, int>> Tribe::get_conquest_prices(Map* map) {
+    if (owned_areas.size() == 0) {
+        map->get_borders(*this,false /*species_description.can_start_anywhere();*/);
+    }
     std::vector<std::pair<int, int>> prices;
     std::unordered_set<int> seen;
     prices.reserve(owned_areas.size() * 3);

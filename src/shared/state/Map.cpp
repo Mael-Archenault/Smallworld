@@ -102,4 +102,16 @@ std::vector<Area>& Map::get_areas () {
     return this->areas;
 }
 
+std::vector<std::pair<int, int> > Map::get_borders(Tribe& tribe, bool can_start_anywhere) {
+    std::vector<std::pair<int, int>> ret = std::vector<std::pair<int, int>>();
+
+    for (Area& area : this->areas) {
+        if (area.is_border or can_start_anywhere) {
+            std::pair<int, int> pair = std::make_pair(area.id, area.get_conquest_price(tribe));
+            ret.push_back(pair);
+        }
+    }
+}
+
+
 }

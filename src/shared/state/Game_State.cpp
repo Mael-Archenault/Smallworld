@@ -35,7 +35,7 @@ std::vector<std::pair<int, int>> Game_State::get_conquest_prices(int player_id) 
     std::vector<std::vector<int>> result;
     for (int i=0; i<players.size(); i++) {
         if (players[i].id == player_id) {
-            return players[i].get_conquest_prices();
+            return players[i].get_conquest_prices(&map);
         }
     }
     throw std::invalid_argument("get_conquest_prices: Player id not found");
