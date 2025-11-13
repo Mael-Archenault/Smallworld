@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(TestMapRenderer)
     state::Map map("4_players");
     // opening a sfml window 
     sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");
-    renderer::Map_Renderer map_renderer(map, window.getSize());
+    renderer::Map_Renderer map_renderer(window);
     // // drawing a rectangle on it for 4 seconds
 
      sf::View view = window.getDefaultView(); // store your base view
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(TestMapRenderer)
         }
 
         window.clear(sf::Color::Black);
-        map_renderer.render(window);
+        map_renderer.render(map);
         window.display();
     }
 
