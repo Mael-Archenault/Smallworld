@@ -6,10 +6,7 @@ namespace engine
 const int Command::id = 3;
 
 Choose_Species_Command::Choose_Species_Command(int player_id, int position)
-    :
-
-      Command(player_id),
-      position(position)
+    : Command(player_id), position(position)
 {
 }
 

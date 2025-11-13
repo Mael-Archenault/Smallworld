@@ -8,41 +8,46 @@ namespace engine
 {
 
 std::unordered_map<int, state::Turn_Phase> phase_command_map = {
+    {Decline_Command::id, state::Turn_Phase::START},
+    {Choose_Species_Command::id, state::Turn_Phase::START},
+    {End_Start_Command::id, state::Turn_Phase::START},
     {Conquer_Command::id, state::Turn_Phase::CONQUER},
-    {Redeploy_Command::id, state::Turn_Phase::REDEPLOY}
-    //{Gather_Free_Units_Command::id, Turn_Phase::GATHER_FREE_UNITS},
-    //{Take_Tribe_Command::id, Turn_Phase::TAKE_TRIBE},
-    //{Go_In_Decline_Command::id, Turn_Phase::GO_IN_DECLINE}
-};
+    {End_Conquer_Command::id, state::Turn_Phase::CONQUER},
+    {Redeploy_Command::id, state::Turn_Phase::REDEPLOY}};
 
-Engine::Engine() : state(4) {};
+Engine::Engine(state::Game_State& state) : state(state) {};
 
-void Engine::add_command(Command command)
+void Engine::add_command(std::unique_ptr<Command> command)
 {
-    command_queue.push(command);
+    command_queue.push(std::move(command));
 }
 
 void Engine::update()
 {
+    if (command_queue.empty())
+    {
+        return;
+    }
     // take the first command
 
-    Command command = command_queue.front();
+    std::unique_ptr<Command>& command = command_queue.front();
     command_queue.pop();
+
     // Verify if the command is valid
 
-    if (state.get_current_player().id != command.player_id)
-    {
-        return;  // or throw
-    }
+    // if (state.get_current_player().id != command->player_id)
+    // {
+    //     return;  // or throw
+    // }
 
-    if (phase_command_map.at(command.id) != state.get_current_turn_phase())
+    if (phase_command_map.at(command->id) != state.get_current_turn_phase())
     {
         return;
     }
 
-    // Execute
+    // // Execute
 
-    command.execute(state);
+    // command->execute(state);
 }
 
 }  // namespace engine
