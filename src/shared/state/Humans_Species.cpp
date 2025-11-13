@@ -5,9 +5,12 @@ using namespace state;
 
 Humans_Species::Humans_Species(): Species_Description("Humans",5,10) {}
 
-int Humans_Species::get_bonus_rewards(Area* area){
-    if(area->get_biome() == FARM){
-        return 1;
+int Humans_Species::get_bonus_rewards(std::vector<Area*> areas){
+    int bonus_reward = 0;
+    for(Area* area : areas){
+        if(area->get_biome() == FARM){
+                bonus_reward++;
+        }
     }
-    return 0;
+    return bonus_reward;
 }

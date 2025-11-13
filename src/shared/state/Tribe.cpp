@@ -86,9 +86,7 @@ void Tribe::go_in_decline(){
     in_decline = true;
 }
 int Tribe::get_rewards(){
-    int reward = owned_areas.size();
-    species_description->get_bonus_rewards(owned_areas);
-    power_description->get_bonus_rewards(owned_areas);
+    int reward = owned_areas.size() + species_description->get_bonus_rewards(owned_areas) + power_description->get_bonus_rewards(owned_areas);
     return reward;
 }
 
