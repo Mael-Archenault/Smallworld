@@ -2,6 +2,6 @@
 
 
 namespace engine{
-    Command::Command(int id, int player_id):player_id(player_id){
+    Command::Command(int player_id):player_id(player_id){
     }
 }

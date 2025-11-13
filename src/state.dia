@@ -1149,7 +1149,7 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#get_current_phase#</dia:string>
+            <dia:string>#get_current_turn_phase#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>##</dia:string>
@@ -1179,7 +1179,7 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#set_current_phase#</dia:string>
+            <dia:string>#set_current_turn_phase#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>##</dia:string>
@@ -8666,15 +8666,15 @@
         <dia:point val="-38.8728,0.679957"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-42.2764,-11.8341;-38.1228,2.27996"/>
+        <dia:rectangle val="-42.2764,-11.8341;-38.1228,1.47996"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="-38.8728,0.679957"/>
-        <dia:point val="-38.8728,-5.90205"/>
-        <dia:point val="-42.2264,-5.90205"/>
+        <dia:point val="-38.8728,-5.90206"/>
+        <dia:point val="-42.2264,-5.90206"/>
         <dia:point val="-42.2264,-11.7841"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
