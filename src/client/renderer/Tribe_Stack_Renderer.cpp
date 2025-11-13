@@ -7,7 +7,7 @@
 namespace renderer
 {
 
-Tribe_Stack_Renderer::Tribe_Stack_Renderer(state::Tribe_Stack& tribe_stack) : stack(tribe_stack)
+Tribe_Stack_Renderer::Tribe_Stack_Renderer(sf::RenderWindow& window) : window(window)
 {
     // Load font
     if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf"))
