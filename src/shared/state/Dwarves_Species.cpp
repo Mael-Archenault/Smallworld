@@ -1,6 +1,4 @@
-//
-// Created by vboxuser on 10/17/25.
-//
+#include "Tribe.h"
 #include "Dwarves_Species.h"
 
 using namespace state;

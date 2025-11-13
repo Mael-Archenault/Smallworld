@@ -13,3 +13,7 @@ void Effects_Bundle::apply_lose_effect (){}
 int Effects_Bundle::get_bonus_rewards (std::vector<Area*> areas){
     return 0;
 }
+void Effects_Bundle::areas_conquered(Area* attacked_area){}
+int Effects_Bundle::add_free_units(int current_units_number){
+    return 0;
+}

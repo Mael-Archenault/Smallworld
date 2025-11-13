@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <unordered_set>
 
-namespace state {
+using namespace state;
 
 Tribe::Tribe(int id,Species_Description* species_description, Power_Description* power_description): id(id), species_description(species_description), power_description(power_description) {
     owned_areas = std::vector<Area*>();
@@ -25,8 +25,9 @@ Power_Description* Tribe::get_power_description() {
 void Tribe::gather_free_units() {
     for (int i=0; i<owned_areas.size(); i++) {
         // Remove all units except one from each area and add them to free_units_number
-        free_units_number = free_units_number + owned_areas[i]->gather_free_units();
+        free_units_number += owned_areas[i]->gather_free_units();
     }
+    free_units_number += species_description->add_free_units(free_units_number+owned_areas.size());
 }
 
 int Tribe::get_free_units_number() {
@@ -78,6 +79,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units) {
     }
     attacked_area->set_owner_tribe(this);
     attacked_area->set_units_number(n_units);
+    species_description->areas_conquered(attacked_area);
     free_units_number-=n_units;
     owned_areas.push_back(attacked_area);
 }
@@ -99,5 +101,4 @@ std::string Tribe::get_power_name(){
 
 bool Tribe::is_in_decline(){
     return in_decline;
-}
 }

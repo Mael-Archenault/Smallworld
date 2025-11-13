@@ -4,7 +4,9 @@
 #include "Species_Description.h"
 #include "Power_Description.h"
 
-namespace state {
+using namespace state;
+
+const int default_attacking_units_required = 2;
 
 Area::Area(int id, int n_units, Area_Biome biome, std::vector<Area_Specialization> area_specialization)
     : id(id),
@@ -30,12 +32,7 @@ int Area::gather_free_units() {
 }
 
 int Area::get_conquest_price(Tribe& attacking_tribe) {
-
-    int price = 2 ; 
-    price = price + special_tokens.size();
-    price = price + units_number;
-    
-    return price;
+    return units_number + special_tokens.size() + default_attacking_units_required;
 }
 
     
@@ -86,6 +83,4 @@ Area_Biome Area::get_biome(){
 
 void Area::set_special_tokens(Area_Special_Token special_token){
     special_tokens.push_back(special_token);
-}
-
 }
