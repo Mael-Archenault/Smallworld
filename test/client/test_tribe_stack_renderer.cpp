@@ -7,9 +7,9 @@
 BOOST_AUTO_TEST_CASE(TestTribeStackRenderer)
 {
     state::Tribe_Stack tribe_stack;
-    renderer::Tribe_Stack_Renderer tribe_stack_renderer(tribe_stack);
-
+    
     sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");
+    renderer::Tribe_Stack_Renderer tribe_stack_renderer(window);
 
     while (window.isOpen())
     {
@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(TestTribeStackRenderer)
         }
 
         window.clear(sf::Color::Black);
-        tribe_stack_renderer.render(window);
+        tribe_stack_renderer.render(tribe_stack);
         window.display();
     }
 }

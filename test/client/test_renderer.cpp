@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(Test_Renderer)
         state::Game_State state(1);
 
         sf::RenderWindow window(sf::VideoMode(1720,820), "Renderer Test", sf::Style::Titlebar | sf::Style::Close);
-        renderer::Renderer renderer(state, window.getSize());
+        renderer::Renderer renderer(state, window);
         
         
         sf::View view = window.getDefaultView(); // store your base view
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(Test_Renderer)
             }
 
             window.clear(sf::Color::Black);
-            renderer.render(window);
+            renderer.render(state);
             window.display();
         }
     }

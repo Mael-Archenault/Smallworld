@@ -4,8 +4,8 @@
 namespace renderer {
 
   /// Constructor
-  Player_Area_Renderer::Player_Area_Renderer (state::Player& player)
-    : player(player), position(0.f, 0.f), angle(0), free_units_renderer("pawn")
+  Player_Area_Renderer::Player_Area_Renderer (sf::RenderWindow& window)
+    : window(window), position(0.f, 0.f), angle(0), free_units_renderer("pawn")
   {
     // Load font
     if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf")) {
@@ -35,7 +35,7 @@ namespace renderer {
     tribes_title.setFillColor(sf::Color::White);
   } 
 
-  void Player_Area_Renderer::render (sf::RenderWindow& window) {
+  void Player_Area_Renderer::render (state::Player& player) {
 
     sf::Vector2u window_size = window.getSize();
 

@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(TestPlayerAreaRenderer)
 
 
     sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");
-    renderer::Player_Area_Renderer player_area_renderer(player);
+    renderer::Player_Area_Renderer player_area_renderer(window);
 
     player_area_renderer.set_position(sf::Vector2f(50.f, 50.f));
 
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(TestPlayerAreaRenderer)
         }
 
         window.clear(sf::Color::Black);
-        player_area_renderer.render(window);
+        player_area_renderer.render(player);
         window.display();
     }
 

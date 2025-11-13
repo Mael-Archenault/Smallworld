@@ -7,20 +7,42 @@
 
 namespace renderer
 {
+  std::vector<std::string> special_tokens_names = {
+    "Troll Lair",
+    "Fortress",
+    "Mountain",
+    "Encampment",
+    "Hole In The Ground",
+    "Hero",
+    "Dragon"
+  };
 
-  Map_Renderer::Map_Renderer(state::Map &map, sf::Vector2u window_size) : map(map), units_renderer("pawn"), special_tokens_renderer("special_tokens"), area_specialization_renderer("area_specialization")
+  std::vector<std::string> area_specializations_names = {
+    "Mine",
+    "Magic Region",
+    "Cavern"
+  };
+
+  Map_Renderer::Map_Renderer(sf::RenderWindow& window) :window(window), units_renderer("pawn"), special_tokens_renderer("special_tokens"), area_specialization_renderer("area_specialization")
   {
-    // loading the map image
-    std::string file_path = std::string(RESOURCE_DIR) + "/maps/" + map.get_name() + "/map.png";
+    loaded_map_name = "None";
+  }
+
+
+  void Map_Renderer::load_map_resources(std::string map_name){
+    // loading the image
+    std::string file_path = std::string(RESOURCE_DIR) + "/maps/" + map_name + "/map.png";
     if (!this->texture.loadFromFile(file_path))
     {
       throw std::runtime_error("Map_Renderer constructor: Failed to load texture :" + file_path);
     }
     this->sprite.setTexture(this->texture);
 
+
     // loading the positions
-    std::string positions_file = std::string(RESOURCE_DIR) + "/maps/" + map.get_name() + "/positions.json";
+    std::string positions_file = std::string(RESOURCE_DIR) + "/maps/" + map_name + "/positions.json";
     std::ifstream file(positions_file, std::ifstream::binary);
+
     if (!file.is_open())
     {
       throw std::runtime_error("Map_Renderer constructor: Failed to open positions file: " + positions_file);
@@ -29,7 +51,7 @@ namespace renderer
     file >> root;
     file.close();
 
-    area_positions.resize(map.get_areas().size());
+    area_positions.resize(root.getMemberNames().size());
     for (const auto &area_id_str : root.getMemberNames())
     {
       int area_id = std::stoi(area_id_str);
@@ -37,10 +59,16 @@ namespace renderer
       float y = root[area_id_str][1].asFloat();
       area_positions.at(area_id) = sf::Vector2f(x, y);
     }
+    loaded_map_name = map_name;
+
   }
 
-  void Map_Renderer::render(sf::RenderWindow &window)
+  void Map_Renderer::render(state::Map& map)
   {
+
+    if (loaded_map_name != map.get_name()){
+      load_map_resources(map.get_name());
+    }
 
     sf::Vector2u window_size = window.getSize();
 
@@ -67,12 +95,7 @@ namespace renderer
         for (size_t j = 0; j < specializations.size(); j++)
         {
           area_specialization_renderer.scale(scaling_factor, scaling_factor);
-          if (specializations[j] == state::Area_Specialization::CAVERN)
-            area_specialization_renderer.set_sprite("Cavern");
-          else if (specializations[j] == state::Area_Specialization::MAGIC_REGION)
-            area_specialization_renderer.set_sprite("Magic Region");
-          else if (specializations[j] == state::Area_Specialization::MINE)
-            area_specialization_renderer.set_sprite("Mine");
+          area_specialization_renderer.set_sprite(area_specializations_names.at(specializations[j]));
           sf::Vector2f position = area_position - sf::Vector2f((area_specialization_renderer.get_sprite_width() * scaling_factor) / 2, (area_specialization_renderer.get_sprite_height() * scaling_factor) / 2);
           // rotated around the center
           position += 100.f*scaling_factor* sf::Vector2f(std::cos(j*90.f*M_PI/180.f), std::sin(j*90.f*M_PI/180.f));
@@ -80,7 +103,6 @@ namespace renderer
         }
       }
 
-      
       // special tokens
 
       std::vector<state::Area_Special_Token> tokens = areas[i].get_special_tokens();
@@ -89,20 +111,7 @@ namespace renderer
         for (size_t j = 0; j < tokens.size(); j++)
         {
           special_tokens_renderer.scale(scaling_factor, scaling_factor);
-          if (tokens[j] == state::Area_Special_Token::MOUNTAIN)
-            special_tokens_renderer.set_sprite("Mountains");
-          else if (tokens[j] == state::Area_Special_Token::TROLL_LAIR)
-            special_tokens_renderer.set_sprite("Troll_Lair");
-          else if (tokens[j] == state::Area_Special_Token::FORTRESS)
-            special_tokens_renderer.set_sprite("Fortress");
-          else if (tokens[j] == state::Area_Special_Token::ENCAMPMENT)
-            special_tokens_renderer.set_sprite("Encampment");
-          else if (tokens[j] == state::Area_Special_Token::HOLE_IN_THE_GROUND)
-            special_tokens_renderer.set_sprite("Hole In The Ground");
-            else if (tokens[j] == state::Area_Special_Token::HERO)
-            special_tokens_renderer.set_sprite("Hero");
-          else if (tokens[j] == state::Area_Special_Token::DRAGON)
-            special_tokens_renderer.set_sprite("Dragon");
+          special_tokens_renderer.set_sprite(special_tokens_names.at(tokens[j]));
 
           sf::Vector2f position = (tokens[j] == state::Area_Special_Token::MOUNTAIN) ?
             area_position - sf::Vector2f((special_tokens_renderer.get_sprite_width() * scaling_factor) / 2, (special_tokens_renderer.get_sprite_height() * scaling_factor) / 2) :
