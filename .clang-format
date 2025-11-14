@@ -1,3 +1,12 @@
 BasedOnStyle: Google
 IndentWidth: 4
 ColumnLimit: 100
+UseTab: Never
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AllowShortFunctionsOnASingleLine: Empty
+BreakBeforeBraces: Allman
+DerivePointerAlignment: false
+PointerAlignment: Left
+SpaceAfterCStyleCast: true
+SortIncludes: true

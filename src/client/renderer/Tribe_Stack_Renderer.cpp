@@ -4,16 +4,20 @@
 
 #include "resources_dir.h"
 
-namespace renderer {
+namespace renderer
+{
 
-Tribe_Stack_Renderer::Tribe_Stack_Renderer(sf::RenderWindow& window) : window(window) {
+Tribe_Stack_Renderer::Tribe_Stack_Renderer(sf::RenderWindow& window) : window(window)
+{
     // Load font
-    if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf")) {
+    if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf"))
+    {
         throw std::runtime_error("Tribe Stack Renderer: Failed to load font");
     }
 
     // Initialize Tribe_Renderers and prices
-    for (size_t i = 0; i < 6; ++i) {
+    for (size_t i = 0; i < 6; ++i)
+    {
         tribes.push_back(std::make_unique<Tribe_Renderer>());
         sf::Text price_text;
         price_text.setFont(font);
@@ -26,19 +30,24 @@ Tribe_Stack_Renderer::Tribe_Stack_Renderer(sf::RenderWindow& window) : window(wi
     set_position(sf::Vector2f(0.f, 0.f));
 }
 
-void Tribe_Stack_Renderer::set_position(sf::Vector2f pos) { position = pos; }
+void Tribe_Stack_Renderer::set_position(sf::Vector2f pos)
+{
+    position = pos;
+}
 
-void Tribe_Stack_Renderer::render(state::Tribe_Stack& tribe_stack) {
-    sf::Vector2u window_size = window.getSize();
-    std::vector<state::Tribe*> top_tribes = tribe_stack.get_tribes_on_top();
+void Tribe_Stack_Renderer::render(state::Tribe_Stack& tribe_stack)
+{
+    sf::Vector2u               window_size = window.getSize();
+    std::vector<state::Tribe*> top_tribes  = tribe_stack.get_tribes_on_top();
 
-    float section_width = window_size.x / 6;
+    float section_width  = window_size.x / 6;
     float section_height = window_size.y * 5 / 6;
 
-    float card_set_width = section_width * 3 / 4;
+    float card_set_width  = section_width * 3 / 4;
     float card_set_height = section_height / 6;
 
-    for (size_t i = 0; i < top_tribes.size(); ++i) {
+    for (size_t i = 0; i < top_tribes.size(); ++i)
+    {
         tribes[i]->set_sprite(top_tribes[i]->get_species_name(), top_tribes[i]->get_power_name(),
                               false);
         float scaling_factor = std::min(card_set_width / 500, card_set_height / 194);
