@@ -5,6 +5,12 @@
 
 #include "state.h"
 
+bool player_has_an_active_tribe(state::Game_State& state, int player_id)
+{
+    state::Player& player = state.get_current_player();
+    return player.get_tribes().first != nullptr;
+}
+
 namespace engine
 {
 
@@ -33,6 +39,14 @@ void Engine::update()
     std::unique_ptr<Command>& command = command_queue.front();
 
     // Verify if the command is valid
+
+    if (!player_has_an_active_tribe(state, command->player_id) &&
+        command->get_id() != Choose_Species_Command::id)  // all commands require an active tribe
+                                                          // (except Choose_Species)
+    {
+        command_queue.pop();
+        throw std::runtime_error("Player has no active tribe!");
+    }
     if (state.get_current_player().id != command->player_id)
     {
         command_queue.pop();
@@ -42,9 +56,7 @@ void Engine::update()
     if (phase_command_map[command->get_id()] != state.get_current_turn_phase())
     {
         command_queue.pop();
-        throw std::runtime_error("Command not allowed in the current phase : " +
-                                 std::to_string(static_cast<int>(state.get_current_turn_phase())) +
-                                 " for command id : " + std::to_string(command->get_id()));
+        throw std::runtime_error("Command not allowed in the current phase");
     }
 
     // Execute

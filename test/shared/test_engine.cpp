@@ -82,34 +82,36 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
                     }
                     if (event.key.code == sf::Keyboard::C)  // conquer
                     {
-                        int                              dice_units = 0;
-                        std::vector<std::pair<int, int>> prices =
-                            state.get_conquest_prices(state.get_current_player().id);
-                        std::vector<std::pair<int, int>> attackable_areas;
-                        for (const auto& price_info : prices)
-                        {
-                            if (price_info.second <=
-                                state.get_free_units_number(state.get_current_player().id))
-                            {
-                                attackable_areas.push_back(price_info);
-                            }
-                        }
-
-                        std::pair<int, int> area_to_attack;
-                        if (attackable_areas.size() == 0)
-                        {
-                            std::cout << "Rolling the dice" << std::endl;
-                            dice_units     = state.roll_dice_for_bonus_units();
-                            area_to_attack = prices[std::rand() % prices.size()];
-                        }
-                        else
-                        {
-                            area_to_attack =
-                                attackable_areas[std::rand() % attackable_areas.size()];
-                        }
-
                         try
                         {
+                            int dice_units = -1;
+
+                            std::vector<std::pair<int, int>> prices =
+                                state.get_conquest_prices(state.get_current_player().id);
+                            std::vector<std::pair<int, int>> attackable_areas;
+                            for (const auto& price_info : prices)
+                            {
+                                if (price_info.second <=
+                                    state.get_free_units_number(state.get_current_player().id))
+                                {
+                                    attackable_areas.push_back(price_info);
+                                }
+                            }
+
+                            std::pair<int, int> area_to_attack;
+                            if (attackable_areas.size() == 0)
+                            {
+                                dice_units     = state.roll_dice_for_bonus_units();
+                                area_to_attack = prices[std::rand() % prices.size()];
+                                std::cout
+                                    << "No more area attackable, rolled the dice : " << dice_units
+                                    << std::endl;
+                            }
+                            else
+                            {
+                                area_to_attack =
+                                    attackable_areas[std::rand() % attackable_areas.size()];
+                            }
                             engine.add_command(std::make_unique<engine::Conquer_Command>(
                                 state.get_current_player().id, area_to_attack.first,
                                 area_to_attack.second, dice_units));
@@ -136,16 +138,23 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 
                     if (event.key.code == sf::Keyboard::R)  // redeploy command
                     {
-                        int              player_id = state.get_current_player().id;
-                        std::vector<int> redeployable_areas =
-                            state.get_redeployable_areas(player_id);
-
                         try
                         {
+                            int              player_id = state.get_current_player().id;
+                            std::vector<int> redeployable_areas =
+                                state.get_redeployable_areas(player_id);
+
+                            if (redeployable_areas.empty())
+                            {
+                                throw std::runtime_error(
+                                    "No redeployable areas available for this player.");
+                            }
+
                             engine.add_command(std::make_unique<engine::Redeploy_Command>(
                                 player_id, redeployable_areas.at(0), 1));
 
                             engine.update();
+                            std::cout << "Ok" << std::endl;
                         }
                         catch (std::exception& e)
                         {

@@ -40,8 +40,7 @@ std::vector<std::pair<int, int>> Player::get_conquest_prices(Map* map)
     {
         return active_tribe->get_conquest_prices(map);
     }
-    throw std::invalid_argument(
-        "get_conquest_prices:there is no tribe_id matching for this player");
+    throw std::invalid_argument("get_conquest_prices:there is no active tribe for this player");
 }
 
 std::vector<int> Player::get_redeployable_areas()
@@ -60,7 +59,7 @@ void Player::redeploy_units(int area_id, int n_added_units)
         active_tribe->redeploy_units(area_id, n_added_units);
         return;
     }
-    throw std::invalid_argument("redeploy_unit:there is no tribe_id matching for this player");
+    throw std::invalid_argument("redeploy_units:there is no active tribe for this player");
 }
 
 void Player::conquer(Area* attacked_area, int n_units, int dice_units)
@@ -70,7 +69,7 @@ void Player::conquer(Area* attacked_area, int n_units, int dice_units)
         active_tribe->conquer(attacked_area, n_units, dice_units);
         return;
     }
-    throw std::invalid_argument("conquer:there is no tribe_id matching for this player");
+    throw std::invalid_argument("conquer:there is no active tribe for this player");
 }
 
 void Player::get_rewards()
