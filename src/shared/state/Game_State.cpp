@@ -1,5 +1,6 @@
 #include "Game_State.h"
 
+#include <iostream>
 #include <stdexcept>
 
 namespace state
@@ -52,6 +53,18 @@ std::vector<std::pair<int, int>> Game_State::get_conquest_prices(int player_id)
         }
     }
     throw std::invalid_argument("get_conquest_prices: Player id not found");
+}
+
+std::vector<int> Game_State::get_redeployable_areas(int player_id)
+{
+    for (size_t i = 0; i < players.size(); i++)
+    {
+        if (players[i].id == player_id)
+        {
+            return players[i].get_redeployable_areas();
+        }
+    }
+    throw std::invalid_argument("get_redeployable_areas: Player id not found");
 }
 
 void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_units, int dice_units)
@@ -165,6 +178,22 @@ Turn_Phase Game_State::get_current_turn_phase()
 void Game_State::set_current_turn_phase(Turn_Phase phase)
 {
     current_turn_phase = phase;
+
+    std::string phase_name;
+    if (phase == Turn_Phase::START)
+    {
+        phase_name = "START";
+    }
+    else if (phase == Turn_Phase::CONQUER)
+    {
+        phase_name = "CONQUER";
+    }
+    else if (phase == Turn_Phase::REDEPLOY)
+    {
+        phase_name = "REDEPLOY";
+    }
+
+    std::cout << "Current phase set to : " + phase_name << std::endl;
 }
 
 void Game_State::next_player()

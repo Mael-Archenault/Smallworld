@@ -23,9 +23,6 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 
         sf::View view = window.getDefaultView();  // store your base view
 
-        engine.add_command(std::make_unique<engine::Choose_Species_Command>(0, 0));
-        engine.update();
-
         while (window.isOpen())
         {
             sf::Event event;
@@ -44,18 +41,47 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 
                 if (event.type == sf::Event::KeyPressed)
                 {
-                    if (event.key.code == sf::Keyboard::Space)
+                    if (event.key.code == sf::Keyboard::Space)  // Choose species
                     {
-                        state.go_in_decline(0);
-                        state.take_tribe_at_position(0, 0);
+                        try
+                        {
+                            engine.add_command(std::make_unique<engine::Choose_Species_Command>(
+                                state.get_current_player().id, 0));
+                            engine.update();
+                        }
+                        catch (std::runtime_error e)
+                        {
+                            std::cout << e.what() << std::endl;
+                        }
                     }
-                    if (event.key.code == sf::Keyboard::N)
+                    if (event.key.code == sf::Keyboard::S)  // start conquest
                     {
-                        std::vector<std::pair<int, int>> prices = state.get_conquest_prices(0);
+                        try
+                        {
+                            engine.add_command(std::make_unique<engine::Start_Conquest_Command>(
+                                state.get_current_player().id));
+                            engine.update();
+                        }
+                        catch (std::runtime_error e)
+                        {
+                            std::cout << e.what() << std::endl;
+                        }
+                    }
+                    if (event.key.code == sf::Keyboard::D)  // decline
+                    {
+                        engine.add_command(std::make_unique<engine::Decline_Command>(
+                            state.get_current_player().id));
+                        engine.update();
+                    }
+                    if (event.key.code == sf::Keyboard::C)  // conquer
+                    {
+                        std::vector<std::pair<int, int>> prices =
+                            state.get_conquest_prices(state.get_current_player().id);
                         std::vector<std::pair<int, int>> attackable_areas;
                         for (const auto& price_info : prices)
                         {
-                            if (price_info.second <= state.get_free_units_number(0))
+                            if (price_info.second <=
+                                state.get_free_units_number(state.get_current_player().id))
                             {
                                 attackable_areas.push_back(price_info);
                             }
@@ -68,7 +94,49 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
                         // take random attackable area
                         std::pair<int, int> area_to_attack =
                             attackable_areas[std::rand() % attackable_areas.size()];
-                        state.conquer(0, area_to_attack.first, area_to_attack.second, 0);
+                        try
+                        {
+                            engine.add_command(std::make_unique<engine::Conquer_Command>(
+                                state.get_current_player().id, area_to_attack.first,
+                                area_to_attack.second, state.roll_dice_for_bonus_units()));
+                            engine.update();
+                        }
+                        catch (std::runtime_error e)
+                        {
+                            std::cout << e.what() << std::endl;
+                        }
+                    }
+                    if (event.key.code == sf::Keyboard::E)  // End conquer
+                    {
+                        try
+                        {
+                            engine.add_command(std::make_unique<engine::End_Conquer_Command>(
+                                state.get_current_player().id));
+                            engine.update();
+                        }
+                        catch (std::runtime_error e)
+                        {
+                            std::cout << e.what() << std::endl;
+                        }
+                    }
+
+                    if (event.key.code == sf::Keyboard::R)  // redeploy command
+                    {
+                        int              player_id = state.get_current_player().id;
+                        std::vector<int> redeployable_areas =
+                            state.get_redeployable_areas(player_id);
+
+                        try
+                        {
+                            engine.add_command(std::make_unique<engine::Redeploy_Command>(
+                                player_id, redeployable_areas.at(0), 1));
+
+                            engine.update();
+                        }
+                        catch (std::runtime_error e)
+                        {
+                            std::cout << e.what() << std::endl;
+                        }
                     }
                 }
             }

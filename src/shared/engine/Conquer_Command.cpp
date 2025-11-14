@@ -3,7 +3,7 @@
 
 namespace engine
 {
-const int Command::id = 1;
+const int Conquer_Command::id = 1;
 
 Conquer_Command::Conquer_Command(int attacking_player_id, int attacked_area_id, int n_units,
                                  int dice_units)
@@ -26,5 +26,10 @@ void Conquer_Command::execute(state::Game_State& state)
         state.set_current_turn_phase(state::Turn_Phase::REDEPLOY);
     }
 };
+
+int Conquer_Command::get_id()
+{
+    return id;
+}
 
 }  // namespace engine
