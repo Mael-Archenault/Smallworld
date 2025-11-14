@@ -35,11 +35,13 @@ void Engine::update()
     // Verify if the command is valid
     if (state.get_current_player().id != command->player_id)
     {
+        command_queue.pop();
         throw std::runtime_error("It's not the player's turn!");
     }
 
     if (phase_command_map[command->get_id()] != state.get_current_turn_phase())
     {
+        command_queue.pop();
         throw std::runtime_error("Command not allowed in the current phase : " +
                                  std::to_string(static_cast<int>(state.get_current_turn_phase())) +
                                  " for command id : " + std::to_string(command->get_id()));
@@ -50,6 +52,11 @@ void Engine::update()
     command->execute(state);
 
     // removing command from queue
+    command_queue.pop();
+}
+
+void Engine::remove_last_command()
+{
     command_queue.pop();
 }
 

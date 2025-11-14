@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
         state::Game_State  state(2);
         sf::RenderWindow   window(sf::VideoMode(1720, 820), "Renderer Test",
                                   sf::Style::Titlebar | sf::Style::Close);
-        renderer::Renderer renderer(state, window.getSize());
+        renderer::Renderer renderer(state, window);
 
         engine::Engine engine(state);
 
@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
                                 state.get_current_player().id, 0));
                             engine.update();
                         }
-                        catch (std::runtime_error e)
+                        catch (std::exception& e)
                         {
                             std::cout << e.what() << std::endl;
                         }
@@ -62,19 +62,27 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
                                 state.get_current_player().id));
                             engine.update();
                         }
-                        catch (std::runtime_error e)
+                        catch (std::exception& e)
                         {
                             std::cout << e.what() << std::endl;
                         }
                     }
                     if (event.key.code == sf::Keyboard::D)  // decline
                     {
-                        engine.add_command(std::make_unique<engine::Decline_Command>(
-                            state.get_current_player().id));
-                        engine.update();
+                        try
+                        {
+                            engine.add_command(std::make_unique<engine::Decline_Command>(
+                                state.get_current_player().id));
+                            engine.update();
+                        }
+                        catch (std::exception& e)
+                        {
+                            std::cout << e.what() << std::endl;
+                        }
                     }
                     if (event.key.code == sf::Keyboard::C)  // conquer
                     {
+                        int                              dice_units = 0;
                         std::vector<std::pair<int, int>> prices =
                             state.get_conquest_prices(state.get_current_player().id);
                         std::vector<std::pair<int, int>> attackable_areas;
@@ -86,22 +94,28 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
                                 attackable_areas.push_back(price_info);
                             }
                         }
+
+                        std::pair<int, int> area_to_attack;
                         if (attackable_areas.size() == 0)
                         {
-                            return;
+                            std::cout << "Rolling the dice" << std::endl;
+                            dice_units     = state.roll_dice_for_bonus_units();
+                            area_to_attack = prices[std::rand() % prices.size()];
+                        }
+                        else
+                        {
+                            area_to_attack =
+                                attackable_areas[std::rand() % attackable_areas.size()];
                         }
 
-                        // take random attackable area
-                        std::pair<int, int> area_to_attack =
-                            attackable_areas[std::rand() % attackable_areas.size()];
                         try
                         {
                             engine.add_command(std::make_unique<engine::Conquer_Command>(
                                 state.get_current_player().id, area_to_attack.first,
-                                area_to_attack.second, state.roll_dice_for_bonus_units()));
+                                area_to_attack.second, dice_units));
                             engine.update();
                         }
-                        catch (std::runtime_error e)
+                        catch (std::exception& e)
                         {
                             std::cout << e.what() << std::endl;
                         }
@@ -114,7 +128,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
                                 state.get_current_player().id));
                             engine.update();
                         }
-                        catch (std::runtime_error e)
+                        catch (std::exception& e)
                         {
                             std::cout << e.what() << std::endl;
                         }
@@ -133,7 +147,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 
                             engine.update();
                         }
-                        catch (std::runtime_error e)
+                        catch (std::exception& e)
                         {
                             std::cout << e.what() << std::endl;
                         }
@@ -142,7 +156,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
             }
 
             window.clear(sf::Color::Black);
-            renderer.render(window);
+            renderer.render(state);
             window.display();
         }
     }

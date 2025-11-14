@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "engine.h"
 #include "state.h"
 
@@ -18,12 +20,28 @@ Conquer_Command::Conquer_Command(int attacking_player_id, int attacked_area_id, 
 
 void Conquer_Command::execute(state::Game_State& state)
 {
-    state.conquer(player_id, attacked_area_id, n_units, dice_units);
-
-    // stopping the conquests if the player used the dice
-    if (dice_units != 0)
+    try
     {
-        state.set_current_turn_phase(state::Turn_Phase::REDEPLOY);
+        state.conquer(player_id, attacked_area_id, n_units, dice_units);
+    }
+
+    catch (std::exception& e)
+    {
+        if (e.what() == std::string("Not enough units to conquer the area!") && dice_units != 0)
+        {
+            std::cout
+                << "Player " << player_id
+                << " tried to conquer an area but didn't have enough units even with bonus units."
+                << std::endl;
+            // removing all bonus units
+            state.gather_free_units(player_id);
+            state.set_current_turn_phase(state::Turn_Phase::REDEPLOY);
+            return;
+        }
+        else
+        {
+            throw e;
+        }
     }
 };
 
