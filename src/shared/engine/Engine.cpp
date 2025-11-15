@@ -47,6 +47,12 @@ void Engine::update()
         command_queue.pop();
         throw std::runtime_error("Player has no active tribe!");
     }
+    if (player_has_an_active_tribe(state, command->player_id) &&
+        command->get_id() == Choose_Species_Command::id)  // Choose_Species requires no active tribe
+    {
+        command_queue.pop();
+        throw std::runtime_error("Player already has an active tribe!");
+    }
     if (state.get_current_player().id != command->player_id)
     {
         command_queue.pop();
