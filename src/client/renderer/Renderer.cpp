@@ -4,15 +4,18 @@
 
 #include <SFML/Graphics.hpp>
 
-namespace renderer {
+namespace renderer
+{
 
 Renderer::Renderer(state::Game_State& state, sf::RenderWindow& window)
     : window(window),
       map_renderer(window),
       tribe_stack_renderer(window),
-      player_area_renderer(window){};
+      player_area_renderer(window),
+      UI_renderer(window) {};
 
-void Renderer::render(state::Game_State& state) {
+void Renderer::render(state::Game_State& state)
+{
     sf::Vector2u window_size = window.getSize();
     map_renderer.render(state.get_map());
 
@@ -22,6 +25,8 @@ void Renderer::render(state::Game_State& state) {
 
     player_area_renderer.set_position(sf::Vector2f(window_size.x / 6, window_size.y * 5 / 6));
     player_area_renderer.render(state.get_current_player());
+
+    UI_renderer.render(state);
 }
 
 }  // namespace renderer
