@@ -15,8 +15,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 {
     {
         state::Game_State  state(2);
-        sf::RenderWindow   window(sf::VideoMode(1720, 820), "Renderer Test",
-                                  sf::Style::Titlebar | sf::Style::Close);
+        sf::RenderWindow   window(sf::VideoMode(1720, 820), "Renderer Test");
         renderer::Renderer renderer(state, window);
 
         engine::Engine engine(state);

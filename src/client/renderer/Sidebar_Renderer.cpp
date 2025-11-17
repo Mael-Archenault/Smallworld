@@ -1,4 +1,9 @@
+#include <json/json.h>
+
+#include <fstream>
+
 #include "renderer.h"
+#include "resources_dir.h"
 #include "state.h"
 
 namespace renderer
@@ -50,8 +55,7 @@ Sidebar_Renderer::Sidebar_Renderer(sf::RenderWindow& window) : window(window)
 
     // area info section
 
-    selected_area_id = 1;
-
+    set_selected_area_id(-1);
     int area_info_height = window.getSize().y - 6 * section_height;
     int area_info_width  = window.getSize().x / 6.f;
 
@@ -76,13 +80,37 @@ Sidebar_Renderer::Sidebar_Renderer(sf::RenderWindow& window) : window(window)
     attack_button.set_colors(sf::Color::White, sf::Color(100, 0, 0), sf::Color::White);
 }
 
-void Sidebar_Renderer::set_selected_area_id(int area_id)
-{
-    selected_area_id = area_id;
-}
-
 void Sidebar_Renderer::render(state::Game_State& state)
+
 {
+    int section_width  = window.getSize().x / 6.f;
+    int section_height = window.getSize().y / 12.f;
+
+    // player infos
+    player_title.set_position(sf::Vector2f(0.f, 0.f));
+    player_title.set_size(sf::Vector2f(section_width, section_height));
+
+    player_value.set_position(sf::Vector2f(2.f, section_height));
+    player_value.set_size(sf::Vector2f(section_width, section_height));
+
+    // turn phase infos
+    turn_phase_title.set_position(sf::Vector2f(0.f, 2 * section_height));
+    turn_phase_title.set_size(sf::Vector2f(section_width, section_height));
+
+    turn_phase_value.set_position(sf::Vector2f(2.f, 3 * section_height));
+    turn_phase_value.set_size(sf::Vector2f(section_width, section_height));
+
+    int area_info_height = window.getSize().y - 6 * section_height;
+    int area_info_width  = window.getSize().x / 6.f;
+
+    int area_info_y_offset = 5 * section_height;
+
+    area_info_title.set_position({2.f, area_info_y_offset});
+    area_info_title.set_size({area_info_width, section_height});
+
+    area_info_value.set_position({2.f, area_info_y_offset + section_height});
+    area_info_value.set_size({area_info_width - 4.f, area_info_height - section_height - 4.f});
+
     // player name
     player_title.render(window);
     turn_phase_title.render(window);
@@ -97,59 +125,61 @@ void Sidebar_Renderer::render(state::Game_State& state)
     // area info
     area_info_title.render(window);
 
-    state::Area& area = state.get_map().get_area(selected_area_id);
+    std::string area_info;
 
-    std::string area_info = "Biome: " + biome_to_string.at(area.get_biome()) + "\n";
-    area_info += "Units: " + std::to_string(area.get_units_number()) + "\n";
-    area_info += "Specializations:\n";
-    if (area.get_area_specialization().empty())
+    if (selected_area_id == -1)
     {
-        area_info += "None\n";
+        area_info = "No area selected";
     }
     else
     {
-        for (auto& spec : area.get_area_specialization())
+        state::Area& area = state.get_map().get_area(selected_area_id);
+        area_info         = "Biome: " + biome_to_string.at(area.get_biome()) + "\n";
+        area_info += "Units: " + std::to_string(area.get_units_number()) + "\n";
+        area_info += "Specializations:\n";
+        if (area.get_area_specialization().empty())
         {
-            area_info += "- " + area_specialization_to_string.at(spec) + "\n";
+            area_info += "None\n";
         }
-    }
-
-    area_info += "Special Tokens: ";
-
-    if (area.get_special_tokens().empty())
-    {
-        area_info += "None\n";
-    }
-    else
-    {
-        for (auto& token : area.get_special_tokens())
+        else
         {
-            area_info += "- " + special_token_to_string.at(token) + "\n";
+            for (auto& spec : area.get_area_specialization())
+            {
+                area_info += "- " + area_specialization_to_string.at(spec) + "\n";
+            }
         }
-    }
 
-    state::Tribe* tribe = area.get_owner_tribe();
-    if (tribe != nullptr)
-    {
-        area_info += "Owner: " + std::to_string(tribe->get_owner()->id) + "\n";
-        area_info += "Tribe: " + tribe->get_power_name() + " " + tribe->get_species_name() + "\n";
-        std::string is_in_decline = tribe->is_in_decline() ? " Yes\n" : " No\n";
-        area_info += "In decline:" + is_in_decline;
+        area_info += "Special Tokens: ";
+
+        if (area.get_special_tokens().empty())
+        {
+            area_info += "None\n";
+        }
+        else
+        {
+            for (auto& token : area.get_special_tokens())
+            {
+                area_info += "- " + special_token_to_string.at(token) + "\n";
+            }
+        }
+
+        state::Tribe* tribe = area.get_owner_tribe();
+        if (tribe != nullptr)
+        {
+            area_info += "Owner: " + std::to_string(tribe->get_owner()->id) + "\n";
+            area_info +=
+                "Tribe: " + tribe->get_power_name() + " " + tribe->get_species_name() + "\n";
+            std::string is_in_decline = tribe->is_in_decline() ? " Yes\n" : " No\n";
+            area_info += "In decline:" + is_in_decline;
+        }
     }
 
     area_info_value.set_content(area_info);
     area_info_value.render(window);
-    // state::Tribe* tribe = area.get_owner_tribe();
-    // if (tribe != nullptr)
-    // {
-    //     std::string area_info = "Unowned Area\n";
-    // }
-    // else
-    // {
-    //     std::string area_info =
-    //         "Owner:" + std::to_string(area.get_owner_tribe()->get_owner().id) + "\n";
-    //     "Tribe:" + area.get_owner_tribe()->get_power_name() + " " +
-    //         area.get_owner_tribe()->get_species_name() + "\n";
-    // }
+}
+
+void Sidebar_Renderer::set_selected_area_id(int area_id)
+{
+    selected_area_id = area_id;
 }
 }  // namespace renderer
