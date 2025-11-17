@@ -12,7 +12,10 @@ namespace state
 {
 
 Tribe::Tribe(int id, Species_Description* species_description, Power_Description* power_description)
-    : id(id), species_description(species_description), power_description(power_description)
+    : id(id),
+      species_description(species_description),
+      power_description(power_description),
+      owner(nullptr)
 {
     owned_areas       = std::vector<Area*>();
     in_decline        = false;
@@ -157,6 +160,16 @@ void Tribe::remove_from_owned_areas(Area* area)
         throw std::invalid_argument("Tribe : remove_from_owned_areas: area not owned by the tribe");
     }
     owned_areas.erase(std::find(owned_areas.begin(), owned_areas.end(), area));
+}
+
+Player* Tribe::get_owner()
+{
+    return owner;
+}
+
+void Tribe::set_owner(Player* player)
+{
+    owner = player;
 }
 
 }  // namespace state

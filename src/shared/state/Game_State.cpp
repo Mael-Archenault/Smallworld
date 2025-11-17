@@ -69,12 +69,12 @@ std::vector<int> Game_State::get_redeployable_areas(int player_id)
 
 void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_units, int dice_units)
 {
-    Area* attacked_area = map.get_area(attacked_area_id);
+    Area& attacked_area = map.get_area(attacked_area_id);
     for (size_t i = 0; i < players.size(); i++)
     {
         if (players[i].id == attacking_player_id)
         {
-            players[i].conquer(attacked_area, n_units, dice_units);
+            players[i].conquer(&attacked_area, n_units, dice_units);
             return;
         }
     }
@@ -123,6 +123,7 @@ void Game_State::take_tribe_at_position(int position, int player_id)
         if (players[i].id == player_id)
         {
             Tribe* tribe = tribe_stack.take_tribe_at_position(position);
+            tribe->set_owner(&players[i]);
             players[i].set_active_tribe(tribe);
             return;
         }

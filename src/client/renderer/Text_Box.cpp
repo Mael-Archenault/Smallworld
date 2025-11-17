@@ -6,82 +6,115 @@
 namespace renderer
 {
 
-void Text_Box::wrap_text()  // used for managing word wrap and alignment
-// generated using chatGPT with some manual adjustments
+void Text_Box::wrap_text()
 {
     float       maxWidth = box.getSize().x - 10.f;  // padding
     std::string original = text.getString();
-    std::string wrapped;
 
-    std::string       word;
-    std::stringstream ss(original);
+    // We'll only measure text using this, to avoid corrupting the real one
+    sf::Text measure(text);
 
-    // ---------- WORD WRAP ----------
-    while (ss >> word)
+    // ---------- 1. TOKENIZE PRESERVING NEWLINES ----------
+    std::vector<std::string> tokens;
+
+    std::string current;
+    for (char c : original)
     {
-        std::string testLine = wrapped;
-        if (!wrapped.empty()) testLine += " ";
-        testLine += word;
-
-        text.setString(testLine);
-
-        if (text.getLocalBounds().width > maxWidth)
+        if (c == '\n')
         {
-            if (!wrapped.empty()) wrapped += "\n";
-            wrapped += word;
+            if (!current.empty())
+            {
+                tokens.push_back(current);
+                current.clear();
+            }
+            tokens.push_back("\n");
+        }
+        else if (c == ' ')
+        {
+            if (!current.empty())
+            {
+                tokens.push_back(current);
+                current.clear();
+            }
+            tokens.push_back(" ");
         }
         else
         {
-            if (!wrapped.empty()) wrapped += " ";
-            wrapped += word;
+            current += c;
         }
     }
+    if (!current.empty()) tokens.push_back(current);
 
-    // Now "wrapped" contains the raw wrapped text with '\n'
-
-    // ---------- SPLIT INTO LINES ----------
+    // ---------- 2. BUILD WRAPPED LINES ----------
     std::vector<std::string> lines;
-    {
-        std::stringstream ls(wrapped);
-        std::string       line;
-        while (std::getline(ls, line, '\n')) lines.push_back(line);
-    }
+    std::string              line;
 
-    // ---------- ALIGN EACH LINE ----------
+    for (const auto& t : tokens)
+    {
+        if (t == "\n")
+        {
+            lines.push_back(line);
+            line.clear();
+            continue;
+        }
+
+        std::string test = line + t;
+        measure.setString(test);
+
+        bool isSpace = (t == " ");
+
+        if (measure.getLocalBounds().width > maxWidth && !line.empty())
+        {
+            // Push current line
+            lines.push_back(line);
+
+            // Start new line with t (skip leading space)
+            line = isSpace ? "" : t;
+        }
+        else
+        {
+            line = test;
+        }
+    }
+    if (!line.empty()) lines.push_back(line);
+
+    // ---------- 3. ALIGN LINES ----------
     std::string finalText;
+
     for (size_t i = 0; i < lines.size(); ++i)
     {
-        text.setString(lines[i]);
-        float lineWidth = text.getLocalBounds().width;
-        float spaceWidth;
+        const std::string& L = lines[i];
 
-        // Measure width of a single space (used for indentation)
-        text.setString(" ");
-        spaceWidth = text.getLocalBounds().width;
+        measure.setString(L);
+        float lw = measure.getLocalBounds().width;
 
-        int spacesToAdd = 0;
+        float offset = 0.f;
 
-        if (alignment == "right")
+        if (alignment == "center")
         {
-            spacesToAdd = static_cast<int>((maxWidth - lineWidth) / spaceWidth);
+            offset = (maxWidth - lw) / 2.f;
         }
-        else if (alignment == "center")
+        else if (alignment == "right")
         {
-            spacesToAdd = static_cast<int>(((maxWidth - lineWidth) / 2.f) / spaceWidth);
+            offset = (maxWidth - lw);
         }
         else
         {
-            // left alignment → no padding
-            spacesToAdd = 0;
+            offset = 0.f;  // left
         }
 
-        // Build aligned line
-        finalText += std::string(std::max(0, spacesToAdd), ' ') + lines[i];
+        // Convert pixel offset to number of spaces
+        measure.setString(" ");
+        float spaceW    = measure.getLocalBounds().width;
+        int   numSpaces = spaceW > 0 ? int(offset / spaceW) : 0;
 
+        std::string padded = std::string(std::max(0, numSpaces), ' ') + L;
+
+        finalText += padded;
         if (i < lines.size() - 1) finalText += "\n";
     }
 
-    // ---------- APPLY ----------
+    // ---------- 4. APPLY TO THE REAL TEXT ----------
     text.setString(finalText);
 }
 
