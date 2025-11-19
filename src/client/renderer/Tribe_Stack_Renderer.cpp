@@ -63,4 +63,32 @@ void Tribe_Stack_Renderer::render(state::Tribe_Stack& tribe_stack)
     }
 }
 
+std::vector<sf::Vector2f> Tribe_Stack_Renderer::get_on_screen_tribe_positions()
+{
+    sf::Vector2u window_size = window.getSize();
+
+    float section_width  = window_size.x / 6;
+    float section_height = window_size.y * 5 / 6;
+
+    float card_set_width  = section_width * 3 / 4;
+    float card_set_height = section_height / 6;
+
+    std::vector<sf::Vector2f> result(6);
+    for (size_t i = 0; i < 6; ++i)
+    {
+        result.at(i) = position + sf::Vector2f(0.0f, i * card_set_height) +
+                       sf::Vector2f(card_set_width / 2, card_set_height / 2);
+    }
+    return result;
+}
+
+sf::FloatRect Tribe_Stack_Renderer::get_layout()
+{
+    sf::Vector2u window_size = window.getSize();
+
+    float section_width  = window_size.x / 6;
+    float section_height = window_size.y * 5 / 6;
+
+    return sf::FloatRect(position, sf::Vector2f(section_width, section_height));
+}
 }  // namespace renderer

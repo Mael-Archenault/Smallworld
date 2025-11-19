@@ -157,4 +157,25 @@ void Map_Renderer::render(state::Map& map)
     }
 }
 
+sf::FloatRect Map_Renderer::get_layout()
+{
+    return this->sprite.getGlobalBounds();
+}
+
+std::vector<sf::Vector2f> Map_Renderer::get_on_screen_area_positions()
+{
+    sf::Vector2u window_size = window.getSize();
+    float scaling_factor = std::min(((float) window_size.x * 5) / (6 * this->texture.getSize().x),
+                                    ((float) window_size.y * 5) / (6 * this->texture.getSize().y));
+    sf::Vector2f map_position =
+        sf::Vector2f(((float) window_size.x - this->sprite.getGlobalBounds().width) / 2, 0.f);
+
+    std::vector<sf::Vector2f> result(area_positions.size());
+    for (size_t i = 0; i < area_positions.size(); i++)
+    {
+        result.at(i) = map_position + area_positions.at(i) * scaling_factor;
+    }
+    return result;
+}
+
 };  // namespace renderer
