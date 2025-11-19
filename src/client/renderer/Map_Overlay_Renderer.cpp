@@ -18,19 +18,6 @@ Map_Overlay_Renderer::Map_Overlay_Renderer(sf::RenderWindow& window) : window(wi
 void Map_Overlay_Renderer::set_selected_area_id(int area_id)
 {
     selected_area_id = area_id;
-
-    if (selected_area_id == -1)
-    {  // no area selected
-        return;
-    }
-
-    if (!selected_area_border_texture.loadFromFile(std::string(RESOURCE_DIR) + "/maps/" +
-                                                   loaded_map_name + "/borders/" +
-                                                   std::to_string(selected_area_id) + ".png"))
-    {
-        throw std::runtime_error("Map_Overlay_Renderer: Failed to load border for selected area");
-    }
-    selected_area_border_sprite.setTexture(selected_area_border_texture);
 }
 
 void Map_Overlay_Renderer::load_map_positions(std::string map_name)
@@ -55,14 +42,78 @@ void Map_Overlay_Renderer::load_map_positions(std::string map_name)
         float y                    = root[area_id_str][1].asFloat();
         area_positions.at(area_id) = sf::Vector2f(x, y);
     }
-    loaded_map_name = map_name;
 }
 
+void Map_Overlay_Renderer::load_map_borders(state::Map& map)
+{
+    int n_areas = map.get_areas().size();
+    border_textures.resize(n_areas);
+
+    for (int area_id = 0; area_id < n_areas; ++area_id)
+    {
+        if (!border_textures.at(area_id).loadFromFile(std::string(RESOURCE_DIR) + "/maps/" +
+                                                      map.get_name() + "/borders/" +
+                                                      std::to_string(area_id) + ".png"))
+        {
+            throw std::runtime_error("Map_Overlay_Renderer: Failed to load border for area :" +
+                                     std::to_string(area_id));
+        }
+
+        border_sprites.emplace_back();
+        border_sprites.at(area_id).setTexture(border_textures.at(area_id));
+    }
+}
 void Map_Overlay_Renderer::render(state::Game_State& state)
 {
     if (state.get_map().get_name() != loaded_map_name)
     {
         load_map_positions(state.get_map().get_name());
+        load_map_borders(state.get_map());
+        loaded_map_name = state.get_map().get_name();
+    }
+
+    float scaling_factor =
+        std::min(((float) window.getSize().x * 5) / (6 * border_textures.at(0).getSize().x),
+                 ((float) window.getSize().y * 5) / (6 * border_textures.at(0).getSize().y));
+
+    if (state.get_current_turn_phase() == state::Turn_Phase::CONQUER)
+    {
+        std::vector<std::pair<int, int>> conquest_prices =
+            state.get_conquest_prices(state.get_current_player().id);
+
+        for (auto& price_pair : conquest_prices)
+        {
+            int area_id = price_pair.first;
+
+            sf::Color border_color =
+                (price_pair.second <= state.get_free_units_number(state.get_current_player().id))
+                    ? sf::Color(0, 255, 0)
+                    : sf::Color(255, 255, 0);
+            border_sprites.at(area_id).setColor(border_color);
+            border_sprites.at(area_id).setScale(scaling_factor, scaling_factor);
+            border_sprites.at(area_id).setPosition(sf::Vector2f(
+                ((float) window.getSize().x - border_sprites.at(area_id).getGlobalBounds().width) /
+                    2,
+                0.f));
+            window.draw(border_sprites.at(area_id));
+        }
+    }
+
+    if (state.get_current_turn_phase() == state::Turn_Phase::REDEPLOY)
+    {
+        std::vector<int> redeployable_areas = state.get_current_player().get_redeployable_areas();
+
+        for (auto& area_id : redeployable_areas)
+        {
+            sf::Color border_color = sf::Color(0, 0, 255);
+            border_sprites.at(area_id).setColor(border_color);
+            border_sprites.at(area_id).setScale(scaling_factor, scaling_factor);
+            border_sprites.at(area_id).setPosition(sf::Vector2f(
+                ((float) window.getSize().x - border_sprites.at(area_id).getGlobalBounds().width) /
+                    2,
+                0.f));
+            window.draw(border_sprites.at(area_id));
+        }
     }
 
     if (selected_area_id == -1)
@@ -70,15 +121,13 @@ void Map_Overlay_Renderer::render(state::Game_State& state)
         return;
     }
 
-    float scaling_factor =
-        std::min(((float) window.getSize().x * 5) / (6 * selected_area_border_texture.getSize().x),
-                 ((float) window.getSize().y * 5) / (6 * selected_area_border_texture.getSize().y));
-
-    selected_area_border_sprite.setColor(sf::Color(255, 0, 0));
-    selected_area_border_sprite.setScale(scaling_factor, scaling_factor);
-    selected_area_border_sprite.setPosition(sf::Vector2f(
-        ((float) window.getSize().x - selected_area_border_sprite.getGlobalBounds().width) / 2,
-        0.f));
-    window.draw(selected_area_border_sprite);
+    border_sprites.at(selected_area_id).setColor(sf::Color(255, 0, 0));
+    border_sprites.at(selected_area_id).setScale(scaling_factor, scaling_factor);
+    border_sprites.at(selected_area_id)
+        .setPosition(sf::Vector2f(((float) window.getSize().x -
+                                   border_sprites.at(selected_area_id).getGlobalBounds().width) /
+                                      2,
+                                  0.f));
+    window.draw(border_sprites.at(selected_area_id));
 }
 }  // namespace renderer
