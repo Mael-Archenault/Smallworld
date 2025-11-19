@@ -22,6 +22,8 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 
         sf::View view = window.getDefaultView();  // store your base view
 
+        int selected_area = -1;
+
         while (window.isOpen())
         {
             sf::Event event;
@@ -159,6 +161,12 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
                         {
                             std::cout << e.what() << std::endl;
                         }
+                    }
+
+                    if (event.key.code == sf::Keyboard::N)
+                    {
+                        renderer.set_selected_area(selected_area);
+                        selected_area = (selected_area + 1) % state.get_map().get_areas().size();
                     }
                 }
             }

@@ -29,4 +29,9 @@ void Renderer::render(state::Game_State& state)
     UI_renderer.render(state);
 }
 
+void Renderer::set_selected_area(int area_id)
+{
+    UI_renderer.set_selected_area(area_id);
+}
+
 }  // namespace renderer
