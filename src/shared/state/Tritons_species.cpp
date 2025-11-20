@@ -2,8 +2,9 @@
 #include "Area.h"
 #include "Tribe.h"
 
+
 namespace state {
-    Tritons_Species::Tritons_Species():Species_Description("Tritons",6,8,Effects_Bundle()){}
+    Tritons_Species::Tritons_Species():Species_Description("Tritons",6,8){}
 
     void Tritons_Species::apply_conquest_effect(Area* area) {
     if (!area) return;

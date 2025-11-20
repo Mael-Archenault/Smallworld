@@ -1,15 +1,13 @@
-//
-// Created by vboxuser on 10/17/25.
-//
 
 #include "Area.h"
 #include "Tribe.h"
 #include "Giants_Species.h"
+
 #include <algorithm>
 
 namespace state {
 
-Giants_Species::Giants_Species():Species_Description("Giants",6,8,Effects_Bundle()){}
+Giants_Species::Giants_Species():Species_Description("Giants",6,8){}
 
 
 void Giants_Species::apply_conquest_effect(Area* area) {
