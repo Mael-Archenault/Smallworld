@@ -1,14 +1,15 @@
 #include "Tribe.h"
-#include "Effects_Bundle.h"
-#include "Species_Description.h"
-#include "Power_Description.h"
-#include "Area_Biome.h"
-#include "Game_State.h"
-#include "Map.h"
 
 #include <algorithm>
 #include <stdexcept>
 #include <unordered_set>
+
+#include "Area_Biome.h"
+#include "Effects_Bundle.h"
+#include "Game_State.h"
+#include "Map.h"
+#include "Power_Description.h"
+#include "Species_Description.h"
 
 using namespace state;
 
@@ -24,7 +25,8 @@ Tribe::Tribe(int id, Species_Description* species_description, Power_Description
                         power_description->get_initial_units_number();
 }
 
-Species_Description* Tribe::get_species_description() {
+Species_Description* Tribe::get_species_description()
+{
     return species_description;
 }
 
@@ -40,7 +42,8 @@ void Tribe::gather_free_units()
         // Remove all units except one from each area and add them to free_units_number
         free_units_number += owned_areas[i]->gather_free_units();
     }
-    free_units_number += species_description->add_free_units(free_units_number+owned_areas.size());
+    free_units_number +=
+        species_description->add_free_units(free_units_number + owned_areas.size());
 }
 
 int Tribe::get_free_units_number()
@@ -122,7 +125,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
     attacked_area->set_owner_tribe(this);
     attacked_area->set_units_number(n_units);
     species_description->areas_conquered(attacked_area);
-    free_units_number-=n_units;
+    free_units_number -= n_units;
     owned_areas.push_back(attacked_area);
 }
 
@@ -130,8 +133,10 @@ void Tribe::go_in_decline()
 {
     in_decline = true;
 }
-int Tribe::get_rewards(){
-    int reward = owned_areas.size() + species_description->get_bonus_rewards(owned_areas) + power_description->get_bonus_rewards(owned_areas);
+int Tribe::get_rewards()
+{
+    int reward = owned_areas.size() + species_description->get_bonus_rewards(owned_areas) +
+                 power_description->get_bonus_rewards(owned_areas);
     return reward;
 }
 
