@@ -109,7 +109,7 @@
         <dia:real val="46.899872555220355"/>
       </dia:attribute>
       <dia:attribute name="name">
-        <dia:string>#ia#</dia:string>
+        <dia:string>#ai#</dia:string>
       </dia:attribute>
       <dia:attribute name="stereotype">
         <dia:string>##</dia:string>
