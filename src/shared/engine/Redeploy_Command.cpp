@@ -26,7 +26,6 @@ void Redeploy_Command::execute(state::Game_State& state)
     if (state.get_free_units_number(player_id) == 0)
     {
         state.get_rewards(player_id);
-        state.next_player();
         state.set_current_turn_phase(state::Turn_Phase::START);
         std::cout << "Finishing turn" << std::endl;
         std::cout << "Current player id : " + std::to_string(state.get_current_player().id)

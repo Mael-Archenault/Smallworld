@@ -11,7 +11,6 @@ void Decline_Command::execute(state::Game_State& state)
 {
     state.go_in_decline(player_id);
     state.get_rewards(player_id);
-    state.next_player();
     state.set_current_turn_phase(state::Turn_Phase::START);
 };
 

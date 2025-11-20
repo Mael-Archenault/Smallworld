@@ -124,7 +124,7 @@ void Game_State::take_tribe_at_position(int position, int player_id)
         {
             Tribe* tribe = tribe_stack.take_tribe_at_position(position);
             tribe->set_owner(&players[i]);
-            players[i].set_active_tribe(tribe);
+            players[i].set_active_tribe(tribe, position);
             return;
         }
     }
@@ -195,12 +195,5 @@ void Game_State::set_current_turn_phase(Turn_Phase phase)
     }
 
     std::cout << "Current phase set to : " + phase_name << std::endl;
-}
-
-void Game_State::next_player()
-{
-    int current_index = current_player->id;
-    int next_index    = (current_index + 1) % n_players;
-    current_player    = &players.at(next_index);
 }
 }  // namespace state
