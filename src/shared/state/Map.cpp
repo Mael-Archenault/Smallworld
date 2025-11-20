@@ -5,11 +5,22 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <unordered_map>
 
 #include "resources_dir.h"
 
 namespace state
 {
+
+std::unordered_map<std::string, Area_Biome> str_to_biome = {
+    {"Hill", Area_Biome::HILL},     {"Mountains", Area_Biome::MOUNTAINS},
+    {"Forest", Area_Biome::FOREST}, {"Swamp", Area_Biome::SWAMP},
+    {"Farm", Area_Biome::FARM},     {"Water", Area_Biome::WATER}};
+
+std::unordered_map<std::string, Area_Specialization> str_to_specialization = {
+    {"Magic Region", Area_Specialization::MAGIC_REGION},
+    {"Cavern", Area_Specialization::CAVERN},
+    {"Mine", Area_Specialization::MINE}};
 
 Map::Map(std::string name) : name(name)
 {
@@ -37,78 +48,51 @@ void Map::load_from_json(std::string file_name)
     file >> root;
     file.close();
 
-    const Json::Value& biomes  = root["biomes"];
-    const Json::Value& specs   = root["specializations"];
-    const Json::Value& units   = root["units"];
-    const Json::Value& rels    = root["relations"];
-    const Json::Value& borders = root["borders"];
+    // pre-preparing the ids
+    std::vector<int> ids;
+    ids.reserve(root.getMemberNames().size());
+    for (const auto& s : root.getMemberNames()) ids.push_back(std::stoi(s));
+    if (ids.empty()) return;
+    int max_id = *std::max_element(ids.begin(), ids.end());
 
+    // resetting current values
     this->areas.clear();
-    this->areas.reserve(biomes.size());
     this->area_connections.clear();
-    this->area_connections.reserve(biomes.size());
-    std::vector<std::pair<int, std::string>> id_keys;
-    for (const auto& key : biomes.getMemberNames())
+
+    // create each area in ids order
+    for (int id = 0; id <= max_id; ++id)
     {
-        id_keys.emplace_back(std::stoi(key), key);
-    }
-
-    std::sort(id_keys.begin(), id_keys.end(),
-              [](const auto& a, const auto& b) { return a.first < b.first; });
-
-    for (const auto& ik : id_keys)
-    {
-        int                id  = ik.first;
-        const std::string& key = ik.second;
-
-        // biome
-        std::string biome_str = biomes[key][0].asString();
-        Area_Biome  biome;
-        if (biome_str == "Hill")
-            biome = Area_Biome::HILL;
-        else if (biome_str == "Mountains")
-            biome = Area_Biome::MOUNTAINS;
-        else if (biome_str == "Forest")
-            biome = Area_Biome::FOREST;
-        else if (biome_str == "Swamp")
-            biome = Area_Biome::SWAMP;
-        else if (biome_str == "Farm")
-            biome = Area_Biome::FARM;
-        else if (biome_str == "Water")
-            biome = Area_Biome::WATER;
-        else
-            throw std::runtime_error("Unknown biome type: " + biome_str);
-
-        // specializations
-        std::vector<Area_Specialization> specializations;
-        for (const auto& s : specs[key])
+        const std::string sid = std::to_string(id);
+        if (!root.isMember(sid))
         {
-            std::string s_str = s.asString();
-            if (s_str == "Magic Region")
-                specializations.push_back(Area_Specialization::MAGIC_REGION);
-            else if (s_str == "Cavern")
-                specializations.push_back(Area_Specialization::CAVERN);
-            else if (s_str == "Mine")
-                specializations.push_back(Area_Specialization::MINE);
-            else
-                throw std::runtime_error("Unknown specialization type: " + s_str);
+            throw std::runtime_error("Missing area id in json: " + sid);
         }
 
-        // unit count
-        int unit_count = units[key].asInt();
+        Json::Value area_infos = root[sid];
 
-        // is_border
-        bool is_border = borders[key].asBool();
+        Area_Biome                       biome = str_to_biome[area_infos["biome"].asString()];
+        std::vector<Area_Specialization> specializations;
+        for (auto s : area_infos["specializations"])
+        {
+            specializations.push_back(str_to_specialization[s.asString()]);
+        }
+        int  unit_count = area_infos["units"].asInt();
+        bool is_border  = area_infos["borders"].asBool();
 
-        // create the area in-place (avoids using deleted assignment)
+        // emplace area so its position in the vector matches its id
         this->areas.emplace_back(id, unit_count, biome, specializations, is_border);
+    }
 
-        // relations (neighbors)
-        std::vector<int> connections;
-        for (const auto& neighbor_id_val : rels[key])
+    // setting areas relations
+    for (int id = 0; id <= max_id; ++id)
+    {
+        const std::string sid       = std::to_string(id);
+        Json::Value       relations = root[sid]["relations"];
+        std::vector<int>  connections;
+        for (const auto& neighbor_id_val : relations)
         {
             int neighbor_id = neighbor_id_val.asInt();
-            this->areas.back().add_neighbor(&this->areas[neighbor_id]);
+            areas.at(id).add_neighbor(&areas.at(neighbor_id));
             connections.push_back(neighbor_id);
         }
         this->area_connections.push_back(connections);
