@@ -3,7 +3,9 @@
 
 using namespace state;
 
-Skeletons_Species::Skeletons_Species(): Species_Description("Skeletons",6,20){}
+Skeletons_Species::Skeletons_Species(): Species_Description("Skeletons",6,20){
+    non_empty_areas_conquered = 0;
+}
 
 int Skeletons_Species::add_free_units(int current_units_number){
     int additional_free_units = non_empty_areas_conquered/2;
