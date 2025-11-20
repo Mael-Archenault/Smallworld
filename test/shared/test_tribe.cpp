@@ -1,34 +1,17 @@
-//
-// Created by vboxuser on 10/10/25.
-//
-
+#include <boost/test/unit_test.hpp>
 #include <iostream>
-
-#include "state/Tribe.h"
-using namespace state;
+#include "state.h"
 
 
-class test_Tribe : public Tribe {
+class Tribe_Observer : public state::Tribe {
 public:
-    test_Tribe(int id, Species_Description* species_description, Power_Description* power_description, std::vector<Area*> owned_areas) : Tribe(id, species_description, power_description) {
-        this->owned_areas = owned_areas;
+    Tribe_Observer(int id, state::Species_Description* species_description, state::Power_Description* power_description): Tribe(id, species_description, power_description) {};
+    std::vector<state::Area*> get_owned_areas() {
+        return owned_areas;
     }
 
-    int test_gather_free_units() {
-        gather_free_units();
-        return free_units_number;
-    }
-    std::vector<std::pair<int, int>> test_get_conquest_prices() {
-        return get_conquest_prices();
-    }
 };
 
-
-
-
-#include <boost/test/unit_test.hpp>
-
-#include <state.h>
 
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
@@ -36,93 +19,68 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
     BOOST_CHECK(1);
 }
 
-BOOST_AUTO_TEST_CASE(TestExemple)
+
+BOOST_AUTO_TEST_CASE(Tribe_Test)
 {
-    Effects_Bundle species_effect = Dwarf_Effects_Bundle();
-    Species_Description * species_description = new Species_Description("test_Species",5,10,species_effect);
-    Effects_Bundle power_effect = (Effects_Bundle) Dwarf_Effects_Bundle();
-    Power_Description * power_description = new Power_Description("test_Power",4,power_effect);
 
-    std::vector<Area*> owned_areas;
-    Area * area1 = new Area(0,3, Area_Biome::HILL,{});
-    Area * area2 = new Area(1,1, Area_Biome::HILL,{});
+    // Initialization
+    state::Effects_Bundle species_effect = state::Dwarf_Effects_Bundle();
+    state::Species_Description* species_description = new state::Species_Description("test_Species",5,10,species_effect);
+    state::Effects_Bundle power_effect = state::Dwarf_Effects_Bundle();
+    state::Power_Description* power_description = new state::Power_Description("test_Power",4,power_effect);
 
-    test_Tribe test_tribe = test_Tribe(0,species_description,power_description, owned_areas);
+    Tribe_Observer tribe(0,species_description,power_description);
 
-    BOOST_CHECK_EQUAL(test_tribe.get_species_description(),species_description);
-    BOOST_CHECK_EQUAL(test_tribe.get_power_description(),power_description);
+    std::vector<state::Area*> areas;
+    areas.emplace_back(new state::Area(0,3, state::Area_Biome::HILL,{}, false));
+    areas.emplace_back(new state::Area(1,2, state::Area_Biome::FOREST,{}, false));
+    areas.at(0)->add_neighbor(areas.at(1));
+    areas.at(1)->add_neighbor(areas.at(0));
 
-
-
-    test_tribe.conquer(area1,5,0);
-    BOOST_CHECK_THROW(test_tribe.conquer(area2,1,0),std::invalid_argument);
-    BOOST_CHECK_THROW(test_tribe.conquer(area2,10,0),std::invalid_argument);
-
-
-    test_tribe.conquer(area2,3,0);
-    BOOST_CHECK_EQUAL(test_tribe.get_free_units_number(),1);
-
-     std::vector<std::vector<int>> conquest_prices = {};
-     conquest_prices.emplace_back();
-     conquest_prices.back().push_back(0);conquest_prices.back().push_back(7);
-     conquest_prices.emplace_back();
-     conquest_prices.back().push_back(1);conquest_prices.back().push_back(5);
-
-    Area * area1_1 = new Area(2,1,state::MOUNTAINS,{});
-    area1->add_neighbor(area1_1);
-    area1->add_neighbor(area2);
+    // Initialization testing
+    BOOST_CHECK_EQUAL(tribe.get_species_description(),species_description);
+    BOOST_CHECK_EQUAL(tribe.get_power_description(),power_description);
+    BOOST_CHECK_EQUAL(tribe.get_free_units_number(),9);
+    BOOST_CHECK_EQUAL(tribe.is_in_decline(),false);
+    BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(),0);
 
 
-    auto conquest_prices_calculated = test_tribe.get_conquest_prices();
-    //
-    // BOOST_CHECK_EQUAL(conquest_prices.at(0).at(0),conquest_prices_calculated.at(0).at(0));
-    // BOOST_CHECK_EQUAL(conquest_prices.at(0).at(1),conquest_prices_calculated.at(0).at(1));
-    // BOOST_TEST(conquest_prices_calculated.at(0)==conquest_prices.at(0),boost::test_tools::per_element());
+    BOOST_CHECK_THROW(tribe.remove_from_owned_areas(areas[0]),std::invalid_argument);
+
+    tribe.conquer(areas.at(0), 5, 0);
+
+    BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(), 1);
+    BOOST_CHECK_EQUAL(tribe.get_owned_areas().at(0)->id, 0);
+    BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 4);
 
 
-    test_tribe.gather_free_units();
-    BOOST_CHECK_EQUAL(test_tribe.get_free_units_number(),7);
+    BOOST_CHECK_THROW(tribe.conquer(areas.at(1),1,0),std::invalid_argument);
+    BOOST_CHECK_THROW(tribe.conquer(areas.at(1),10,0),std::invalid_argument);
 
-    test_tribe.redeploy_units(0,4);
-    BOOST_CHECK_THROW(test_tribe.redeploy_units(1,4),std::invalid_argument);
-    BOOST_CHECK_EQUAL(test_tribe.get_free_units_number(),3);
+
+    std::vector<std::pair<int,int>> price_infos = tribe.get_conquest_prices(nullptr);
+
+    BOOST_CHECK_EQUAL(price_infos.size(), 1);
+    BOOST_CHECK_EQUAL(price_infos.at(0).first, 1);
+    BOOST_CHECK_EQUAL(price_infos.at(0).second, 4);
+    
+    tribe.gather_free_units();
+    BOOST_CHECK_EQUAL(tribe.get_free_units_number(),8);
+
+    tribe.redeploy_units(0,7);
+    BOOST_CHECK_THROW(tribe.redeploy_units(0,2),std::invalid_argument);
+    BOOST_CHECK_THROW(tribe.redeploy_units(100,0),std::invalid_argument);
+    BOOST_CHECK_EQUAL(tribe.get_free_units_number(),1);
+
+    BOOST_CHECK_EQUAL(tribe.get_rewards(), 0);
+
+    BOOST_CHECK_EQUAL(tribe.get_species_name(), "test_Species");
+    BOOST_CHECK_EQUAL(tribe.get_power_name(), "test_Power");
+
+    tribe.go_in_decline();
+    BOOST_CHECK_EQUAL(tribe.is_in_decline(), true);
+    tribe.remove_from_map();
+    BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(), 0);
+
 
 }
-
-/*
-int main() {
-    bool test_result = true ;
-
-    //Scenario 1
-    Effects_Bundle species_effect = Effects_Bundle();
-    Species_Description * species_description = new Species_Description("test_Species",5,10,species_effect);
-    Effects_Bundle power_effect = Effects_Bundle();
-    Power_Description * power_description = new Power_Description("test_Power",4,power_effect);
-
-    std::vector<Area*> owned_areas;
-    Area * area1 = new Area();
-    Area * area2 = new Area();
-    owned_areas.push_back(area1); owned_areas.push_back(area2);
-    test_Tribe test_tribe = test_Tribe(species_description,power_description, owned_areas);
-
-    if (test_tribe.test_gather_free_units() != 1) {
-        test_result = false;
-    }
-
-    std::vector<std::vector<int>> conquest_prices = test_tribe.test_get_conquest_prices();
-    for (std::vector<int> i : conquest_prices) {
-        //TODO test each conquest price against Area.get_conquest_price. (need to call map with area id)
-    }
-
-
-
-
-
-
-    if (test_result == true) {
-        std::cout << "Tribe tests were successful !";
-        return 0;
-    }
-        std::cout << "Tribe tests failed !";
-        return 1;
-}*/

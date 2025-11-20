@@ -2,14 +2,6 @@
 
 #include <state.h>
 
-class Player_Observer : public state::Player
-{
-public:
-  Player_Observer(int id) : state::Player(id){};
-
-  int get_money() { return money; }
-  std::vector<state::Tribe*> get_tribes() { return tribes; }
-};
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
 {
@@ -31,40 +23,43 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
         new state::Species_Description("TestSpecies", 5, 10, state::Effects_Bundle()),
         new state::Power_Description("TestPower", 3, state::Effects_Bundle())
     );
-    static state::Area area(0,1,state::Area_Biome::HILL, std::vector<state::Area_Specialization>());
-    Player_Observer observer(0);
+    static state::Area area(0,1,state::Area_Biome::HILL, std::vector<state::Area_Specialization>(), false);
+    state::Player player(0);
 
     // testing initialization
-    BOOST_CHECK_EQUAL(observer.get_money(), 0);
-    BOOST_CHECK_EQUAL(observer.get_tribes().size(), 0);
-    BOOST_CHECK_EQUAL(observer.id, 0);
+    BOOST_CHECK_EQUAL(player.get_money(), 0);
+    BOOST_CHECK_EQUAL(player.id, 0);
+    BOOST_CHECK_EQUAL(player.get_tribes().first, nullptr);
+    BOOST_CHECK_EQUAL(player.get_tribes().second, nullptr);
     
     // errors testing
-    observer.go_in_decline(); // trying to go in decline without any tribe
-    BOOST_CHECK_THROW(observer.get_free_units_number(100), std::invalid_argument);
+    player.go_in_decline(); // trying to go in decline without any tribe
+    BOOST_CHECK_THROW(player.get_free_units_number(), std::invalid_argument);
     
-    BOOST_CHECK_THROW(observer.gather_free_units(100), std::invalid_argument);
+    BOOST_CHECK_THROW(player.gather_free_units(), std::invalid_argument);
     
-    BOOST_CHECK_THROW(observer.get_conquest_prices(100), std::invalid_argument);
-    BOOST_CHECK_THROW(observer.redeploy_units(100, 0,10), std::invalid_argument);
-    BOOST_CHECK_THROW(observer.conquer(100, &area, 5, 2), std::invalid_argument);
+    BOOST_CHECK_THROW(player.get_conquest_prices(nullptr), std::invalid_argument);
+    BOOST_CHECK_THROW(player.redeploy_units(0,10), std::invalid_argument);
+    BOOST_CHECK_THROW(player.conquer(&area, 5, 2), std::invalid_argument);
 
 
     // methods testing
-    observer.set_active_tribe(tribe0); 
-    BOOST_CHECK_EQUAL(observer.get_tribes().size(),1);
-    observer.go_in_decline();
+    player.set_active_tribe(tribe0);
+    BOOST_CHECK_EQUAL(player.get_tribes().first, tribe0);
+    BOOST_CHECK_EQUAL(player.get_tribes().second, nullptr);
+    player.go_in_decline();
     
-    observer.set_active_tribe(tribe1);
-    BOOST_CHECK_EQUAL(observer.get_tribes().size(),2);
+    player.set_active_tribe(tribe1);
+    BOOST_CHECK_EQUAL(player.get_tribes().first, tribe1);
+    BOOST_CHECK_EQUAL(player.get_tribes().second, tribe0);
 
-    BOOST_CHECK_EQUAL(observer.get_free_units_number(1), 8);
-    observer.gather_free_units(1);
-    BOOST_CHECK_EQUAL(observer.get_conquest_prices(1).size(), 0);
-    observer.redeploy_units(1, 0, 5);
-    observer.conquer(1, &area, 3,0);
-    observer.get_rewards();
-    BOOST_CHECK_EQUAL(observer.get_money(), 0);
+    BOOST_CHECK_EQUAL(player.get_free_units_number(), 8);
+    player.gather_free_units();
+    player.conquer(&area, 3,0);
+    BOOST_CHECK_EQUAL(player.get_conquest_prices(nullptr).size(), 0);
+    player.redeploy_units(0, 5);
+    player.get_rewards();
+    BOOST_CHECK_EQUAL(player.get_money(), 0);
   }
 
 }

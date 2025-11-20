@@ -29,18 +29,20 @@ BOOST_AUTO_TEST_CASE(TestSpeciesDescription)
     // testing initialization
 
     state::Dwarf_Effects_Bundle bundle = state::Dwarf_Effects_Bundle();
-    Species_Description_Observer observer("TestSpecies", 5, 10, (state::Effects_Bundle)bundle);
-    BOOST_CHECK_EQUAL(observer.get_name(), "TestSpecies");
-    BOOST_CHECK_EQUAL(observer.get_given_units_number(), 5);
-    BOOST_CHECK_EQUAL(observer.get_max_units_number(), 10);
+    Species_Description_Observer species_description("TestSpecies", 5, 10, (state::Effects_Bundle)bundle);
+    BOOST_CHECK_EQUAL(species_description.get_name(), "TestSpecies");
+    BOOST_CHECK_EQUAL(species_description.get_given_units_number(), 5);
+    BOOST_CHECK_EQUAL(species_description.get_max_units_number(), 10);
 
     // testing methods
 
-    BOOST_CHECK_EQUAL(observer.get_initial_units_number(), 5);
+    BOOST_CHECK_EQUAL(species_description.get_initial_units_number(), 5);
     std::vector<state::Area_Specialization> area_specs;
-    state::Area area(0,10, state::Area_Biome::HILL, area_specs);
+    state::Area area(0,10, state::Area_Biome::HILL, area_specs, false);
     // bonus reward not implemented yet so it should return 0
-    BOOST_CHECK_EQUAL(observer.get_bonus_rewards(area), 0);
+    BOOST_CHECK_EQUAL(species_description.get_bonus_rewards(area), 0);
+
+    BOOST_CHECK_EQUAL(species_description.get_name(), "TestSpecies");
   }
 
   {

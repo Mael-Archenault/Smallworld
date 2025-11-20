@@ -1,3 +1,10 @@
+---
+header-includes:
+  - \usepackage{float}
+  - \let\origfigure\figure
+  - \let\endorigfigure\endfigure
+  - \renewenvironment{figure}[1][]{\origfigure[H]}{\endorigfigure}
+---
 
 
 # Projet Logiciel Transversal: SmallWorld
@@ -191,12 +198,8 @@ Ce moteur de rendu afficher les 6 tribus de la pioche auquel le joueur a accès.
 Cette classe est responsable du rendu global du jeu. Elle utilise les différentes classes de rendu pour afficher l'état actuel du jeu.
 
 
-### 3.3 Conception logicielle: extension pour les animations
 
-Pas d'animations implémentées.
-
-
-### 3.4 Ressources
+### 3.3 Ressources
 
 L'ensemble des ressources est stockée sous forme de spritesheet. Les classe s'occupent ensuite de d'afficher seulement une partie rognée de la spritesheet. Pour cela, elles s'aident de fichier nommes "indexing" qui leur indiquent où trouver chaque sprite dans la spritesheet.
 
@@ -228,7 +231,7 @@ Exemple de fichier de type "indexing"
 }
 ```
 
-### 3.5 Exemple de rendu
+### 3.4 Exemple de rendu
 
 A l'aide de la classe Renderer, il est possible de rendre l'état complet du jeu.
 
@@ -237,25 +240,62 @@ A l'aide de la classe Renderer, il est possible de rendre l'état complet du jeu
 
 ![Diagramme de classes du module de rendu](./img/renderer.png)
 
-<!-- ## 4 Règles de changement d'états et moteur de jeu
-Dans cette section, il faut présenter les événements qui peuvent faire passer d'un état à un autre. Il faut également décrire les aspects liés au temps, comme la chronologie des événements et les aspects de synchronisation. Une fois ceci présenté, on propose une conception logicielle pour pouvoir mettre en œuvre ces règles, autrement dit le moteur de jeu.
+## 4 Règles de changement d'états et moteur de jeu
 
-### 4.1 Horloge globale
+### Vue d'ensemble
 
-### 4.2 Changements extérieurs
+Le moteur de jeu (« Engine ») est la couche responsable de l'exécution des actions des joueurs sur l'état de la partie (`state::Game_State`). Il ne contient pas la logique métier des règles (qui reste dans `Game_State`, `Area`, `Player`, etc.), mais orchestre l'application ordonnée des commandes produites par l'interface joueur, l'IA ou les tests.
 
-### 4.3 Changements autonomes
+Principales responsabilités :
+- recevoir et mettre en file (FIFO) des commandes via `add_command()` ;
+- valider la légitimité d'une commande par rapport à l'état courant (joueur courant, phase de tour, présence d'une tribu active, ...);
+- exécuter la commande en appelant `command->execute(state)` ;
+- gérer la file de commandes (suppression après exécution, possibilité d'annuler la commande en tête via `remove_last_command()` dans l'implémentation actuelle).
 
-### 4.4 Conception logicielle
+### Cycle de traitement d'une commande
 
-### 4.5 Conception logicielle: extension pour l'IA
+1. Appel de `add_command(std::unique_ptr<Command>)` pour mettre la commande dans la file.
+2. Périodiquement (ou à chaque boucle de jeu), `Engine::update()` est appelé :
+   - si la file est vide : rien à faire ;
+   - sinon, le moteur prend la commande en tête et effectue des validations :
+     - l'utilisateur possède-t-il une tribu active (sauf pour `Choose_Species`) ?
+     - est-ce le tour du joueur qui a initié la commande ?
+     - la commande est-elle autorisée dans la phase courante ?
+   - en cas d'échec d'une de ces validations, la commande est retirée de la file et une exception `std::runtime_error` est lancée ;
+   - si les validations passent, le moteur appelle `command->execute(state)` puis retire la commande de la file.
 
-### 4.6 Conception logicielle: extension pour la parallélisation
 
-Illustration 3: Diagrammes des classes pour le moteur de jeu
+### Règles de validation importantes
+
+- `Choose_Species_Command` est spécial : il nécessite l'absence d'une tribu active pour le joueur.
+- Les autres commandes (Conquer, Redeploy, Decline, ...) exigent la présence d'une tribu active.
+- Le joueur qui envoie la commande doit être le joueur courant.
+- La commande doit correspondre à la phase du tour en cours (ex. : `Conquer_Command` dans `CONQUER`).
+
+### Phases de tour
+
+Le moteur de jeu s'appuie sur le concept de phases de tour (`state::Turn_Phase`) pour organiser les actions possibles à chaque étape du tour d'un joueur. Chaque commande est associée à une phase spécifique durant laquelle elle est autorisée. Les différentes phases sont les suivantes:
+
+- START : l'utilisateur peut choisir une espèce, passer en déclin ou ne rien faire.
+- CONQUER : l'utilisateur peut conquérir des territoires.
+- REDEPLOY : l'utilisateur peut redéployer ses unités.
 
 
-## 5 Intelligence Artificielle
+
+### Les différentes commandes
+
+| Nom de la commande | Attributs (principaux) | Phase de tour d'usage | Phase suivante |
+|---|---|---|---|
+| Choose_Species_Command | player_id, position | START | CONQUER |
+| Decline_Command | player_id | START | START (passe au joueur suivant) |
+| Start_Conquest_Command | player_id | START | CONQUER |
+| Conquer_Command | player_id, attacked_area_id, n_units, dice_units | CONQUER | REDEPLOY si dernière conquête, sinon reste en CONQUER |
+| End_Conquer_Command | player_id | CONQUER | REDEPLOY |
+| Redeploy_Command | player_id, area_id, added_units | REDEPLOY | START si plus d'unités libres (fin du tour) et passe au joueur suivant, sinon reste en REDEPLOY |
+
+![Diagramme de classes du moteur de jeu](./img/engine.png)
+
+<!-- ## 5 Intelligence Artificielle
 Cette section est dédiée aux stratégies et outils développés pour créer un joueur artificiel. Ce robot doit utiliser les mêmes commandes qu'un joueur humain, ie utiliser les mêmes actions/ordres que ceux produit par le clavier ou la souris. Le robot ne doit pas avoir accès à plus information qu'un joueur humain. Comme pour les autres sections, commencez par présenter la stratégie, puis la conception logicielle.
 ### 5.1 Stratégies
 
