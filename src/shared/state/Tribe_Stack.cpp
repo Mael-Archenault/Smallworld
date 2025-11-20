@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include "Dwarves_Species.h"
+#include "Power_Description.h"
 
 #define number_of_species 14
 #define number_of_powers 20
