@@ -124,7 +124,7 @@ void Game_State::take_tribe_at_position(int position, int player_id)
         {
             Tribe* tribe = tribe_stack.take_tribe_at_position(position);
             tribe->set_owner(&players[i]);
-            players[i].set_active_tribe(tribe);
+            players[i].set_active_tribe(tribe,position);
             return;
         }
     }
