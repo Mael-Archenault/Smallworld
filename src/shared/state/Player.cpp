@@ -100,7 +100,7 @@ void Player::go_in_decline()
     }
 }
 
-void Player::set_active_tribe(Tribe* tribe)
+void Player::set_active_tribe(Tribe* tribe, int cost)
 {
     active_tribe = tribe;
 }
