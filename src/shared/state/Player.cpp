@@ -74,7 +74,6 @@ void Player::conquer(Area* attacked_area, int n_units, int dice_units)
 
 void Player::get_rewards()
 {
-    int money = 0;
     if (active_tribe != nullptr)
     {
         money += active_tribe->get_rewards();

@@ -127,7 +127,7 @@ void Tribe::go_in_decline()
 }
 int Tribe::get_rewards()
 {
-    return 0;
+    return owned_areas.size();
 }
 
 std::string Tribe::get_species_name()
