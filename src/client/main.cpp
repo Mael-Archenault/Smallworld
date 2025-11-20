@@ -1,22 +1,21 @@
 #include <iostream>
 
+#include "client.h"
+#include "engine.h"
+
 // The following lines are here to check that SFML is installed and working
 #include <SFML/Graphics.hpp>
 
-void testSFML() {
+void testSFML()
+{
     sf::Texture texture;
 }
 // end of test SFML
 
-#include <state.h>
-
-using namespace std;
-using namespace state;
-
-int main(int argc,char* argv[])
+int main(int argc, char* argv[])
 {
+    engine::Engine engine;
+    client::Client client(engine);
 
-    cout << "Code compiled succesfully and quickly" << endl;
-
-    return 0;
+    client.run();
 }

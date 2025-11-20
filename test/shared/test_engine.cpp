@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
         sf::RenderWindow   window(sf::VideoMode(1720, 820), "Renderer Test");
         renderer::Renderer renderer(state, window);
 
-        engine::Engine engine(state);
+        engine::Engine engine;
 
         sf::View view = window.getDefaultView();  // store your base view
 
