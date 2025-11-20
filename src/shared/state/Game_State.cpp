@@ -1,5 +1,6 @@
 #include "Game_State.h"
 
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
@@ -69,6 +70,16 @@ std::vector<int> Game_State::get_redeployable_areas(int player_id)
 
 void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_units, int dice_units)
 {
+    std::vector<std::pair<int, int>> attackable_areas = get_conquest_prices(attacking_player_id);
+    std::vector<int>                 area_ids;
+    for (size_t i = 0; i < attackable_areas.size(); i++)
+    {
+        area_ids.push_back(attackable_areas.at(i).first);
+    }
+    if (std::find(area_ids.begin(), area_ids.end(), attacked_area_id) == area_ids.end())
+    {
+        throw std::invalid_argument("conquer: Area not conquerable by the player");
+    }
     Area& attacked_area = map.get_area(attacked_area_id);
     for (size_t i = 0; i < players.size(); i++)
     {

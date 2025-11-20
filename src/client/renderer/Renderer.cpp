@@ -43,6 +43,11 @@ std::unordered_map<std::string, sf::FloatRect> Renderer::get_layout_infos()
 
     result["map"]         = map_renderer.get_layout();
     result["tribe_stack"] = tribe_stack_renderer.get_layout();
+
+    for (const auto& [key, value] : UI_renderer.get_widgets_layout())
+    {
+        result[key] = value;
+    }
     return result;
 }
 

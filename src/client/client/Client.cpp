@@ -14,6 +14,8 @@ Client::Client(engine::Engine& engine)
       renderer(state, window),
       engine(engine)
 {
+    selected_area_id = 0;
+    renderer.set_selected_area(selected_area_id);
 }
 
 void Client::run()
@@ -55,9 +57,11 @@ void Client::run()
         try
         {
             engine.update();
+            state = state::Game_State(engine.get_state());
         }
         catch (const std::exception& e)
         {
+            engine.remove_last_command();
             std::cerr << "Error executing command: " << e.what() << std::endl;
         }
 
@@ -69,15 +73,65 @@ void Client::run()
 
 void Client::handle_mouse_click(sf::Vector2i position)
 {
-    std::unordered_map<std::string, sf::FloatRect> layout_infos = renderer.get_layout_infos();
+    std::unordered_map<std::string, sf::FloatRect> layout_infos  = renderer.get_layout_infos();
+    state::Turn_Phase                              current_phase = state.get_current_turn_phase();
 
     if (layout_infos["map"].contains(static_cast<sf::Vector2f>(position)))
     {
         handle_map_click(position, layout_infos["map"]);
     }
-    if (layout_infos["tribe_stack"].contains(static_cast<sf::Vector2f>(position)))
+    else if (layout_infos["tribe_stack"].contains(static_cast<sf::Vector2f>(position)))
     {
         handle_tribe_stack_click(position, layout_infos["tribe_stack"]);
+    }
+    else if (layout_infos["conquer_button"].contains(static_cast<sf::Vector2f>(position)) &&
+             current_phase == state::Turn_Phase::CONQUER)
+    {
+        std::vector<std::pair<int, int>> prices =
+            state.get_conquest_prices(state.get_current_player().id);
+        int price;
+        for (const auto& price_info : prices)
+        {
+            if (price_info.first == selected_area_id)
+            {
+                price = price_info.second;
+            }
+        }
+
+        std::cout << "Conquer button clicked for area " << selected_area_id << " with price "
+                  << price << std::endl;
+        std::pair<int, int> area_to_attack;
+        int available_units = state.get_free_units_number(state.get_current_player().id);
+        if (price > available_units)
+        {
+            int dice_units = state.roll_dice_for_bonus_units();
+            std::cout << "No more area attackable, rolled the dice : " << dice_units << std::endl;
+            engine.add_command(std::make_unique<engine::Conquer_Command>(
+                state.get_current_player().id, selected_area_id, available_units, dice_units));
+        }
+        else
+        {
+            engine.add_command(std::make_unique<engine::Conquer_Command>(
+                state.get_current_player().id, selected_area_id, price, -1));
+        }
+    }
+    else if (layout_infos["decline_button"].contains(static_cast<sf::Vector2f>(position)) &&
+             current_phase == state::Turn_Phase::START)
+    {
+        engine.add_command(
+            std::make_unique<engine::Decline_Command>(state.get_current_player().id));
+    }
+    else if (layout_infos["start_conquest_button"].contains(static_cast<sf::Vector2f>(position)) &&
+             current_phase == state::Turn_Phase::START)
+    {
+        engine.add_command(
+            std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id));
+    }
+    else if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
+             current_phase == state::Turn_Phase::REDEPLOY)
+    {
+        engine.add_command(std::make_unique<engine::Redeploy_Command>(state.get_current_player().id,
+                                                                      selected_area_id, 1));
     }
 }
 
@@ -102,6 +156,7 @@ void Client::handle_map_click(sf::Vector2i position, sf::FloatRect map_layout)
     }
 
     renderer.set_selected_area(static_cast<int>(min_index));
+    selected_area_id = static_cast<int>(min_index);
 }
 
 void Client::handle_tribe_stack_click(sf::Vector2i position, sf::FloatRect tribe_stack_layout)

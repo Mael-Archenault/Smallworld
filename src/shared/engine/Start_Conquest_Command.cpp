@@ -9,7 +9,6 @@ Start_Conquest_Command::Start_Conquest_Command(int player_id) : Command(player_i
 
 void Start_Conquest_Command::execute(state::Game_State& state)
 {
-    state.gather_free_units(state.get_current_player().id);
     state.set_current_turn_phase(state::Turn_Phase::CONQUER);
 };
 
