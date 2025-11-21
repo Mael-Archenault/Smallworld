@@ -63,10 +63,6 @@ void Map::load_from_json(std::string file_name)
     for (int id = 0; id <= max_id; ++id)
     {
         const std::string sid = std::to_string(id);
-        if (!root.isMember(sid))
-        {
-            throw std::runtime_error("Missing area id in json: " + sid);
-        }
 
         Json::Value area_infos = root[sid];
 
