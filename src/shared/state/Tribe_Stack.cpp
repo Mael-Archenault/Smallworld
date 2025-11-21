@@ -9,10 +9,6 @@
 #include "Dwarves_Species.h"
 #include "Power_Description.h"
 
-#define number_of_species 14
-#define number_of_powers 20
-#define seeable_stack_number 6
-
 namespace state
 {
 
@@ -29,8 +25,7 @@ Tribe* Tribe_Stack::take_tribe_at_position(int position)
         throw std::out_of_range("Tribe Stack: No tribes left in the stack");
     }
 
-    if (position >= static_cast<int>(stack.size()) || position < 0 ||
-        position >= seeable_stack_number)
+    if ((position < 0) | (position > 5))
     {
         throw std::out_of_range("Tribe Stack: Invalid tribe position");
     }
@@ -43,7 +38,7 @@ Tribe* Tribe_Stack::take_tribe_at_position(int position)
 std::vector<Tribe*> Tribe_Stack::get_tribes_on_top()
 {
     std::vector<Tribe*> seeable_Tribes;
-    for (size_t i = 0; i < std::min(static_cast<size_t>(seeable_stack_number), stack.size()); ++i)
+    for (size_t i = 0; i < std::min(6, static_cast<int>(stack.size())); ++i)
     {
         seeable_Tribes.push_back(&stack[i]);
     }
