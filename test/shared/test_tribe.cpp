@@ -1,78 +1,75 @@
 #include <boost/test/unit_test.hpp>
 #include <iostream>
+
 #include "state.h"
 
-
-class Tribe_Observer : public state::Tribe {
-public:
-    Tribe_Observer(int id, state::Species_Description* species_description, state::Power_Description* power_description): Tribe(id, species_description, power_description) {};
-    std::vector<state::Area*> get_owned_areas() {
+class Tribe_Observer : public state::Tribe
+{
+   public:
+    Tribe_Observer(int id, state::Species_Description* species_description,
+                   state::Power_Description* power_description)
+        : Tribe(id, species_description, power_description) {};
+    std::vector<state::Area*> get_owned_areas()
+    {
         return owned_areas;
     }
-
 };
-
-
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
 {
     BOOST_CHECK(1);
 }
 
-
 BOOST_AUTO_TEST_CASE(Tribe_Test)
 {
-
     // Initialization
-    state::Effects_Bundle species_effect = state::Dwarf_Effects_Bundle();
-    state::Species_Description* species_description = new state::Species_Description("test_Species",5,10,species_effect);
-    state::Effects_Bundle power_effect = state::Dwarf_Effects_Bundle();
-    state::Power_Description* power_description = new state::Power_Description("test_Power",4,power_effect);
+    state::Species_Description* species_description =
+        new state::Species_Description("test_Species", 5, 10);
+    state::Power_Description* power_description = new state::Power_Description("test_Power", 4);
 
-    Tribe_Observer tribe(0,species_description,power_description);
+    Tribe_Observer tribe(0, species_description, power_description);
 
     std::vector<state::Area*> areas;
-    areas.emplace_back(new state::Area(0,3, state::Area_Biome::HILL,{}, false));
-    areas.emplace_back(new state::Area(1,2, state::Area_Biome::FOREST,{}, false));
+    areas.emplace_back(new state::Area(0, 3, state::Area_Biome::HILL, {}, false));
+    areas.emplace_back(new state::Area(1, 2, state::Area_Biome::FOREST, {}, false));
     areas.at(0)->add_neighbor(areas.at(1));
     areas.at(1)->add_neighbor(areas.at(0));
 
     // Initialization testing
-    BOOST_CHECK_EQUAL(tribe.get_species_description(),species_description);
-    BOOST_CHECK_EQUAL(tribe.get_power_description(),power_description);
-    BOOST_CHECK_EQUAL(tribe.get_free_units_number(),9);
-    BOOST_CHECK_EQUAL(tribe.is_in_decline(),false);
-    BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(),0);
+    BOOST_CHECK_EQUAL(tribe.get_species_description(), species_description);
+    BOOST_CHECK_EQUAL(tribe.get_power_description(), power_description);
+    BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 9);
+    BOOST_CHECK_EQUAL(tribe.is_in_decline(), false);
+    BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(), 0);
+    BOOST_CHECK_EQUAL(tribe.get_owner(), nullptr);
 
-
-    BOOST_CHECK_THROW(tribe.remove_from_owned_areas(areas[0]),std::invalid_argument);
+    BOOST_CHECK_THROW(tribe.remove_from_owned_areas(areas[0]), std::invalid_argument);
 
     tribe.conquer(areas.at(0), 5, 0);
 
     BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(), 1);
     BOOST_CHECK_EQUAL(tribe.get_owned_areas().at(0)->id, 0);
     BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 4);
+    BOOST_CHECK_EQUAL(tribe.get_redeployable_areas().size(), 1);
 
+    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 1, 0), std::invalid_argument);
+    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 10, 0), std::invalid_argument);
 
-    BOOST_CHECK_THROW(tribe.conquer(areas.at(1),1,0),std::invalid_argument);
-    BOOST_CHECK_THROW(tribe.conquer(areas.at(1),10,0),std::invalid_argument);
-
-
-    std::vector<std::pair<int,int>> price_infos = tribe.get_conquest_prices(nullptr);
+    std::vector<std::pair<int, int>> price_infos = tribe.get_conquest_prices(nullptr);
 
     BOOST_CHECK_EQUAL(price_infos.size(), 1);
     BOOST_CHECK_EQUAL(price_infos.at(0).first, 1);
     BOOST_CHECK_EQUAL(price_infos.at(0).second, 4);
-    
+
     tribe.gather_free_units();
-    BOOST_CHECK_EQUAL(tribe.get_free_units_number(),8);
+    BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 8);
 
-    tribe.redeploy_units(0,7);
-    BOOST_CHECK_THROW(tribe.redeploy_units(0,2),std::invalid_argument);
-    BOOST_CHECK_THROW(tribe.redeploy_units(100,0),std::invalid_argument);
-    BOOST_CHECK_EQUAL(tribe.get_free_units_number(),1);
+    tribe.redeploy_units(0, 7);
+    BOOST_CHECK_THROW(tribe.redeploy_units(0, 2), std::invalid_argument);
+    BOOST_CHECK_THROW(tribe.redeploy_units(100, 0), std::invalid_argument);
+    BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 1);
 
-    BOOST_CHECK_EQUAL(tribe.get_rewards(), 0);
+    BOOST_CHECK_EQUAL(tribe.get_rewards(), 1);  // 1 area -> 1 piece of money
 
     BOOST_CHECK_EQUAL(tribe.get_species_name(), "test_Species");
     BOOST_CHECK_EQUAL(tribe.get_power_name(), "test_Power");
@@ -81,6 +78,4 @@ BOOST_AUTO_TEST_CASE(Tribe_Test)
     BOOST_CHECK_EQUAL(tribe.is_in_decline(), true);
     tribe.remove_from_map();
     BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(), 0);
-
-
 }

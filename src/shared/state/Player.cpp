@@ -98,6 +98,7 @@ void Player::go_in_decline()
         active_tribe     = nullptr;
         return;
     }
+    throw std::invalid_argument("go_in_decline:there is no active tribe for this player");
 }
 
 void Player::set_active_tribe(Tribe* tribe, int cost)

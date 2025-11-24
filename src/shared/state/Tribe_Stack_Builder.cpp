@@ -48,8 +48,7 @@ std::unordered_map<std::string, std::function<Power_Description()>> str_to_power
     {"Dragon Master", []() { return Power_Description("Dragon Master", 5); }},
     {"Flying", []() { return Power_Description("Flying", 5); }},
     {"Forest", []() { return Power_Description("Forest", 4); }},
-    {"Fortified", []() { return Power_Description("Fortified", 3); }},
-    {"Hill", []() { return Power_Description("Hill", 4); }}};
+    {"Fortified", []() { return Power_Description("Fortified", 3); }}};
 
 Tribe_Stack_Builder::Tribe_Stack_Builder()
 {

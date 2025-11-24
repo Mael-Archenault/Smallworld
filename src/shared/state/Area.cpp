@@ -2,8 +2,9 @@
 
 #include <random>
 #include <stdexcept>
-#include "Species_Description.h"
+
 #include "Power_Description.h"
+#include "Species_Description.h"
 
 using namespace state;
 
@@ -20,7 +21,7 @@ Area::Area(int id, int n_units, Area_Biome biome,
 {
     if (biome == state::Area_Biome::MOUNTAINS)
     {
-        special_tokens.push_back(state::Area_Special_Token::MOUNTAIN);
+        add_special_token(state::Area_Special_Token::MOUNTAIN);
     }
 }
 
@@ -32,7 +33,8 @@ int Area::gather_free_units()
     return to_return;
 }
 
-int Area::get_conquest_price(Tribe& attacking_tribe) {
+int Area::get_conquest_price(Tribe& attacking_tribe)
+{
     return units_number + special_tokens.size() + default_attacking_units_required;
 }
 
@@ -89,12 +91,13 @@ std::vector<Area_Specialization>& Area::get_area_specialization()
     return area_specialization;
 }
 
-
-Area_Biome Area::get_biome(){
+Area_Biome Area::get_biome()
+{
     return biome;
 }
 
-void Area::set_special_tokens(Area_Special_Token special_token){
+void Area::add_special_token(Area_Special_Token special_token)
+{
     special_tokens.push_back(special_token);
 }
 

@@ -116,11 +116,11 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
 {
     if (n_units + std::max(0, dice_units) < attacked_area->get_conquest_price(*this))
     {
-        return;
+        throw std::invalid_argument("Tribe : conquer: not enough units to conquer the area");
     }
     if (n_units > free_units_number + std::max(0, dice_units))
     {
-        return;
+        throw std::invalid_argument("Tribe : conquer: not enough free units to conquer the area");
     }
     attacked_area->set_owner_tribe(this);
     attacked_area->set_units_number(n_units);

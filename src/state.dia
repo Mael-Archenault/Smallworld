@@ -3692,7 +3692,7 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#set_special_tokens#</dia:string>
+            <dia:string>#add_special_token#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>##</dia:string>
@@ -10971,7 +10971,7 @@
         <dia:point val="7.48714,42.2431"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="6.73714,35.3938;55.319,43.8431"/>
+        <dia:rectangle val="6.73714,34.6838;55.319,43.0831"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -11052,7 +11052,7 @@
         <dia:point val="-0.89812,45.1935"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-1.64812,44.4435;62.4067,50.9634"/>
+        <dia:rectangle val="-1.64812,44.4435;62.4067,50.1634"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -11133,7 +11133,7 @@
         <dia:point val="-0.2447,33.7187"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-0.9947,32.9687;0.5053,40.8927"/>
+        <dia:rectangle val="-0.9947,32.9687;0.5053,40.0927"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -11214,7 +11214,7 @@
         <dia:point val="-0.89812,39.2927"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-1.64812,34.7658;29.0295,40.8927"/>
+        <dia:rectangle val="-1.64812,34.7658;29.0295,40.0927"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
