@@ -121,11 +121,17 @@ void Client::handle_mouse_click(sf::Vector2i position)
         engine.add_command(
             std::make_unique<engine::Decline_Command>(state.get_current_player().id));
     }
-    else if (layout_infos["start_conquest_button"].contains(static_cast<sf::Vector2f>(position)) &&
+    else if (layout_infos["start_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
              current_phase == state::Turn_Phase::START)
     {
         engine.add_command(
             std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id));
+    }
+    else if (layout_infos["end_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
+             current_phase == state::Turn_Phase::CONQUER)
+    {
+        engine.add_command(
+            std::make_unique<engine::End_Conquer_Command>(state.get_current_player().id));
     }
     else if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
              current_phase == state::Turn_Phase::REDEPLOY)
