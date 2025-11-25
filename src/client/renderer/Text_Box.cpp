@@ -88,29 +88,11 @@ void Text_Box::wrap_text()
         measure.setString(L);
         float lw = measure.getLocalBounds().width;
 
-        float offset = 0.f;
-
-        if (alignment == "center")
-        {
-            offset = (maxWidth - lw) / 2.f;
-        }
-        else if (alignment == "right")
-        {
-            offset = (maxWidth - lw);
-        }
-        else
-        {
-            offset = 0.f;  // left
-        }
-
         // Convert pixel offset to number of spaces
         measure.setString(" ");
-        float spaceW    = measure.getLocalBounds().width;
-        int   numSpaces = spaceW > 0 ? int(offset / spaceW) : 0;
+        float spaceW = measure.getLocalBounds().width;
 
-        std::string padded = std::string(std::max(0, numSpaces), ' ') + L;
-
-        finalText += padded;
+        finalText += L;
         if (i < lines.size() - 1) finalText += "\n";
     }
 
@@ -128,7 +110,6 @@ Text_Box::Text_Box()
     set_size({200, 100});
     set_character_size(40);
     set_colors(sf::Color(0, 0, 0, 0), sf::Color(0, 0, 0, 0), sf::Color::White);
-    set_alignment("left");
 }
 
 void Text_Box::set_font(std::string font_name)
@@ -182,30 +163,15 @@ void Text_Box::set_size(sf::Vector2f new_size)
     set_position(box.getPosition());  // replacing the text inside the box
 }
 
-void Text_Box::set_alignment(std::string new_alignment)
-{
-    alignment = new_alignment;
-    wrap_text();
-    set_position(box.getPosition());  // replacing the text inside the box
-}
-
 void Text_Box::render(sf::RenderWindow& window)
 {
     window.draw(box);
-
-    // sf::Text text;
-    // text.setFont(font);
-    // text.setString(content);
-    // text.setCharacterSize(static_cast<unsigned int>(size.y * 0.6f));
-    // text.setFillColor(sf::Color::White);
-
-    // // Center the text within the box
-    // sf::FloatRect textBounds = text.getLocalBounds();
-    // text.setOrigin(textBounds.left + textBounds.width / 2.0f,
-    //                textBounds.top + textBounds.height / 2.0f);
-    // text.setPosition(position.x + size.x / 2.0f, position.y + size.y / 2.0f);
-
     window.draw(text);
+}
+
+sf::FloatRect Text_Box::get_rect()
+{
+    return box.getGlobalBounds();
 }
 
 }  // namespace renderer

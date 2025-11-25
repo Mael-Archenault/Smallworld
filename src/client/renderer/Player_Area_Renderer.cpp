@@ -2,13 +2,16 @@
 
 #include "resources_dir.h"
 
-namespace renderer {
+namespace renderer
+{
 
 /// Constructor
 Player_Area_Renderer::Player_Area_Renderer(sf::RenderWindow& window)
-    : window(window), position(0.f, 0.f), angle(0), free_units_renderer("pawn") {
+    : window(window), position(0.f, 0.f), angle(0), free_units_renderer("pawn")
+{
     // Load font
-    if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf")) {
+    if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf"))
+    {
         // Handle error
     }
 
@@ -33,12 +36,15 @@ Player_Area_Renderer::Player_Area_Renderer(sf::RenderWindow& window)
     tribes_title.setString("Tribes:");
     tribes_title.setCharacterSize(14);
     tribes_title.setFillColor(sf::Color::White);
+
+    tribes_rects.resize(3);
 }
 
-void Player_Area_Renderer::render(state::Player& player) {
+void Player_Area_Renderer::render(state::Player& player)
+{
     sf::Vector2u window_size = window.getSize();
 
-    float section_width = window_size.x * 4 / 6;
+    float section_width  = window_size.x * 4 / 6;
     float section_height = window_size.y / 6;
 
     // draw a rectangle
@@ -49,7 +55,7 @@ void Player_Area_Renderer::render(state::Player& player) {
     window.draw(background);
 
     float header_size = section_height / 4;
-    float body_size = section_height - header_size;
+    float body_size   = section_height - header_size;
 
     // Titles in the header
     money_title.setCharacterSize(header_size / 2);
@@ -80,9 +86,10 @@ void Player_Area_Renderer::render(state::Player& player) {
     // Free units
     std::pair<state::Tribe*, state::Tribe*> player_tribes = player.get_tribes();
 
-    if (player_tribes.first != nullptr) {
-        int free_units_number = player.get_free_units_number();
-        float scaling_factor = std::min((section_width / 5) / 150, body_size / 150);
+    if (player_tribes.first != nullptr)
+    {
+        int   free_units_number = player.get_free_units_number();
+        float scaling_factor    = std::min((section_width / 5) / 150, body_size / 150);
         free_units_renderer.scale(scaling_factor, scaling_factor);
         free_units_renderer.set_sprite(player_tribes.first->get_species_name());
         free_units_renderer.set_number(free_units_number);
@@ -96,7 +103,8 @@ void Player_Area_Renderer::render(state::Player& player) {
 
     // Render tribe_renderers
 
-    if (player_tribes.first != nullptr) {
+    if (player_tribes.first != nullptr)
+    {
         float scaling_factor = std::min((section_width / 4) / 500, body_size / 194);
         tribe_renderer.set_sprite(player_tribes.first->get_species_name(),
                                   player_tribes.first->get_power_name(), false);
@@ -106,9 +114,12 @@ void Player_Area_Renderer::render(state::Player& player) {
             sf::Vector2f(
                 position.x + section_width / 2 + section_width / 8 - (500 * scaling_factor) / 2,
                 position.y + header_size + body_size / 2 - (194 * scaling_factor) / 2));
+
+        tribes_rects.at(0) = tribe_renderer.get_rect();
     }
 
-    if (player_tribes.second != nullptr) {
+    if (player_tribes.second != nullptr)
+    {
         float scaling_factor = std::min((section_width / 4) / 500, (body_size * 2 / 3) / 194);
         tribe_renderer.set_sprite(player_tribes.second->get_species_name(),
                                   player_tribes.second->get_power_name(), true);
@@ -118,6 +129,7 @@ void Player_Area_Renderer::render(state::Player& player) {
             sf::Vector2f(
                 position.x + section_width * 3 / 4 + section_width / 8 - (500 * scaling_factor) / 2,
                 position.y + header_size + body_size / 3 - (194 * scaling_factor) / 2));
+        tribes_rects.at(1) = tribe_renderer.get_rect();
     }
 
     // to do when the ghouls power will be implemented
@@ -132,6 +144,19 @@ void Player_Area_Renderer::render(state::Player& player) {
     // }
 }
 
-void Player_Area_Renderer::set_position(sf::Vector2f position) { this->position = position; }
+void Player_Area_Renderer::set_position(sf::Vector2f position)
+{
+    this->position = position;
+}
+
+std::unordered_map<std::string, sf::FloatRect> Player_Area_Renderer::get_layout()
+{
+    std::unordered_map<std::string, sf::FloatRect> layout_infos;
+    layout_infos["player_area"] =
+        sf::FloatRect(position.x, position.y, window.getSize().x * 4 / 6, window.getSize().y / 6);
+    layout_infos["active_tribe"]     = tribes_rects.at(0);
+    layout_infos["in_decline_tribe"] = tribes_rects.at(1);
+    return layout_infos;
+}
 
 }  // namespace renderer

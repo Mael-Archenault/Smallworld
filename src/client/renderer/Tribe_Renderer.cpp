@@ -140,4 +140,8 @@ std::unordered_map<std::string, std::pair<int, int>> Tribe_Renderer::open_indexi
     }
     return indexing;
 }
+sf::FloatRect Tribe_Renderer::get_rect()
+{
+    return this->sprite.getGlobalBounds();
+}
 };  // namespace renderer

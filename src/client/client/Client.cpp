@@ -14,7 +14,8 @@ Client::Client(engine::Engine& engine)
       renderer(state, window),
       engine(engine)
 {
-    selected_area_id = 0;
+    selected_area_id         = 0;
+    tribe_info_window_opened = false;
     renderer.set_selected_area(selected_area_id);
 }
 
@@ -76,14 +77,42 @@ void Client::handle_mouse_click(sf::Vector2i position)
     std::unordered_map<std::string, sf::FloatRect> layout_infos  = renderer.get_layout_infos();
     state::Turn_Phase                              current_phase = state.get_current_turn_phase();
 
-    if (layout_infos["map"].contains(static_cast<sf::Vector2f>(position)))
+    // tribe window management
+    if (tribe_info_window_opened)
+    {
+        if (layout_infos["tribe_info_window"].contains(static_cast<sf::Vector2f>(position)))
+        {
+            handle_info_window_click(position, layout_infos);
+            return;
+        }
+        else
+        {
+            renderer.close_tribe_info_window();
+            tribe_info_window_opened = false;
+            return;
+        }
+    }
+
+    // click on map
+    else if (layout_infos["map"].contains(static_cast<sf::Vector2f>(position)))
     {
         handle_map_click(position, layout_infos["map"]);
     }
+
+    // click on the tribe stack
     else if (layout_infos["tribe_stack"].contains(static_cast<sf::Vector2f>(position)))
     {
         handle_tribe_stack_click(position, layout_infos["tribe_stack"]);
     }
+
+    // click on the player area
+
+    else if (layout_infos["player_area"].contains(static_cast<sf::Vector2f>(position)))
+    {
+        handle_player_area_click(position, layout_infos);
+    }
+
+    // click on the buttons
     else if (layout_infos["conquer_button"].contains(static_cast<sf::Vector2f>(position)) &&
              current_phase == state::Turn_Phase::CONQUER)
     {
@@ -98,8 +127,6 @@ void Client::handle_mouse_click(sf::Vector2i position)
             }
         }
 
-        std::cout << "Conquer button clicked for area " << selected_area_id << " with price "
-                  << price << std::endl;
         std::pair<int, int> area_to_attack;
         int available_units = state.get_free_units_number(state.get_current_player().id);
         if (price > available_units)
@@ -186,8 +213,51 @@ void Client::handle_tribe_stack_click(sf::Vector2i position, sf::FloatRect tribe
         if (distances.at(i) < distances.at(min_index)) min_index = i;
     }
 
-    engine.add_command(std::make_unique<engine::Choose_Species_Command>(
-        state.get_current_player().id, static_cast<int>(min_index)));
+    std::cout << "Clicked on tribe card index: " << min_index << std::endl;
+
+    renderer.open_tribe_info_window(*state.get_tribes_on_top().at(min_index));
+    selected_position_in_stack = static_cast<int>(min_index);
+    tribe_info_window_opened   = true;
 }
 
+void Client::handle_player_area_click(sf::Vector2i                                   position,
+                                      std::unordered_map<std::string, sf::FloatRect> layout_infos)
+{
+    std::cout << "handling click on player area" << std::endl;
+
+    if (layout_infos["active_tribe"].contains(static_cast<sf::Vector2f>(position)))
+    {
+        std::cout << "Clicked on active tribe" << std::endl;
+        renderer.open_tribe_info_window(*state.get_current_player().get_tribes().first);
+        tribe_info_window_opened = true;
+    }
+    else if (layout_infos["in_decline_tribe"].contains(static_cast<sf::Vector2f>(position)))
+    {
+        std::cout << "Clicked on in decline tribe" << std::endl;
+        renderer.open_tribe_info_window(*state.get_current_player().get_tribes().second);
+        tribe_info_window_opened = true;
+    }
+}
+
+void Client::handle_info_window_click(sf::Vector2i                                   position,
+                                      std::unordered_map<std::string, sf::FloatRect> layout_infos)
+{
+    if (layout_infos["tribe_info_window_close_button"].contains(
+            static_cast<sf::Vector2f>(position)))
+    {
+        std::cout << "Closing info window" << std::endl;
+        renderer.close_tribe_info_window();
+        tribe_info_window_opened = false;
+    }
+
+    else if (layout_infos["tribe_info_window_buy_button"].contains(
+                 static_cast<sf::Vector2f>(position)))
+    {
+        std::cout << "Buying" << std::endl;
+        engine.add_command(std::make_unique<engine::Choose_Species_Command>(
+            state.get_current_player().id, selected_position_in_stack));
+        renderer.close_tribe_info_window();
+        tribe_info_window_opened = false;
+    }
+}
 }  // namespace client
