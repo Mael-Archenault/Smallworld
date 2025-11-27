@@ -72,6 +72,12 @@ void Client::run()
         {
             engine.update();
             state = state::Game_State(engine.get_state());
+
+            if (state.is_game_finished())
+            {
+                std::cout << "Maximum rounds reached." << std::endl;
+                window.close();
+            }
         }
         catch (const std::exception& e)
         {

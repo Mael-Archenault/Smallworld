@@ -27,6 +27,11 @@ Map::Map(std::string name) : name(name)
     load_from_json(std::string(RESOURCE_DIR) + "/maps/" + name + "/data.json");
 }
 
+int Map::get_max_round()
+{
+    return this->max_round;
+}
+
 Area& Map::get_area(int area_id)
 {
     for (size_t i = 0; i < areas.size(); i++)
@@ -48,10 +53,14 @@ void Map::load_from_json(std::string file_name)
     file >> root;
     file.close();
 
+    max_round = root["max_round"].asInt();
+
+    Json::Value areas_infos = root["areas"];
+
     // pre-preparing the ids
     std::vector<int> ids;
-    ids.reserve(root.getMemberNames().size());
-    for (const auto& s : root.getMemberNames()) ids.push_back(std::stoi(s));
+    ids.reserve(areas_infos.getMemberNames().size());
+    for (const auto& s : areas_infos.getMemberNames()) ids.push_back(std::stoi(s));
     if (ids.empty()) return;
     int max_id = *std::max_element(ids.begin(), ids.end());
 
@@ -64,7 +73,7 @@ void Map::load_from_json(std::string file_name)
     {
         const std::string sid = std::to_string(id);
 
-        Json::Value area_infos = root[sid];
+        Json::Value area_infos = areas_infos[sid];
 
         Area_Biome                       biome = str_to_biome[area_infos["biome"].asString()];
         std::vector<Area_Specialization> specializations;
@@ -83,7 +92,7 @@ void Map::load_from_json(std::string file_name)
     for (int id = 0; id <= max_id; ++id)
     {
         const std::string sid       = std::to_string(id);
-        Json::Value       relations = root[sid]["relations"];
+        Json::Value       relations = areas_infos[sid]["relations"];
         std::vector<int>  connections;
         for (const auto& neighbor_id_val : relations)
         {

@@ -1,276 +1,279 @@
 {
-  "0": {
-    "biome": "Farm",
-    "specializations": [],
-    "units": 0,
-    "relations": [1, 38],
-    "borders": true
-  },
-  "1": {
-    "biome": "Swamp",
-    "specializations": ["Magic Region"],
-    "units": 1,
-    "relations": [0, 2, 16, 38],
-    "borders": true
-  },
-  "2": {
-    "biome": "Hill",
-    "specializations": ["Cavern"],
-    "units": 1,
-    "relations": [1, 3, 9, 15, 16, 38],
-    "borders": true
-  },
-  "3": {
-    "biome": "Farm",
-    "specializations": ["Mine"],
-    "units": 1,
-    "relations": [2, 4, 5, 9, 38],
-    "borders": true
-  },
-  "4": {
-    "biome": "Forest",
-    "specializations": ["Cavern"],
-    "units": 1,
-    "relations": [3, 5, 38],
-    "borders": true
-  },
-  "5": {
-    "biome": "Hill",
-    "specializations": [],
-    "units": 1,
-    "relations": [3, 4, 6, 8, 9],
-    "borders": true
-  },
-  "6": {
-    "biome": "Swamp",
-    "specializations": ["Magic Region"],
-    "units": 0,
-    "relations": [5, 7, 8],
-    "borders": true
-  },
-  "7": {
-    "biome": "Forest",
-    "specializations": ["Cavern"],
-    "units": 0,
-    "relations": [6, 8, 10, 11],
-    "borders": true
-  },
-  "8": {
-    "biome": "Mountains",
-    "specializations": ["Mine"],
-    "units": 0,
-    "relations": [5, 6, 7, 9, 10, 37],
-    "borders": 0
-  },
-  "9": {
-    "biome": "Farm",
-    "specializations": [],
-    "units": 0,
-    "relations": [2, 3, 5, 8, 14, 15, 37],
-    "borders": 0
-  },
-  "10": {
-    "biome": "Forest",
-    "specializations": ["Magic Region"],
-    "units": 1,
-    "relations": [7, 8, 11, 12, 37],
-    "borders": 0
-  },
-  "11": {
-    "biome": "Mountains",
-    "specializations": [],
-    "units": 0,
-    "relations": [7, 10, 12, 13],
-    "borders": true
-  },
-  "12": {
-    "biome": "Swamp",
-    "specializations": ["Mine"],
-    "units": 0,
-    "relations": [10, 11, 13, 24, 25, 37],
-    "borders": 0
-  },
-  "13": {
-    "biome": "Farm",
-    "specializations": [],
-    "units": 0,
-    "relations": [11, 12, 25, 26],
-    "borders": true
-  },
-  "14": {
-    "biome": "Hill",
-    "specializations": ["Magic Region"],
-    "units": 0,
-    "relations": [9, 15, 19, 37],
-    "borders": 0
-  },
-  "15": {
-    "biome": "Swamp",
-    "specializations": [],
-    "units": 1,
-    "relations": [2, 9, 14, 16, 18, 19],
-    "borders": 0
-  },
-  "16": {
-    "biome": "Forest",
-    "specializations": [],
-    "units": 0,
-    "relations": [1, 2, 15, 17, 18, 38],
-    "borders": true
-  },
-  "17": {
-    "biome": "Mountains",
-    "specializations": [],
-    "units": 0,
-    "relations": [16, 18, 20, 38],
-    "borders": true
-  },
-  "18": {
-    "biome": "Hill",
-    "specializations": [],
-    "units": 0,
-    "relations": [15, 16, 17, 19, 20, 22],
-    "borders": 0
-  },
-  "19": {
-    "biome": "Mountains",
-    "specializations": ["Cavern", "Mine"],
-    "units": 0,
-    "relations": [14, 15, 18, 22, 23, 37],
-    "borders": 0
-  },
-  "20": {
-    "biome": "Swamp",
-    "specializations": ["Mine"],
-    "units": 1,
-    "relations": [17, 18, 21, 22],
-    "borders": true
-  },
-  "21": {
-    "biome": "Farm",
-    "specializations": [],
-    "units": 0,
-    "relations": [20, 22, 35],
-    "borders": true
-  },
-  "22": {
-    "biome": "Forest",
-    "specializations": ["Magic Region"],
-    "units": 1,
-    "relations": [18, 19, 20, 21, 23, 33, 35],
-    "borders": 0
-  },
-  "23": {
-    "biome": "Mountains",
-    "specializations": [],
-    "units": 0,
-    "relations": [19, 22, 24, 33, 37],
-    "borders": 0
-  },
-  "24": {
-    "biome": "Farm",
-    "specializations": [],
-    "units": 0,
-    "relations": [12, 23, 25, 28, 30, 31, 37],
-    "borders": 0
-  },
-  "25": {
-    "biome": "Hill",
-    "specializations": [],
-    "units": 1,
-    "relations": [12, 13, 24, 26, 27, 28],
-    "borders": 0
-  },
-  "26": {
-    "biome": "Swamp",
-    "specializations": [],
-    "units": 1,
-    "relations": [13, 25, 27],
-    "borders": true
-  },
-  "27": {
-    "biome": "Hill",
-    "specializations": ["Magic Region"],
-    "units": 0,
-    "relations": [25, 26, 28, 29, 36],
-    "borders": true
-  },
-  "28": {
-    "biome": "Mountains",
-    "specializations": ["Cavern"],
-    "units": 0,
-    "relations": [24, 25, 27, 29, 30],
-    "borders": 0
-  },
-  "29": {
-    "biome": "Forest",
-    "specializations": [],
-    "units": 0,
-    "relations": [27, 28, 30, 36],
-    "borders": true
-  },
-  "30": {
-    "biome": "Mountains",
-    "specializations": ["Mine"],
-    "units": 1,
-    "relations": [28, 29, 31, 32],
-    "borders": true
-  },
-  "31": {
-    "biome": "Forest",
-    "specializations": ["Magic Region"],
-    "units": 1,
-    "relations": [24, 30, 32, 33],
-    "borders": 0
-  },
-  "32": {
-    "biome": "Farm",
-    "specializations": [],
-    "units": 0,
-    "relations": [30, 31, 33, 34],
-    "borders": true
-  },
-  "33": {
-    "biome": "Swamp",
-    "specializations": [],
-    "units": 1,
-    "relations": [22, 23, 24, 31, 32, 34, 35],
-    "borders": 0
-  },
-  "34": {
-    "biome": "Hill",
-    "specializations": ["Mine"],
-    "units": 0,
-    "relations": [32, 33, 35],
-    "borders": true
-  },
-  "35": {
-    "biome": "Mountains",
-    "specializations": [],
-    "units": 0,
-    "relations": [21, 22, 33, 34],
-    "borders": true
-  },
-  "36": {
-    "biome": "Water",
-    "specializations": [],
-    "units": 0,
-    "relations": [29, 27],
-    "borders": 0
-  },
-  "37": {
-    "biome": "Water",
-    "specializations": [],
-    "units": 0,
-    "relations": [8, 9, 10, 12, 14, 19, 23, 24, 25],
-    "borders": 0
-  },
-  "38": {
-    "biome": "Water",
-    "specializations": [],
-    "units": 0,
-    "relations": [0, 1, 2, 3, 4, 16, 17],
-    "borders": 0
+  "max_round":2,
+  "areas":{
+    "0": {
+      "biome": "Farm",
+      "specializations": [],
+      "units": 0,
+      "relations": [1, 38],
+      "borders": true
+    },
+    "1": {
+      "biome": "Swamp",
+      "specializations": ["Magic Region"],
+      "units": 1,
+      "relations": [0, 2, 16, 38],
+      "borders": true
+    },
+    "2": {
+      "biome": "Hill",
+      "specializations": ["Cavern"],
+      "units": 1,
+      "relations": [1, 3, 9, 15, 16, 38],
+      "borders": true
+    },
+    "3": {
+      "biome": "Farm",
+      "specializations": ["Mine"],
+      "units": 1,
+      "relations": [2, 4, 5, 9, 38],
+      "borders": true
+    },
+    "4": {
+      "biome": "Forest",
+      "specializations": ["Cavern"],
+      "units": 1,
+      "relations": [3, 5, 38],
+      "borders": true
+    },
+    "5": {
+      "biome": "Hill",
+      "specializations": [],
+      "units": 1,
+      "relations": [3, 4, 6, 8, 9],
+      "borders": true
+    },
+    "6": {
+      "biome": "Swamp",
+      "specializations": ["Magic Region"],
+      "units": 0,
+      "relations": [5, 7, 8],
+      "borders": true
+    },
+    "7": {
+      "biome": "Forest",
+      "specializations": ["Cavern"],
+      "units": 0,
+      "relations": [6, 8, 10, 11],
+      "borders": true
+    },
+    "8": {
+      "biome": "Mountains",
+      "specializations": ["Mine"],
+      "units": 0,
+      "relations": [5, 6, 7, 9, 10, 37],
+      "borders": 0
+    },
+    "9": {
+      "biome": "Farm",
+      "specializations": [],
+      "units": 0,
+      "relations": [2, 3, 5, 8, 14, 15, 37],
+      "borders": 0
+    },
+    "10": {
+      "biome": "Forest",
+      "specializations": ["Magic Region"],
+      "units": 1,
+      "relations": [7, 8, 11, 12, 37],
+      "borders": 0
+    },
+    "11": {
+      "biome": "Mountains",
+      "specializations": [],
+      "units": 0,
+      "relations": [7, 10, 12, 13],
+      "borders": true
+    },
+    "12": {
+      "biome": "Swamp",
+      "specializations": ["Mine"],
+      "units": 0,
+      "relations": [10, 11, 13, 24, 25, 37],
+      "borders": 0
+    },
+    "13": {
+      "biome": "Farm",
+      "specializations": [],
+      "units": 0,
+      "relations": [11, 12, 25, 26],
+      "borders": true
+    },
+    "14": {
+      "biome": "Hill",
+      "specializations": ["Magic Region"],
+      "units": 0,
+      "relations": [9, 15, 19, 37],
+      "borders": 0
+    },
+    "15": {
+      "biome": "Swamp",
+      "specializations": [],
+      "units": 1,
+      "relations": [2, 9, 14, 16, 18, 19],
+      "borders": 0
+    },
+    "16": {
+      "biome": "Forest",
+      "specializations": [],
+      "units": 0,
+      "relations": [1, 2, 15, 17, 18, 38],
+      "borders": true
+    },
+    "17": {
+      "biome": "Mountains",
+      "specializations": [],
+      "units": 0,
+      "relations": [16, 18, 20, 38],
+      "borders": true
+    },
+    "18": {
+      "biome": "Hill",
+      "specializations": [],
+      "units": 0,
+      "relations": [15, 16, 17, 19, 20, 22],
+      "borders": 0
+    },
+    "19": {
+      "biome": "Mountains",
+      "specializations": ["Cavern", "Mine"],
+      "units": 0,
+      "relations": [14, 15, 18, 22, 23, 37],
+      "borders": 0
+    },
+    "20": {
+      "biome": "Swamp",
+      "specializations": ["Mine"],
+      "units": 1,
+      "relations": [17, 18, 21, 22],
+      "borders": true
+    },
+    "21": {
+      "biome": "Farm",
+      "specializations": [],
+      "units": 0,
+      "relations": [20, 22, 35],
+      "borders": true
+    },
+    "22": {
+      "biome": "Forest",
+      "specializations": ["Magic Region"],
+      "units": 1,
+      "relations": [18, 19, 20, 21, 23, 33, 35],
+      "borders": 0
+    },
+    "23": {
+      "biome": "Mountains",
+      "specializations": [],
+      "units": 0,
+      "relations": [19, 22, 24, 33, 37],
+      "borders": 0
+    },
+    "24": {
+      "biome": "Farm",
+      "specializations": [],
+      "units": 0,
+      "relations": [12, 23, 25, 28, 30, 31, 37],
+      "borders": 0
+    },
+    "25": {
+      "biome": "Hill",
+      "specializations": [],
+      "units": 1,
+      "relations": [12, 13, 24, 26, 27, 28],
+      "borders": 0
+    },
+    "26": {
+      "biome": "Swamp",
+      "specializations": [],
+      "units": 1,
+      "relations": [13, 25, 27],
+      "borders": true
+    },
+    "27": {
+      "biome": "Hill",
+      "specializations": ["Magic Region"],
+      "units": 0,
+      "relations": [25, 26, 28, 29, 36],
+      "borders": true
+    },
+    "28": {
+      "biome": "Mountains",
+      "specializations": ["Cavern"],
+      "units": 0,
+      "relations": [24, 25, 27, 29, 30],
+      "borders": 0
+    },
+    "29": {
+      "biome": "Forest",
+      "specializations": [],
+      "units": 0,
+      "relations": [27, 28, 30, 36],
+      "borders": true
+    },
+    "30": {
+      "biome": "Mountains",
+      "specializations": ["Mine"],
+      "units": 1,
+      "relations": [28, 29, 31, 32],
+      "borders": true
+    },
+    "31": {
+      "biome": "Forest",
+      "specializations": ["Magic Region"],
+      "units": 1,
+      "relations": [24, 30, 32, 33],
+      "borders": 0
+    },
+    "32": {
+      "biome": "Farm",
+      "specializations": [],
+      "units": 0,
+      "relations": [30, 31, 33, 34],
+      "borders": true
+    },
+    "33": {
+      "biome": "Swamp",
+      "specializations": [],
+      "units": 1,
+      "relations": [22, 23, 24, 31, 32, 34, 35],
+      "borders": 0
+    },
+    "34": {
+      "biome": "Hill",
+      "specializations": ["Mine"],
+      "units": 0,
+      "relations": [32, 33, 35],
+      "borders": true
+    },
+    "35": {
+      "biome": "Mountains",
+      "specializations": [],
+      "units": 0,
+      "relations": [21, 22, 33, 34],
+      "borders": true
+    },
+    "36": {
+      "biome": "Water",
+      "specializations": [],
+      "units": 0,
+      "relations": [29, 27],
+      "borders": 0
+    },
+    "37": {
+      "biome": "Water",
+      "specializations": [],
+      "units": 0,
+      "relations": [8, 9, 10, 12, 14, 19, 23, 24, 25],
+      "borders": 0
+    },
+    "38": {
+      "biome": "Water",
+      "specializations": [],
+      "units": 0,
+      "relations": [0, 1, 2, 3, 4, 16, 17],
+      "borders": 0
+    }
   }
 }
 
