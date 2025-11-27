@@ -172,6 +172,12 @@ void Tribe::remove_from_owned_areas(Area* area)
     owned_areas.erase(std::find(owned_areas.begin(), owned_areas.end(), area));
 }
 
+void Tribe::gather_units_after_losing(Area* on_area)
+{
+    int gathered_units = on_area->get_units_number();
+    free_units_number += gathered_units - 1;
+}
+
 Player* Tribe::get_owner()
 {
     return owner;
