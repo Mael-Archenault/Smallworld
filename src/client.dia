@@ -406,7 +406,7 @@
             <dia:string>#ais#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::vector&lt;ai::Ai_Interface&gt;#</dia:string>
+            <dia:string>#std::vector&lt;ai::Ai_Interface*&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>##</dia:string>

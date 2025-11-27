@@ -44,6 +44,7 @@ void Client::run()
                 is_ai_turn = true;
                 ai->update_state(&state);
                 engine.add_command(ai->give_command(state.get_current_turn_phase()));
+                event_happened = true;
             }
         }
         if (!is_ai_turn)
@@ -90,6 +91,7 @@ void Client::run()
             {
                 std::cout << "Maximum rounds reached." << std::endl;
                 window.close();
+                return;
             }
         }
         catch (const std::exception& e)
