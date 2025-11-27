@@ -20,16 +20,14 @@ int Effects_Bundle::get_bonus_rewards (std::vector<Area*> areas){
 
 void Effects_Bundle::apply_additional_defense(Area* areas){}
 
-void Effects_Bundle::areas_conquered(Area* attacked_area){}
-
 int Effects_Bundle::add_free_units(int current_units_number){
     return 0;
 }
 
-void Effects_Bundle::on_decline(Area* area){}
+void Effects_Bundle::disable_effects(){}
 
 void Effects_Bundle::on_abandon_area(Area* area){}
 
 bool Effects_Bundle::is_area_impenetrable(Area* area){
-    return true;
+    return false;
 }
