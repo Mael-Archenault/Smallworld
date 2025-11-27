@@ -1,9 +1,43 @@
-{
-    "species":{
-        "Dwarves": "Dwarves description"
-    },
-    "powers":{
-        "Berserk": "Berserk description"
-    }
 
+{
+  "species": {
+    "Amazons": "Four of your Amazon tokens may only be used for conquest, not for defense, as indicated by the +4 on the banner. You start with 10 Amazon tokens (plus any granted by your Special Power). At the end of each of your Troop Redeployments, remove four tokens from the map and take them back in hand to redeploy on your next turn.",
+    "Dwarves": "Each Mine Region your Dwarves occupy is worth 1 bonus Victory coin at the end of your turn. This bonus is kept even when the Dwarves are In Decline.",
+    "Elves": "When an enemy conquers one of your Regions, keep all your Elf tokens in hand for redeployment rather than discarding 1 token. Elves never lose tokens to conquests.",
+    "Ghouls": "Your Ghouls stay on the map when going into Decline (instead of only one per Region). Once In Decline, they may continue to conquer new Regions at the start of your turn before your Active race acts.",
+    "Giants": "Your Giants may conquer any Region adjacent to a Mountain Region they occupy at a cost of 1 less Giant token than normal (minimum 1).",
+    "Halflings": "Your Halflings may enter the map through any Region (not only borders). Place a Hole-in-the-Ground in each of the first 2 Regions you conquer, making them immune to enemy conquests and racial/special powers. Holes are removed when Halflings go into Decline or you abandon the Region.",
+    "Humans": "Each Farmland Region your Humans occupy is worth 1 bonus Victory coin at the end of your turn.",
+    "Orcs": "Each non-empty Region your Orcs conquered this turn is worth 1 bonus Victory coin at the end of your turn.",
+    "Ratmen": "No special racial power; they are strong because of their large number of tokens.",
+    "Skeletons": "During Troop Redeployment, take 1 new Skeleton token from the tray for every 2 non-empty Regions you conquered this turn and add it to your troops. If the tray is empty, you gain none.",
+    "Sorcerers": "Once per turn per opponent, your Sorcerers may conquer a Region by replacing a single enemy Active token with one of your own from the tray. The target token must be alone in its Region and the Region must be adjacent to yours. The replaced token returns to the tray. Elves do lose the token.",
+    "Tritons": "Your Tritons may conquer all Coastal Regions at a cost of 1 less Triton token than normal (minimum 1).",
+    "Trolls": "Place a Troll's Lair in each Region your Trolls occupy. The Lair boosts the Region's defense by 1 and remains even after Trolls go into Decline. Remove the Lair if the Region is abandoned or conquered.",
+    "Wizards": "Each Magic Region your Wizards occupy is worth 1 bonus Victory coin at the end of your turn."
+  },
+
+  "powers": {
+    "Alchemist": "Collect 2 bonus Victory coins at the end of each turn in which your race has not yet gone into Decline.",
+    "Berserk": "You may roll the Reinforcement die before each of your conquests. Roll first, then choose the Region you attack and place the required number of tokens minus the rolled value (minimum 1 token). If you lack tokens, this becomes your final conquest attempt.",
+    "Bivouacking": "Deploy the 5 Encampments during Troop Redeployment. Each Encampment counts as 1 defending Race token. They may stack. Encampments are never lost on defense and may be redeployed each turn. They disappear when your race goes into Decline.",
+    "Commando": "You may conquer any Region with 1 less Race token than normal (minimum 1).",
+    "Diplomat": "At the end of your turn, select one opponent whose Active race you did not attack. That opponent may not attack your Active race until your next turn. Does not affect tokens In Decline (Ghouls In Decline may still attack you).",
+    "Dragon Master": "Once per turn, you may conquer a Region using a single token regardless of defense. Place your Dragon in the Region, making it immune to attacks and powers until the Dragon moves. The Dragon disappears when you go into Decline.",
+    "Flying": "You may conquer any Region on the map except Seas and Lakes. These Regions do not need to be adjacent.",
+    "Forest": "Collect 1 bonus Victory coin for each Forest Region you occupy at end of turn.",
+    "Fortified": "Once per turn, place 1 Fortress in a Region you occupy. Each Fortress gives +1 defense and 1 bonus Victory coin (not in Decline). Remove if abandoned or conquered. Max 1 per Region and 6 total.",
+    "Heroic": "At the end of your turn, place each of your 2 Heroes in 2 different Regions you occupy. These Regions are immune to enemy conquests and powers until the Heroes move. Heroes disappear when you go into Decline.",
+    "Hill": "Collect 1 bonus Victory coin for each Hill Region you occupy at end of turn.",
+    "Merchant": "Collect 1 bonus Victory coin for every Region you occupy at end of turn.",
+    "Mounted": "You may conquer any Hill or Farmland Region with 1 less token than normal (minimum 1).",
+    "Pillaging": "Each non-empty Region you conquer this turn is worth 1 bonus Victory coin at the end of the turn.",
+    "Seafaring": "You may conquer Seas and the Lake, treating them as 3 empty Regions. You keep these Regions even in Decline and continue scoring them. Only Seafaring races can occupy Seas and the Lake.",
+    "Spirit": "Your Spirits never count toward the limit of one In Decline race. You may have two In Decline races simultaneously. Spirits never leave the map except when conquered.",
+    "Stout": "You may go into Decline at the end of a regular turn of conquests (after scoring), instead of spending your whole turn doing so.",
+    "Swamp": "Collect 1 bonus Victory coin for each Swamp Region you occupy at end of turn.",
+    "Underworld": "You may conquer any Region with a Cavern using 1 less token (minimum 1). All Cavern Regions are considered adjacent for your conquests.",
+    "Wealthy": "Collect 7 bonus Victory coins at the end of your first turn only."
+  }
 }
+
