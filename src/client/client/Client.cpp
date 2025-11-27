@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <iostream>
+#include <ai/Ai_Random.h>
 
 #include "engine.h"
 
@@ -17,44 +18,55 @@ Client::Client(engine::Engine& engine)
     selected_area_id         = 0;
     tribe_info_window_opened = false;
     renderer.set_selected_area(selected_area_id);
+    ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Random(&state,1)});
 }
 
 void Client::run()
 {
     sf::View view          = window.getDefaultView();  // store your base view
     bool     mouse_clicked = false;
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed) window.close();
-
-            // When window is resized:
-            if (event.type == sf::Event::Resized)
+    while (window.isOpen()) {
+        bool is_ai_turn = false;
+        for (auto ai : ais) {
+            if (ai->id == state.get_current_player().id)
             {
-                // Reset the view to match the new window size
-                view.setSize(event.size.width, event.size.height);
-                view.setCenter(event.size.width / 2.f, event.size.height / 2.f);
-                window.setView(view);
-            }
-
-            // handle click
-
-            if (event.type == sf::Event::MouseButtonPressed && mouse_clicked == false)
-            {
-                mouse_clicked          = true;
-                sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-                std::cout << "Mouse clicked at: " << mouse_pos.x << ", " << mouse_pos.y
-                          << std::endl;
-                handle_mouse_click(mouse_pos);
-            }
-            if (event.type == sf::Event::MouseButtonReleased)
-            {
-                mouse_clicked = false;
+                is_ai_turn = true;
+                ai->update_state(&state);
+                engine.add_command(ai->give_command(state.get_current_turn_phase()));
             }
         }
+        if (!is_ai_turn)
+        {
+            sf::Event event;
+            while (window.pollEvent(event))
+            {
+                if (event.type == sf::Event::Closed) window.close();
 
+                // When window is resized:
+                if (event.type == sf::Event::Resized)
+                {
+                    // Reset the view to match the new window size
+                    view.setSize(event.size.width, event.size.height);
+                    view.setCenter(event.size.width / 2.f, event.size.height / 2.f);
+                    window.setView(view);
+                }
+
+                // handle click
+
+                if (event.type == sf::Event::MouseButtonPressed && mouse_clicked == false)
+                {
+                    mouse_clicked          = true;
+                    sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+                    std::cout << "Mouse clicked at: " << mouse_pos.x << ", " << mouse_pos.y
+                              << std::endl;
+                    handle_mouse_click(mouse_pos);
+                }
+                if (event.type == sf::Event::MouseButtonReleased)
+                {
+                    mouse_clicked = false;
+                }
+            }
+        }
         try
         {
             engine.update();
