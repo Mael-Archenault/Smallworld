@@ -103,7 +103,7 @@ void Tribe_Info_Window::set_values(state::Tribe& tribe)
     }
 }
 
-void Tribe_Info_Window::render()
+void Tribe_Info_Window::render(state::Game_State& state)
 {
     if (!is_visible) return;
 
@@ -114,32 +114,33 @@ void Tribe_Info_Window::render()
 
     // Draw texts
     float section_width  = background.getSize().x / 2.f;
-    float section_height = background.getSize().y / 3.f;
+    float section_height = background.getSize().y;
 
     int title_font_size   = window.getSize().y / 20;
     int content_font_size = window.getSize().y / 30;
 
+    power_title.set_position(sf::Vector2f(background.getPosition().x, background.getPosition().y));
     power_title.set_size(sf::Vector2f(section_width, section_height * 0.2));
     power_title.set_character_size(title_font_size);
-    power_title.set_position(sf::Vector2f(background.getPosition().x, background.getPosition().y));
 
-    power_content.set_size(sf::Vector2f(section_width, section_height * 0.8));
-    power_content.set_character_size(content_font_size);
     power_content.set_position(sf::Vector2f(background.getPosition().x,
                                             background.getPosition().y + section_height * 0.2));
+    power_content.set_size(sf::Vector2f(section_width, section_height * 0.6));
+    power_content.set_character_size(content_font_size);
 
     power_title.render(window);
     power_content.render(window);
 
-    species_title.set_size(sf::Vector2f(section_width, section_height * 0.2));
-    species_title.set_character_size(title_font_size);
     species_title.set_position(
         sf::Vector2f(background.getPosition().x + section_width, background.getPosition().y));
+    species_title.set_size(sf::Vector2f(section_width, section_height * 0.2));
+    species_title.set_character_size(title_font_size);
 
-    species_content.set_size(sf::Vector2f(section_width, section_height * 0.8));
-    species_content.set_character_size(content_font_size);
     species_content.set_position(sf::Vector2f(background.getPosition().x + section_width,
                                               background.getPosition().y + section_height * 0.2));
+    species_content.set_size(sf::Vector2f(section_width, section_height * 0.6));
+    species_content.set_character_size(content_font_size);
+
     species_title.render(window);
     species_content.render(window);
 
@@ -148,16 +149,20 @@ void Tribe_Info_Window::render()
     close_window_button.set_character_size(content_font_size);
     close_window_button.set_position(
         sf::Vector2f(background.getPosition().x + background.getSize().x * 0.1,
-                     background.getPosition().y + background.getSize().y * 0.9));
+                     background.getPosition().y + background.getSize().y * 0.85));
 
-    buy_tribe_button.set_size(
-        sf::Vector2f(background.getSize().x * 0.3, background.getSize().y * 0.1));
-    buy_tribe_button.set_character_size(content_font_size);
-    buy_tribe_button.set_position(
-        sf::Vector2f(background.getPosition().x + background.getSize().x * 0.6,
-                     background.getPosition().y + background.getSize().y * 0.9));
     close_window_button.render(window);
-    buy_tribe_button.render(window);
+    if (state.get_current_turn_phase() == state::Turn_Phase::START &&
+        state.get_current_player().get_tribes().first == nullptr)
+    {
+        buy_tribe_button.set_size(
+            sf::Vector2f(background.getSize().x * 0.3, background.getSize().y * 0.1));
+        buy_tribe_button.set_character_size(content_font_size);
+        buy_tribe_button.set_position(
+            sf::Vector2f(background.getPosition().x + background.getSize().x * 0.6,
+                         background.getPosition().y + background.getSize().y * 0.85));
+        buy_tribe_button.render(window);
+    }
 }
 
 std::unordered_map<std::string, sf::FloatRect> Tribe_Info_Window::get_layout()

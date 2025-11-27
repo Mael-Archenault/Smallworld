@@ -21,8 +21,19 @@ Client::Client(engine::Engine& engine)
 
 void Client::run()
 {
-    sf::View view          = window.getDefaultView();  // store your base view
-    bool     mouse_clicked = false;
+    // first rendering
+    sf::Event e;
+    while (window.pollEvent(e))
+    {
+    }  // purge early events
+
+    window.clear(sf::Color::Black);
+    renderer.render(state);
+    window.display();
+
+    sf::View view           = window.getDefaultView();  // store your base view
+    bool     mouse_clicked  = false;
+    bool     event_happened = false;
     while (window.isOpen())
     {
         sf::Event event;
@@ -34,6 +45,7 @@ void Client::run()
             if (event.type == sf::Event::Resized)
             {
                 // Reset the view to match the new window size
+                event_happened = true;
                 view.setSize(event.size.width, event.size.height);
                 view.setCenter(event.size.width / 2.f, event.size.height / 2.f);
                 window.setView(view);
@@ -43,6 +55,7 @@ void Client::run()
 
             if (event.type == sf::Event::MouseButtonPressed && mouse_clicked == false)
             {
+                event_happened         = true;
                 mouse_clicked          = true;
                 sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
                 std::cout << "Mouse clicked at: " << mouse_pos.x << ", " << mouse_pos.y
@@ -66,9 +79,13 @@ void Client::run()
             std::cerr << "Error executing command: " << e.what() << std::endl;
         }
 
-        window.clear(sf::Color::Black);
-        renderer.render(state);
-        window.display();
+        if (event_happened)
+        {
+            window.clear(sf::Color::Black);
+            renderer.render(state);
+            window.display();
+            event_happened = false;
+        }
     }
 }
 
@@ -94,28 +111,32 @@ void Client::handle_mouse_click(sf::Vector2i position)
     }
 
     // click on map
-    else if (layout_infos["map"].contains(static_cast<sf::Vector2f>(position)))
+    if (layout_infos["map"].contains(static_cast<sf::Vector2f>(position)))
     {
         handle_map_click(position, layout_infos["map"]);
+        return;
     }
 
     // click on the tribe stack
-    else if (layout_infos["tribe_stack"].contains(static_cast<sf::Vector2f>(position)))
+    if (layout_infos["tribe_stack"].contains(static_cast<sf::Vector2f>(position)))
     {
         handle_tribe_stack_click(position, layout_infos["tribe_stack"]);
+        return;
     }
 
     // click on the player area
 
-    else if (layout_infos["player_area"].contains(static_cast<sf::Vector2f>(position)))
+    if (layout_infos["player_area"].contains(static_cast<sf::Vector2f>(position)))
     {
         handle_player_area_click(position, layout_infos);
+        return;
     }
 
     // click on the buttons
-    else if (layout_infos["conquer_button"].contains(static_cast<sf::Vector2f>(position)) &&
-             current_phase == state::Turn_Phase::CONQUER)
+    if (layout_infos["conquer_button"].contains(static_cast<sf::Vector2f>(position)) &&
+        current_phase == state::Turn_Phase::CONQUER)
     {
+        // getting attackable areas
         std::vector<std::pair<int, int>> prices =
             state.get_conquest_prices(state.get_current_player().id);
         int price;
@@ -141,30 +162,35 @@ void Client::handle_mouse_click(sf::Vector2i position)
             engine.add_command(std::make_unique<engine::Conquer_Command>(
                 state.get_current_player().id, selected_area_id, price, -1));
         }
+        return;
     }
-    else if (layout_infos["decline_button"].contains(static_cast<sf::Vector2f>(position)) &&
-             current_phase == state::Turn_Phase::START)
+    if (layout_infos["decline_button"].contains(static_cast<sf::Vector2f>(position)) &&
+        current_phase == state::Turn_Phase::START)
     {
         engine.add_command(
             std::make_unique<engine::Decline_Command>(state.get_current_player().id));
+        return;
     }
-    else if (layout_infos["start_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
-             current_phase == state::Turn_Phase::START)
+    if (layout_infos["start_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
+        current_phase == state::Turn_Phase::START)
     {
         engine.add_command(
             std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id));
+        return;
     }
-    else if (layout_infos["end_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
-             current_phase == state::Turn_Phase::CONQUER)
+    if (layout_infos["end_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
+        current_phase == state::Turn_Phase::CONQUER)
     {
         engine.add_command(
             std::make_unique<engine::End_Conquer_Command>(state.get_current_player().id));
+        return;
     }
-    else if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
-             current_phase == state::Turn_Phase::REDEPLOY)
+    if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
+        current_phase == state::Turn_Phase::REDEPLOY)
     {
         engine.add_command(std::make_unique<engine::Redeploy_Command>(state.get_current_player().id,
                                                                       selected_area_id, 1));
+        return;
     }
 }
 
@@ -253,11 +279,15 @@ void Client::handle_info_window_click(sf::Vector2i                              
     else if (layout_infos["tribe_info_window_buy_button"].contains(
                  static_cast<sf::Vector2f>(position)))
     {
-        std::cout << "Buying" << std::endl;
-        engine.add_command(std::make_unique<engine::Choose_Species_Command>(
-            state.get_current_player().id, selected_position_in_stack));
-        renderer.close_tribe_info_window();
-        tribe_info_window_opened = false;
+        if (state.get_current_turn_phase() == state::Turn_Phase::START &&
+            state.get_current_player().get_tribes().first == nullptr)
+        {
+            std::cout << "Buying" << std::endl;
+            engine.add_command(std::make_unique<engine::Choose_Species_Command>(
+                state.get_current_player().id, selected_position_in_stack));
+            renderer.close_tribe_info_window();
+            tribe_info_window_opened = false;
+        }
     }
 }
 }  // namespace client

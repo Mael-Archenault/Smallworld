@@ -1,3 +1,4 @@
+#include <iostream>
 #include <sstream>
 
 #include "renderer.h"
@@ -6,37 +7,29 @@
 namespace renderer
 {
 
-void Text_Box::wrap_text()
+void Text_Box::set_content_with_wrapping()
+// wrapping text to avoid it getting out of the box (generated using ChatGPT)
 {
-    float       maxWidth = box.getSize().x - 10.f;  // padding
-    std::string original = text.getString();
+    const float       maxWidth = box.getSize().x - 10.f;  // Padding
+    const std::string input    = content;
 
-    // We'll only measure text using this, to avoid corrupting the real one
+    // Text used only for width measurement
     sf::Text measure(text);
 
-    // ---------- 1. TOKENIZE PRESERVING NEWLINES ----------
+    // ===== 1. TOKENIZE (words, spaces, newlines) =====
     std::vector<std::string> tokens;
+    std::string              current;
 
-    std::string current;
-    for (char c : original)
+    for (char c : input)
     {
-        if (c == '\n')
+        if (c == '\n' || c == ' ')
         {
             if (!current.empty())
             {
                 tokens.push_back(current);
                 current.clear();
             }
-            tokens.push_back("\n");
-        }
-        else if (c == ' ')
-        {
-            if (!current.empty())
-            {
-                tokens.push_back(current);
-                current.clear();
-            }
-            tokens.push_back(" ");
+            tokens.emplace_back(1, c);  // push "\n" or " "
         }
         else
         {
@@ -45,59 +38,50 @@ void Text_Box::wrap_text()
     }
     if (!current.empty()) tokens.push_back(current);
 
-    // ---------- 2. BUILD WRAPPED LINES ----------
+    // ===== 2. BUILD LINES WITH WRAPPING =====
     std::vector<std::string> lines;
     std::string              line;
 
-    for (const auto& t : tokens)
+    for (const auto& token : tokens)
     {
-        if (t == "\n")
+        // Explicit line break
+        if (token == "\n")
         {
             lines.push_back(line);
             line.clear();
             continue;
         }
 
-        std::string test = line + t;
-        measure.setString(test);
+        // Test if adding token exceeds maxWidth
+        std::string candidate = line + token;
+        measure.setString(candidate);
 
-        bool isSpace = (t == " ");
+        const bool isSpace = (token == " ");
 
-        if (measure.getLocalBounds().width > maxWidth && !line.empty())
+        if (!line.empty() && measure.getLocalBounds().width > maxWidth)
         {
-            // Push current line
+            // Wrap
             lines.push_back(line);
-
-            // Start new line with t (skip leading space)
-            line = isSpace ? "" : t;
+            line = isSpace ? "" : token;  // avoid leading space
         }
         else
         {
-            line = test;
+            line = candidate;
         }
     }
+
     if (!line.empty()) lines.push_back(line);
 
-    // ---------- 3. ALIGN LINES ----------
-    std::string finalText;
-
+    // ===== 3. JOIN LINES =====
+    std::string finalOutput;
     for (size_t i = 0; i < lines.size(); ++i)
     {
-        const std::string& L = lines[i];
-
-        measure.setString(L);
-        float lw = measure.getLocalBounds().width;
-
-        // Convert pixel offset to number of spaces
-        measure.setString(" ");
-        float spaceW = measure.getLocalBounds().width;
-
-        finalText += L;
-        if (i < lines.size() - 1) finalText += "\n";
+        finalOutput += lines[i];
+        if (i + 1 < lines.size()) finalOutput += "\n";
     }
 
-    // ---------- 4. APPLY TO THE REAL TEXT ----------
-    text.setString(finalText);
+    // ===== 4. SET TEXT =====
+    text.setString(finalOutput);
 }
 
 Text_Box::Text_Box()
@@ -119,7 +103,7 @@ void Text_Box::set_font(std::string font_name)
         throw std::runtime_error("Failed to load font: " + font_name);
     }
     text.setFont(font);
-    wrap_text();
+    set_content_with_wrapping();
     set_position(box.getPosition());  // replacing the text inside the box
 }
 
@@ -132,20 +116,20 @@ void Text_Box::set_position(sf::Vector2f new_position)
                    textbounds.top + textbounds.height / 2.f);
     text.setPosition(new_position.x + box.getSize().x / 2.f,
                      new_position.y + box.getSize().y / 2.f);
-    wrap_text();
 }
 
 void Text_Box::set_content(std::string new_content)
 {
-    text.setString(new_content);
-    wrap_text();
+    content = new_content;
+
+    set_content_with_wrapping();
     set_position(box.getPosition());  // replacing the text inside the box
 }
 
 void Text_Box::set_character_size(int new_size)
 {
     text.setCharacterSize(new_size);
-    wrap_text();
+    set_content_with_wrapping();
     set_position(box.getPosition());  // replacing the text inside the box
 }
 
@@ -159,7 +143,7 @@ void Text_Box::set_colors(sf::Color line_color, sf::Color fill_color, sf::Color 
 void Text_Box::set_size(sf::Vector2f new_size)
 {
     box.setSize(new_size);
-    wrap_text();
+    set_content_with_wrapping();
     set_position(box.getPosition());  // replacing the text inside the box
 }
 

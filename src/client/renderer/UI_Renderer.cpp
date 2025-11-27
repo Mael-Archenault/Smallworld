@@ -16,7 +16,7 @@ void UI_Renderer::render(state::Game_State& state)
     sidebar_renderer.render(state);
     map_overlay_renderer.render(state);
     widgets_renderer.render(state);
-    tribe_info_window.render();
+    tribe_info_window.render(state);
 }
 
 void UI_Renderer::set_selected_area(int area_id)
