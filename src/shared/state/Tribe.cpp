@@ -71,6 +71,7 @@ std::vector<std::pair<int, int>> Tribe::get_conquest_prices(Map* map)
             if (!neighbor) continue;
             if (neighbor->get_owner_tribe() == this) continue;
             int nid = neighbor->id;
+            if (neighbor->get_biome() == Area_Biome::WATER) continue;
             if (seen.find(nid) != seen.end()) continue;
             seen.insert(nid);
             int price = neighbor->get_conquest_price(*this);
@@ -114,7 +115,14 @@ void Tribe::redeploy_units(int area_id, int n_added_units)
 
 void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
 {
-    if (n_units + std::max(0, dice_units) < attacked_area->get_conquest_price(*this))
+    if (dice_units != -1)
+    {
+        if (n_units + dice_units < attacked_area->get_conquest_price(*this))
+        {
+            return;
+        }
+    }
+    if (n_units < attacked_area->get_conquest_price(*this))
     {
         throw std::invalid_argument("Tribe : conquer: not enough units to conquer the area");
     }
@@ -170,6 +178,12 @@ void Tribe::remove_from_owned_areas(Area* area)
         throw std::invalid_argument("Tribe : remove_from_owned_areas: area not owned by the tribe");
     }
     owned_areas.erase(std::find(owned_areas.begin(), owned_areas.end(), area));
+}
+
+void Tribe::gather_units_after_losing(Area* on_area)
+{
+    int gathered_units = on_area->get_units_number();
+    free_units_number += gathered_units - 1;
 }
 
 Player* Tribe::get_owner()

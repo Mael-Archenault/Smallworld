@@ -38,19 +38,8 @@ void Engine::update()
     // take the first command
     std::unique_ptr<Command>& command = command_queue.front();
 
-    // Verify if the command is valid
+    // Verify if turn's conditions
 
-    if (!player_has_an_active_tribe(state, command->player_id) &&
-        command->get_id() != Choose_Species_Command::id)  // all commands require an active tribe
-                                                          // (except Choose_Species)
-    {
-        throw std::runtime_error("Player has no active tribe!");
-    }
-    if (player_has_an_active_tribe(state, command->player_id) &&
-        command->get_id() == Choose_Species_Command::id)  // Choose_Species requires no active tribe
-    {
-        throw std::runtime_error("Player already has an active tribe!");
-    }
     if (state.get_current_player().id != command->player_id)
     {
         throw std::runtime_error("It's not the player's turn!");

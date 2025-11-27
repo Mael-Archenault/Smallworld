@@ -7,7 +7,7 @@
 namespace state
 {
 
-Game_State::Game_State(int n_players) : n_players(n_players), round(0), map(Map("4_players"))
+Game_State::Game_State(int n_players) : n_players(n_players), round(1), map(Map("4_players"))
 {
     for (int i = 0; i < n_players; i++)
     {
@@ -198,7 +198,21 @@ void Game_State::set_current_turn_phase(Turn_Phase phase)
 void Game_State::next_player()
 {
     int current_index = current_player->id;
-    int next_index    = (current_index + 1) % n_players;
-    current_player    = &players.at(next_index);
+    int next_index;
+    if (current_index + 1 >= n_players)
+    {
+        next_round();
+        next_index = 0;
+    }
+    else
+    {
+        next_index = current_index + 1;
+    }
+    current_player = &players.at(next_index);
+}
+
+bool Game_State::is_game_finished()
+{
+    return round > map.get_max_round();
 }
 }  // namespace state
