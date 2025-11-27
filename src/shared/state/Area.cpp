@@ -3,8 +3,12 @@
 #include <random>
 #include <stdexcept>
 
-namespace state
-{
+#include "Power_Description.h"
+#include "Species_Description.h"
+
+using namespace state;
+
+const int default_attacking_units_required = 2;
 
 Area::Area(int id, int n_units, Area_Biome biome,
            std::vector<Area_Specialization> area_specialization, bool is_border)
@@ -17,7 +21,7 @@ Area::Area(int id, int n_units, Area_Biome biome,
 {
     if (biome == state::Area_Biome::MOUNTAINS)
     {
-        special_tokens.push_back(state::Area_Special_Token::MOUNTAIN);
+        add_special_token(state::Area_Special_Token::MOUNTAIN);
     }
 }
 
@@ -31,11 +35,7 @@ int Area::gather_free_units()
 
 int Area::get_conquest_price(Tribe& attacking_tribe)
 {
-    int price = 2;
-    price     = price + special_tokens.size();
-    price     = price + units_number;
-
-    return price;
+    return units_number + special_tokens.size() + default_attacking_units_required;
 }
 
 void Area::deploy_units(int n_added_units)
@@ -91,13 +91,17 @@ std::vector<Area_Specialization>& Area::get_area_specialization()
     return area_specialization;
 }
 
-void Area::clear_units()
-{
-    units_number = 0;
-}
-
 Area_Biome Area::get_biome()
 {
     return biome;
 }
-}  // namespace state
+
+void Area::add_special_token(Area_Special_Token special_token)
+{
+    special_tokens.push_back(special_token);
+}
+
+void Area::clear_units()
+{
+    units_number = 0;
+}

@@ -8,7 +8,7 @@ namespace state
 
 Player::Player(int id) : id(id)
 {
-    money            = 0;
+    money            = 5;
     active_tribe     = nullptr;
     tribe_in_decline = nullptr;
 }
@@ -98,10 +98,16 @@ void Player::go_in_decline()
         active_tribe     = nullptr;
         return;
     }
+    throw std::invalid_argument("go_in_decline:there is no active tribe for this player");
 }
 
-void Player::set_active_tribe(Tribe* tribe)
+void Player::set_active_tribe(Tribe* tribe, int cost)
 {
+    if (money < cost)
+    {
+        throw std::invalid_argument("not enough money");
+    }
+    money -= cost;
     active_tribe = tribe;
 }
 

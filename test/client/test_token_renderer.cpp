@@ -1,41 +1,21 @@
-#include <boost/test/unit_test.hpp>
-
-
-#include <state.h>
 #include <renderer.h>
-
+#include <state.h>
 
 #include <SFML/Graphics.hpp>
+#include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
 {
-  BOOST_CHECK(1);
+    BOOST_CHECK(1);
 }
 
 BOOST_AUTO_TEST_CASE(TestTribeRenderer)
 {
-  {
-
-    sf::RenderWindow window(sf::VideoMode(800,600), "Renderer Test");
+    sf::RenderWindow         window(sf::VideoMode(800, 600), "Renderer Test");
     renderer::Token_Renderer token_renderer("area_specialization");
     token_renderer.set_sprite("Cavern");
     token_renderer.set_number(15);
     token_renderer.scale(1.0f, 1.0f);
 
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear(sf::Color::Black);
-        token_renderer.render(window, sf::Vector2f(200,100), false);
-        window.display();
-    }
-
-
-  }
+    token_renderer.render(window, sf::Vector2f(200, 100), false);
 }

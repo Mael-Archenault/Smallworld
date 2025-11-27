@@ -28,8 +28,8 @@ Sidebar_Renderer::Sidebar_Renderer(sf::RenderWindow& window) : window(window)
     int title_character_size = 32;
     int value_character_size = 18;
 
-    int section_width  = window.getSize().x / 6.f;
-    int section_height = window.getSize().y / 12.f;
+    float section_width  = window.getSize().x / 6.f;
+    float section_height = window.getSize().y / 12.f;
 
     // player infos
     player_title.set_content("Player:");
@@ -56,10 +56,10 @@ Sidebar_Renderer::Sidebar_Renderer(sf::RenderWindow& window) : window(window)
     // area info section
 
     set_selected_area_id(-1);
-    int area_info_height = window.getSize().y - 6 * section_height;
-    int area_info_width  = window.getSize().x / 6.f;
+    float area_info_height = window.getSize().y - 6 * section_height;
+    float area_info_width  = window.getSize().x / 6.f;
 
-    int area_info_y_offset = 5 * section_height;
+    float area_info_y_offset = 5 * section_height;
 
     area_info_title.set_content("Area Infos");
     area_info_title.set_character_size(title_character_size);
@@ -83,8 +83,8 @@ Sidebar_Renderer::Sidebar_Renderer(sf::RenderWindow& window) : window(window)
 void Sidebar_Renderer::render(state::Game_State& state)
 
 {
-    int section_width  = window.getSize().x / 6.f;
-    int section_height = window.getSize().y / 12.f;
+    float section_width  = window.getSize().x / 6.f;
+    float section_height = window.getSize().y / 12.f;
 
     // player infos
     player_title.set_position(sf::Vector2f(0.f, 0.f));
@@ -100,10 +100,10 @@ void Sidebar_Renderer::render(state::Game_State& state)
     turn_phase_value.set_position(sf::Vector2f(2.f, 3 * section_height));
     turn_phase_value.set_size(sf::Vector2f(section_width, section_height));
 
-    int area_info_height = window.getSize().y - 6 * section_height;
-    int area_info_width  = window.getSize().x / 6.f;
+    float area_info_height = window.getSize().y - 6 * section_height;
+    float area_info_width  = window.getSize().x / 6.f;
 
-    int area_info_y_offset = 5 * section_height;
+    float area_info_y_offset = 5 * section_height;
 
     area_info_title.set_position({2.f, area_info_y_offset});
     area_info_title.set_size({area_info_width, section_height});

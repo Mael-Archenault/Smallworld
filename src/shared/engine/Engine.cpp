@@ -22,7 +22,7 @@ std::unordered_map<int, state::Turn_Phase> phase_command_map = {
     {End_Conquer_Command::id, state::Turn_Phase::CONQUER},
     {Redeploy_Command::id, state::Turn_Phase::REDEPLOY}};
 
-Engine::Engine(state::Game_State& state) : state(state) {};
+Engine::Engine() : state(2) {};
 
 void Engine::add_command(std::unique_ptr<Command> command)
 {
@@ -44,24 +44,20 @@ void Engine::update()
         command->get_id() != Choose_Species_Command::id)  // all commands require an active tribe
                                                           // (except Choose_Species)
     {
-        command_queue.pop();
         throw std::runtime_error("Player has no active tribe!");
     }
     if (player_has_an_active_tribe(state, command->player_id) &&
         command->get_id() == Choose_Species_Command::id)  // Choose_Species requires no active tribe
     {
-        command_queue.pop();
         throw std::runtime_error("Player already has an active tribe!");
     }
     if (state.get_current_player().id != command->player_id)
     {
-        command_queue.pop();
         throw std::runtime_error("It's not the player's turn!");
     }
 
     if (phase_command_map[command->get_id()] != state.get_current_turn_phase())
     {
-        command_queue.pop();
         throw std::runtime_error("Command not allowed in the current phase");
     }
 
@@ -76,6 +72,11 @@ void Engine::update()
 void Engine::remove_last_command()
 {
     command_queue.pop();
+}
+
+state::Game_State& Engine::get_state()
+{
+    return state;
 }
 
 }  // namespace engine

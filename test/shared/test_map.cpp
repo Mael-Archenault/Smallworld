@@ -45,12 +45,9 @@ BOOST_AUTO_TEST_CASE(TestMap)
 
         BOOST_CHECK_EQUAL(map.get_area(0).id, 0);
 
-        state::Effects_Bundle       species_effect = state::Dwarf_Effects_Bundle();
         state::Species_Description* species_description =
-            new state::Species_Description("test_Species", 5, 10, species_effect);
-        state::Effects_Bundle     power_effect = state::Dwarf_Effects_Bundle();
-        state::Power_Description* power_description =
-            new state::Power_Description("test_Power", 4, power_effect);
+            new state::Species_Description("test_Species", 5, 10);
+        state::Power_Description* power_description = new state::Power_Description("test_Power", 4);
 
         state::Tribe tribe(0, species_description, power_description);
         map.get_starting_points_prices(tribe, false);

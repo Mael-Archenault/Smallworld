@@ -1,5 +1,6 @@
 #include "Game_State.h"
 
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
@@ -69,6 +70,20 @@ std::vector<int> Game_State::get_redeployable_areas(int player_id)
 
 void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_units, int dice_units)
 {
+    // verifying if the area is attackable by the player
+
+    std::vector<std::pair<int, int>> attackable_areas = get_conquest_prices(attacking_player_id);
+    std::vector<int>                 area_ids;
+    for (size_t i = 0; i < attackable_areas.size(); i++)
+    {
+        area_ids.push_back(attackable_areas.at(i).first);
+    }
+    if (std::find(area_ids.begin(), area_ids.end(), attacked_area_id) == area_ids.end())
+    {
+        throw std::invalid_argument("conquer: Area not conquerable by the player");
+    }
+
+    // attacking the targeted area
     Area& attacked_area = map.get_area(attacked_area_id);
     for (size_t i = 0; i < players.size(); i++)
     {
@@ -78,7 +93,6 @@ void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_un
             return;
         }
     }
-    throw std::invalid_argument("conquer: Player id not found");
 }
 
 int Game_State::roll_dice_for_bonus_units()
@@ -124,7 +138,7 @@ void Game_State::take_tribe_at_position(int position, int player_id)
         {
             Tribe* tribe = tribe_stack.take_tribe_at_position(position);
             tribe->set_owner(&players[i]);
-            players[i].set_active_tribe(tribe);
+            players[i].set_active_tribe(tribe, position);
             return;
         }
     }
@@ -179,22 +193,6 @@ Turn_Phase Game_State::get_current_turn_phase()
 void Game_State::set_current_turn_phase(Turn_Phase phase)
 {
     current_turn_phase = phase;
-
-    std::string phase_name;
-    if (phase == Turn_Phase::START)
-    {
-        phase_name = "START";
-    }
-    else if (phase == Turn_Phase::CONQUER)
-    {
-        phase_name = "CONQUER";
-    }
-    else if (phase == Turn_Phase::REDEPLOY)
-    {
-        phase_name = "REDEPLOY";
-    }
-
-    std::cout << "Current phase set to : " + phase_name << std::endl;
 }
 
 void Game_State::next_player()

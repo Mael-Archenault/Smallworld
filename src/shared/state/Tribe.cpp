@@ -5,11 +5,13 @@
 #include <unordered_set>
 
 #include "Area_Biome.h"
+#include "Effects_Bundle.h"
 #include "Game_State.h"
 #include "Map.h"
+#include "Power_Description.h"
+#include "Species_Description.h"
 
-namespace state
-{
+using namespace state;
 
 Tribe::Tribe(int id, Species_Description* species_description, Power_Description* power_description)
     : id(id),
@@ -22,6 +24,7 @@ Tribe::Tribe(int id, Species_Description* species_description, Power_Description
     free_units_number = species_description->get_initial_units_number() +
                         power_description->get_initial_units_number();
 }
+
 Species_Description* Tribe::get_species_description()
 {
     return species_description;
@@ -37,8 +40,10 @@ void Tribe::gather_free_units()
     for (size_t i = 0; i < owned_areas.size(); i++)
     {
         // Remove all units except one from each area and add them to free_units_number
-        free_units_number = free_units_number + owned_areas[i]->gather_free_units();
+        free_units_number += owned_areas[i]->gather_free_units();
     }
+    free_units_number +=
+        species_description->add_free_units(free_units_number + owned_areas.size());
 }
 
 int Tribe::get_free_units_number()
@@ -98,6 +103,8 @@ void Tribe::redeploy_units(int area_id, int n_added_units)
         if (owned_areas[i]->id == area_id)
         {
             owned_areas[i]->deploy_units(n_added_units);
+            species_description->apply_additional_defense(owned_areas[i]);
+            power_description->apply_additional_defense(owned_areas[i]);
             free_units_number -= n_added_units;
             return;
         }
@@ -109,14 +116,15 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
 {
     if (n_units + std::max(0, dice_units) < attacked_area->get_conquest_price(*this))
     {
-        return;
+        throw std::invalid_argument("Tribe : conquer: not enough units to conquer the area");
     }
     if (n_units > free_units_number + std::max(0, dice_units))
     {
-        return;
+        throw std::invalid_argument("Tribe : conquer: not enough free units to conquer the area");
     }
     attacked_area->set_owner_tribe(this);
     attacked_area->set_units_number(n_units);
+    species_description->areas_conquered(attacked_area);
     free_units_number -= n_units;
     owned_areas.push_back(attacked_area);
 }
@@ -127,7 +135,9 @@ void Tribe::go_in_decline()
 }
 int Tribe::get_rewards()
 {
-    return owned_areas.size();
+    int reward = owned_areas.size() + species_description->get_bonus_rewards(owned_areas) +
+                 power_description->get_bonus_rewards(owned_areas);
+    return reward;
 }
 
 std::string Tribe::get_species_name()
@@ -171,5 +181,3 @@ void Tribe::set_owner(Player* player)
 {
     owner = player;
 }
-
-}  // namespace state
