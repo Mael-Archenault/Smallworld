@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
 
         // initialization testing
         BOOST_CHECK_EQUAL(state.get_n_players(), 4);
-        BOOST_CHECK_EQUAL(state.get_round(), 0);
+        BOOST_CHECK_EQUAL(state.get_round(), 1);
         BOOST_CHECK_EQUAL(state.get_players().size(), 4);
         BOOST_CHECK_EQUAL(state.get_map().get_name(), "4_players");
         BOOST_CHECK_EQUAL(state.get_tribe_stack().get_tribes_on_top().size(), 6);
@@ -83,6 +83,6 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         state.next_player();
         BOOST_CHECK_EQUAL(state.get_current_player().id, 1);
         state.next_round();
-        BOOST_CHECK_EQUAL(state.get_round(), 1);
+        BOOST_CHECK_EQUAL(state.get_round(), 2);
     }
 }
