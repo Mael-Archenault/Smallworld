@@ -16,7 +16,7 @@ namespace state
 std::unordered_map<std::string, std::function<effects::Species_Description*()>> str_to_species = {
     {"Amazons", []() { return new effects::Amazons_Species(); }},
     {"Dwarves", []() { return new effects::Dwarves_Species(); }},
-    {"Elves", []() { return new effects::Dwarves_Species(); }},
+    {"Elves", []() { return new effects::Elves_Species(); }},
     {"Ghouls", []() { return new effects::Dwarves_Species(); }},
     {"Giants", []() { return new effects::Giants_Species(); }},
     {"Halflings", []() { return new effects::Halflings_Species(); }},

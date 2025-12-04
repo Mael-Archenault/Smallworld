@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "state/Area.h"
+#include "state/Map.h"
 
 namespace effects
 {
@@ -30,7 +31,8 @@ std::vector<std::pair<int, int>> modify_price(std::vector<std::pair<int, int>> p
 Giants_Species::Giants_Species() : Species_Description("Giants", 6, 8) {}
 
 std::vector<std::pair<int, int>> Giants_Species::conquest_prices_effect(
-    std::vector<std::pair<int, int>> initial_conquest_prices, std::vector<state::Area*> owned_areas)
+    std::vector<std::pair<int, int>> initial_conquest_prices, std::vector<state::Area*> owned_areas,
+    state::Map* map)
 {
     std::unordered_set<int> seen;
 

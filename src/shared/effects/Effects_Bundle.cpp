@@ -2,6 +2,7 @@
 #include "effects/Effects_Bundle.h"
 
 #include "state/Area.h"
+#include "state/Map.h"
 
 namespace effects
 {
@@ -14,7 +15,8 @@ int Effects_Bundle::first_gather_effect(int initial_free_units_number)
 }
 
 std::vector<std::pair<int, int>> Effects_Bundle::conquest_prices_effect(
-    std::vector<std::pair<int, int>> initial_conquest_price, std::vector<state::Area*> owned_areas)
+    std::vector<std::pair<int, int>> initial_conquest_price, std::vector<state::Area*> owned_areas,
+    state::Map* map)
 {
     return initial_conquest_price;
 }
@@ -32,7 +34,10 @@ int Effects_Bundle::rewards_effect(std::vector<state::Area*> owned_areas)
 {
     return 0;
 }
-void Effects_Bundle::lose_effect(state::Area* lost_area) {}
+int Effects_Bundle::lose_effect(state::Area* lost_area)
+{
+    return 0;
+}
 
 void Effects_Bundle::decline_effect(std::vector<state::Area*> owned_areas) {}
 

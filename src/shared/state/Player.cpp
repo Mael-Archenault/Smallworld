@@ -62,11 +62,11 @@ void Player::redeploy_units(int area_id, int n_added_units)
     throw std::invalid_argument("redeploy_units:there is no active tribe for this player");
 }
 
-void Player::conquer(Area* attacked_area, int n_units, int dice_units)
+void Player::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
 {
     if (active_tribe != nullptr)
     {
-        active_tribe->conquer(attacked_area, n_units, dice_units);
+        active_tribe->conquer(attacked_area, n_units, dice_units, map);
         return;
     }
     throw std::invalid_argument("conquer:there is no active tribe for this player");

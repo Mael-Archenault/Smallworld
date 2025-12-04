@@ -28,10 +28,11 @@ void Trolls_Species::redeploy_effect(std::vector<state::Area*> owned_areas)
             continue;
         }
         area->add_special_token(state::Area_Special_Token::TROLL_LAIR);
+        placed_troll_lairs++;
     }
 }
 
-void Trolls_Species::lose_effect(state::Area* lost_area)
+int Trolls_Species::lose_effect(state::Area* lost_area)
 {
     auto& tokens = lost_area->get_special_tokens();
     auto  it     = std::find(tokens.begin(), tokens.end(), state::Area_Special_Token::TROLL_LAIR);
@@ -39,6 +40,8 @@ void Trolls_Species::lose_effect(state::Area* lost_area)
     {
         tokens.erase(it);
     }
+    placed_troll_lairs--;
+    return 0;
 }
 
 void Trolls_Species::disappearing_effect(std::vector<state::Area*> owned_areas)
@@ -52,5 +55,6 @@ void Trolls_Species::disappearing_effect(std::vector<state::Area*> owned_areas)
             tokens.erase(it);
         }
     }
+    placed_troll_lairs = 0;
 }
 }  // namespace effects

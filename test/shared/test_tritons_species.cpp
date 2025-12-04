@@ -8,7 +8,7 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
     BOOST_CHECK(1);
 }
 
-BOOST_AUTO_TEST_CASE(Test_Humans_Species)
+BOOST_AUTO_TEST_CASE(Test_Tritons_Species)
 {
     std::vector<state::Area*> owned_areas;
     state::Area               area1(0, 5, state::Area_Biome::HILL, {}, false);
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(Test_Humans_Species)
 
     std::vector<std::pair<int, int>> initial_conquest_prices = {{area2.id, 5}, {area4.id, 6}};
     std::vector<std::pair<int, int>> modified_prices =
-        tritons_species.conquest_prices_effect(initial_conquest_prices, owned_areas);
+        tritons_species.conquest_prices_effect(initial_conquest_prices, owned_areas, nullptr);
     BOOST_CHECK_EQUAL(modified_prices.at(0).second, 4);  // price reduced by 1
     BOOST_CHECK_EQUAL(modified_prices.at(1).second, 6);  // initial price
 }

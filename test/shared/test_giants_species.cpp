@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(Test_Humans_Species)
 
     std::vector<std::pair<int, int>> initial_conquest_prices = {{area2.id, 5}, {area3.id, 4}};
     std::vector<std::pair<int, int>> modified_prices =
-        giants_species.conquest_prices_effect(initial_conquest_prices, owned_areas);
+        giants_species.conquest_prices_effect(initial_conquest_prices, owned_areas, nullptr);
     BOOST_CHECK_EQUAL(modified_prices.at(0).second, 4);  // price reduced by 1
     BOOST_CHECK_EQUAL(modified_prices.at(1).second, 4);  // initial price
 }

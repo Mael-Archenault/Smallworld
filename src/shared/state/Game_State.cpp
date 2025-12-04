@@ -89,7 +89,7 @@ void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_un
     {
         if (players[i].id == attacking_player_id)
         {
-            players[i].conquer(&attacked_area, n_units, dice_units);
+            players[i].conquer(&attacked_area, n_units, dice_units, &map);
             return;
         }
     }

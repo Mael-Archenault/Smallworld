@@ -1,22 +1,7 @@
-#include <state.h>
-
 #include <boost/test/unit_test.hpp>
 
-class Power_Description_Observer : public state::Power_Description
-{
-   public:
-    Power_Description_Observer(std::string name, int given_units_number)
-        : state::Power_Description(name, given_units_number) {};
-
-    int get_given_units_number()
-    {
-        return given_units_number;
-    }
-    std::string get_name()
-    {
-        return name;
-    }
-};
+#include "effects.h"
+#include "state.h"
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
 {
@@ -27,9 +12,9 @@ BOOST_AUTO_TEST_CASE(TestPowerDescription)
 {
     {
         // testing initialization
-        Power_Description_Observer power_description("TestPower", 5);
+        effects::Power_Description power_description("TestPower", 5);
         BOOST_CHECK_EQUAL(power_description.get_name(), "TestPower");
-        BOOST_CHECK_EQUAL(power_description.get_given_units_number(), 5);
+        BOOST_CHECK_EQUAL(power_description.get_initial_units_number(), 5);
 
         // testing methods
 
@@ -39,7 +24,7 @@ BOOST_AUTO_TEST_CASE(TestPowerDescription)
         std::vector<state::Area*> areas;
         areas.push_back(&area);
         // bonus reward not implemented yet so it should return 0
-        BOOST_CHECK_EQUAL(power_description.get_bonus_rewards(areas), 0);
+        BOOST_CHECK_EQUAL(power_description.rewards_effect(areas), 0);
 
         BOOST_CHECK_EQUAL(power_description.get_name(), "TestPower");
     }

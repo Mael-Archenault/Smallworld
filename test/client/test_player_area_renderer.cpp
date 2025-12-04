@@ -1,8 +1,9 @@
-#include <renderer.h>
-#include <state.h>
-
 #include <SFML/Graphics.hpp>
 #include <boost/test/unit_test.hpp>
+
+#include "effects.h"
+#include "renderer.h"
+#include "state.h"
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
 {
@@ -12,13 +13,12 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
 BOOST_AUTO_TEST_CASE(TestPlayerAreaRenderer)
 {
     // instanciating useful classes
-    state::Tribe* tribe0 = new state::Tribe(0, new state::Species_Description("Dwarves", 5, 10),
-                                            new state::Power_Description("Berserk", 3));
-    state::Tribe* tribe1 = new state::Tribe(1, new state::Species_Description("Giants", 5, 10),
-                                            new state::Power_Description("Alchemist", 3));
-    state::Tribe* tribe2 = new state::Tribe(2, new state::Species_Description("Ratmen", 5, 10),
-                                            new state::Power_Description("Bivouacking", 3));
-
+    state::Tribe* tribe0 = new state::Tribe(0, new effects::Species_Description("Dwarves", 5, 10),
+                                            new effects::Power_Description("Berserk", 3));
+    state::Tribe* tribe1 = new state::Tribe(1, new effects::Species_Description("Giants", 5, 10),
+                                            new effects::Power_Description("Alchemist", 3));
+    state::Tribe* tribe2 = new state::Tribe(2, new effects::Species_Description("Ratmen", 5, 10),
+                                            new effects::Power_Description("Bivouacking", 3));
     static state::Area area(0, 1, state::Area_Biome::HILL,
                             std::vector<state::Area_Specialization>(), false);
     state::Player      player(0);

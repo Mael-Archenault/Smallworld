@@ -7,10 +7,7 @@ class Map_Observer : public state::Map
 {
    public:
     Map_Observer(std::string name) : state::Map(name) {};
-    int get_max_round()
-    {
-        return max_round;
-    }
+
     std::vector<std::vector<int>> get_area_connections()
     {
         return area_connections;
@@ -45,9 +42,10 @@ BOOST_AUTO_TEST_CASE(TestMap)
 
         BOOST_CHECK_EQUAL(map.get_area(0).id, 0);
 
-        state::Species_Description* species_description =
-            new state::Species_Description("test_Species", 5, 10);
-        state::Power_Description* power_description = new state::Power_Description("test_Power", 4);
+        effects::Species_Description* species_description =
+            new effects::Species_Description("test_Species", 5, 10);
+        effects::Power_Description* power_description =
+            new effects::Power_Description("test_Power", 4);
 
         state::Tribe tribe(0, species_description, power_description);
         map.get_starting_points_prices(tribe, false);

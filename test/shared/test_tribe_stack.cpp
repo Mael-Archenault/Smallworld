@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(Tribe_Stack_Test)
     BOOST_CHECK_THROW(ts.take_tribe_at_position(6), std::out_of_range);
 
     // taking all tribes out of the stack
-    for (size_t i = 0; i < 14; ++i)
+    while (ts.get_tribes_on_top().size() > 0)
     {
         state::Tribe* p = ts.take_tribe_at_position(0);
         BOOST_CHECK(p != nullptr);

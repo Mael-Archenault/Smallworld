@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "state/Area.h"
+#include "state/Map.h"
 
 namespace effects
 {
@@ -27,7 +28,8 @@ bool is_coastal(state::Area* area)
 Tritons_Species::Tritons_Species() : Species_Description("Tritons", 6, 11) {}
 
 std::vector<std::pair<int, int>> Tritons_Species::conquest_prices_effect(
-    std::vector<std::pair<int, int>> initial_conquest_prices, std::vector<state::Area*> owned_areas)
+    std::vector<std::pair<int, int>> initial_conquest_prices, std::vector<state::Area*> owned_areas,
+    state::Map* map)
 {
     std::unordered_set<int> seen;
 

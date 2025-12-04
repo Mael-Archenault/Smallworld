@@ -8,7 +8,6 @@ namespace effects
 
 Skeletons_Species::Skeletons_Species() : Species_Description("Skeletons", 6, 20)
 {
-    max_units_number          = 20;
     non_empty_areas_conquered = 0;
 }
 
