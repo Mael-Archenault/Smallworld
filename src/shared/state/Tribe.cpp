@@ -52,6 +52,9 @@ void Tribe::gather_free_units(Turn_Phase turn_phase)
     {
         free_units_number = species_description->second_gather_effect(free_units_number);
         free_units_number = power_description->second_gather_effect(free_units_number);
+
+        species_description->redeploy_effect(owned_areas);
+        power_description->redeploy_effect(owned_areas);
     }
 }
 
@@ -194,6 +197,8 @@ bool Tribe::is_in_decline()
 
 void Tribe::remove_from_map()
 {
+    power_description->disappearing_effect(owned_areas);
+    species_description->disappearing_effect(owned_areas);
     std::vector<Area*> copy(owned_areas);
     for (auto& area : copy)
     {
@@ -214,6 +219,9 @@ void Tribe::gather_units_after_losing(Area* on_area)
 {
     int gathered_units = on_area->get_units_number();
     free_units_number += gathered_units - 1;
+
+    power_description->lose_effect(on_area);
+    species_description->lose_effect(on_area);
 }
 
 Player* Tribe::get_owner()

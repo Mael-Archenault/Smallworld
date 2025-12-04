@@ -32,9 +32,11 @@ int Effects_Bundle::rewards_effect(std::vector<state::Area*> owned_areas)
 {
     return 0;
 }
-void Effects_Bundle::lose_effect() {}
+void Effects_Bundle::lose_effect(state::Area* lost_area) {}
 
 void Effects_Bundle::decline_effect(std::vector<state::Area*> owned_areas) {}
+
+void Effects_Bundle::disappearing_effect(std::vector<state::Area*> owned_areas) {}
 
 Effects_Bundle::~Effects_Bundle() = default;
 }  // namespace effects

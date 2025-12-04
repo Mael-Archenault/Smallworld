@@ -18,7 +18,6 @@ bool is_coastal(state::Area* area)
     {
         if (neighbor->get_biome() == state::Area_Biome::WATER)
         {
-            std::cout << "coastal area found" << std::endl;
             return true;
         }
     }
