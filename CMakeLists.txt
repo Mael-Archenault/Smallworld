@@ -131,11 +131,11 @@ configure_file(${CMAKE_SOURCE_DIR}/src/resources_dir.h.in
 
 # Copy graphic resources into the build tree so executables/tests can open them
 # using RESOURCE_DIR or relative paths from the build directory.
-add_custom_target(copy_graphics ALL
+add_custom_target(copy_resources ALL
   COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${PROJECT_SOURCE_DIR}/src/resources
     ${CMAKE_BINARY_DIR}/resources
-  COMMENT "Copying graphic resources into build directory"
+  COMMENT "Copying resources into build directory"
 )
 
 # Rapport generation

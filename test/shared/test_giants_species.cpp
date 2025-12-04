@@ -25,6 +25,7 @@ BOOST_AUTO_TEST_CASE(Test_Humans_Species)
     area3.add_neighbor(&area4);
 
     owned_areas.push_back(&area1);
+    owned_areas.push_back(&area3);
 
     effects::Giants_Species giants_species;
 

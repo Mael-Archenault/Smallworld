@@ -4502,19 +4502,19 @@
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O28">
       <dia:attribute name="obj_pos">
-        <dia:point val="105.512,32.0909"/>
+        <dia:point val="96.1343,31.0005"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="105.462,32.0409;129.162,35.7409"/>
+        <dia:rectangle val="96.0843,30.9505;136.339,37.0505"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="105.512,32.0909"/>
+        <dia:point val="96.1343,31.0005"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="23.600000000000001"/>
+        <dia:real val="40.155000000000001"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="3.5999999999999996"/>
+        <dia:real val="6"/>
       </dia:attribute>
       <dia:attribute name="name">
         <dia:string>#Tritons_Species#</dia:string>
@@ -4640,13 +4640,13 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#apply_conquest_effect#</dia:string>
+            <dia:string>#conquest_prices_effect#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#void#</dia:string>
+            <dia:string>#std::vector&lt;std::pair&lt;int,int&gt;&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -4669,10 +4669,27 @@
           <dia:attribute name="parameters">
             <dia:composite type="umlparameter">
               <dia:attribute name="name">
-                <dia:string>#area#</dia:string>
+                <dia:string>#initial_conquest_prices#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#state::Area*#</dia:string>
+                <dia:string>#std::vector&lt;std::pair&lt;int,int&gt;&gt;#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="value">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="comment">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="kind">
+                <dia:enum val="0"/>
+              </dia:attribute>
+            </dia:composite>
+            <dia:composite type="umlparameter">
+              <dia:attribute name="name">
+                <dia:string>#owned_areas#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="type">
+                <dia:string>#std::vector&lt;state::Area*&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -4698,16 +4715,16 @@
         <dia:point val="30.7867,5.34553"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="29.9367,5.29553;117.362,32.0905"/>
+        <dia:rectangle val="29.9367,5.29553;116.262,31.0001"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="30.7867,5.34553"/>
-        <dia:point val="30.7867,19.093"/>
-        <dia:point val="117.312,19.093"/>
-        <dia:point val="117.312,32.0405"/>
+        <dia:point val="30.7867,18.5478"/>
+        <dia:point val="116.212,18.5478"/>
+        <dia:point val="116.212,30.9501"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>

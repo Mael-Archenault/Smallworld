@@ -1,36 +1,73 @@
 #include "effects/Tritons_Species.h"
 
+#include <algorithm>
+#include <iostream>
+#include <unordered_set>
+
 #include "state/Area.h"
 
 namespace effects
 {
-Tritons_Species::Tritons_Species() : Species_Description("Tritons", 6, 8) {}
 
-void Tritons_Species::apply_conquest_effect(state::Area* area)
+std::vector<std::pair<int, int>> modify_price(std::vector<std::pair<int, int>> prices, int area_id,
+                                              int price);  // defined in Giants_Species.cpp
+
+bool is_coastal(state::Area* area)
 {
-    // if (!area) return;
+    for (state::Area* neighbor : area->get_neighbors())
+    {
+        if (neighbor->get_biome() == state::Area_Biome::WATER)
+        {
+            std::cout << "coastal area found" << std::endl;
+            return true;
+        }
+    }
+    return false;
+}
 
-    // Tribe* tribe = area->get_owner_tribe();
-    // if (!tribe) return;
+Tritons_Species::Tritons_Species() : Species_Description("Tritons", 6, 11) {}
 
-    // bool has_adjacent_water = false;
+std::vector<std::pair<int, int>> Tritons_Species::conquest_prices_effect(
+    std::vector<std::pair<int, int>> initial_conquest_prices, std::vector<state::Area*> owned_areas)
+{
+    std::unordered_set<int> seen;
 
-    // for (Area* neighbor : area->get_neighbors())
-    // {
-    //     if (!neighbor) continue;
-    //     if (neighbor->get_biome() == Area_Biome::WATER && neighbor->get_owner_tribe() == tribe)
-    //     {
-    //         has_adjacent_water = true;
-    //         break;
-    //     }
-    // }
+    state::Tribe*    effect_owner = nullptr;
+    std::vector<int> reduced_price_area_ids;
 
-    // int base_price  = area->get_conquest_price(*tribe);
-    // int final_price = has_adjacent_water ? std::max(1, base_price - 1) : base_price;
+    // getting all neighbors areas
+    for (state::Area* area : owned_areas)
+    {
+        if (!area) continue;
+        if (effect_owner == nullptr)
+        {
+            effect_owner = area->get_owner_tribe();
+        }
+        for (state::Area* neighbor : area->get_neighbors())
+        {
+            if (!neighbor) continue;
+            if (neighbor->get_owner_tribe() == effect_owner) continue;
+            if (seen.find(neighbor->id) != seen.end()) continue;
 
-    // if (tribe->get_free_units_number() >= final_price)
-    // {
-    //     tribe->conquer(area, final_price, 0);
-    // }
+            if (is_coastal(neighbor))
+            {
+                reduced_price_area_ids.push_back(neighbor->id);
+            }
+        }
+    }
+
+    std::vector<std::pair<int, int>> result = initial_conquest_prices;
+    for (int neighbor : reduced_price_area_ids)
+    {
+        for (auto& price_info : initial_conquest_prices)
+        {
+            if (price_info.first == neighbor)
+            {
+                result = modify_price(result, neighbor, std::max(1, price_info.second - 1));
+            }
+        }
+    }
+
+    return result;
 }
 }  // namespace effects

@@ -24,7 +24,7 @@ target_include_directories(${lib_shared_target} PUBLIC
 
 # Ensure graphic resources are copied before building the shared library so
 # runtime code that expects RESOURCE_DIR or relative paths will find assets.
-add_dependencies(${lib_shared_target} copy_graphics)
+add_dependencies(${lib_shared_target} copy_resources)
 
 # vim: set sw=2 sts=2 et:
 
