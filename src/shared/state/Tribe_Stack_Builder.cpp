@@ -21,7 +21,7 @@ std::unordered_map<std::string, std::function<effects::Species_Description*()>> 
     {"Giants", []() { return new effects::Giants_Species(); }},
     {"Halflings", []() { return new effects::Halflings_Species(); }},
     {"Humans", []() { return new effects::Humans_Species(); }},
-    {"Orcs", []() { return new effects::Dwarves_Species(); }},
+    {"Orcs", []() { return new effects::Orcs_Species(); }},
     {"Ratmen", []() { return new effects::Ratmen_Species(); }},
     {"Skeletons", []() { return new effects::Skeletons_Species(); }},
     {"Sorcerers", []() { return new effects::Dwarves_Species(); }},

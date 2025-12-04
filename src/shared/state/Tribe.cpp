@@ -148,10 +148,13 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
         }
         else
         {
+            power_description->conquest_effect(attacked_area);
+            species_description->conquest_effect(attacked_area);
             attacked_area->set_owner_tribe(this);
             attacked_area->set_units_number(n_units);
             free_units_number -= n_units;
             owned_areas.push_back(attacked_area);
+
             return;
         }
     }
@@ -163,6 +166,8 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
     {
         throw std::invalid_argument("Tribe : conquer: not enough free units to conquer the area");
     }
+    power_description->conquest_effect(attacked_area);
+    species_description->conquest_effect(attacked_area);
     attacked_area->set_owner_tribe(this);
     attacked_area->set_units_number(n_units);
     free_units_number -= n_units;
@@ -177,8 +182,10 @@ void Tribe::go_in_decline()
 }
 int Tribe::get_rewards()
 {
-    return owned_areas.size() + species_description->rewards_effect(owned_areas) +
-           power_description->rewards_effect(owned_areas);
+    int total_rewards = owned_areas.size() + species_description->rewards_effect(owned_areas) +
+                        power_description->rewards_effect(owned_areas);
+    std::cout << total_rewards << std::endl;
+    return total_rewards;
 }
 
 std::string Tribe::get_species_name()

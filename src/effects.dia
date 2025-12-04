@@ -3569,16 +3569,16 @@
     </dia:object>
     <dia:object type="UML - Class" version="0" id="O16">
       <dia:attribute name="obj_pos">
-        <dia:point val="102.388,24.8433"/>
+        <dia:point val="101.679,25.1159"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="102.338,24.7933;129.503,29.8933"/>
+        <dia:rectangle val="101.629,25.0659;129.949,30.1659"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="102.388,24.8433"/>
+        <dia:point val="101.679,25.1159"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="27.064999999999998"/>
+        <dia:real val="28.219999999999999"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="5"/>
@@ -3731,7 +3731,7 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#get_bonus_rewards#</dia:string>
+            <dia:string>#rewards_effect#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>#override#</dia:string>
@@ -3760,10 +3760,10 @@
           <dia:attribute name="parameters">
             <dia:composite type="umlparameter">
               <dia:attribute name="name">
-                <dia:string>#area#</dia:string>
+                <dia:string>#owned_areas#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#state::Area*#</dia:string>
+                <dia:string>#std::vector&lt;state::Area*&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>
@@ -3779,7 +3779,7 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#apply_conquest_effect#</dia:string>
+            <dia:string>#conquest_effect#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>#override#</dia:string>
@@ -4153,16 +4153,16 @@
         <dia:point val="30.7867,5.34553"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="29.9367,5.29553;115.97,24.843"/>
+        <dia:rectangle val="29.9367,5.29553;115.839,25.1156"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="30.7867,5.34553"/>
-        <dia:point val="30.7867,15.4693"/>
-        <dia:point val="115.92,15.4693"/>
-        <dia:point val="115.92,24.793"/>
+        <dia:point val="30.7867,15.6056"/>
+        <dia:point val="115.789,15.6056"/>
+        <dia:point val="115.789,25.0656"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="1"/>
