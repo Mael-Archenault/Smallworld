@@ -1,9 +1,9 @@
 #include "client.h"
 
-#include <ai/Ai_Random.h>
-
 #include <cmath>
 #include <iostream>
+#include <ai/Ai_Heuristic.h>
+#include <ai/Ai_Random.h>
 
 #include "engine.h"
 
@@ -19,10 +19,10 @@ Client::Client(engine::Engine& engine)
     selected_area_id         = 0;
     tribe_info_window_opened = false;
     renderer.set_selected_area(selected_area_id);
-    ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Random(&state, 1)});
+    ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Random(&state,1), new ai::Ai_Heuristic(&state,0)});
 }
 
-void Client::run()
+int Client::run()
 {
     // first rendering
     sf::Event e;
@@ -48,7 +48,7 @@ void Client::run()
                 ai->update_state(&state);
                 engine.add_command(ai->give_command(state.get_current_turn_phase()));
                 event_happened = true;
-                sf::sleep(sf::seconds(1));
+                //sf::sleep(sf::seconds(1));
             }
         }
         if (!is_ai_turn)
@@ -94,8 +94,16 @@ void Client::run()
             if (state.is_game_finished())
             {
                 std::cout << "Maximum rounds reached." << std::endl;
+                std::pair<int,int>  victorious_player_money = {0,-1};
+                for (std::pair<int,int> player_id_money : state.get_all_player_id_money()) {
+                    std::cout << "Player "<< player_id_money.first << " has " << player_id_money.second << " money." << std::endl;
+                    if (player_id_money.second >= victorious_player_money.second) {
+                        victorious_player_money = player_id_money;
+                    }
+                }
+                std::cout << "\nVictory goes to " << victorious_player_money.first << ", with " << victorious_player_money.second<<" money !"<<std::endl;
                 window.close();
-                return;
+                return victorious_player_money.first;
             }
         }
         catch (const std::exception& e)
