@@ -3,14 +3,23 @@
 
 using namespace state;
 
-Humans_Species::Humans_Species(): Species_Description("Humans",5,10) {}
+Humans_Species::Humans_Species(): Species_Description("Humans",5,10) {
+    effect_disabled = false;
+}
 
 int Humans_Species::get_bonus_rewards(std::vector<Area*> areas){
     int bonus_reward = 0;
+    if(effect_disabled){
+        return 0;
+    }
     for(Area* area : areas){
         if(area->get_biome() == FARM){
                 bonus_reward++;
         }
     }
     return bonus_reward;
+}
+
+void Humans_Species::disable_effects(std::vector<Area*> areas){
+    effect_disabled = true;
 }

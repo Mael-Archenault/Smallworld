@@ -19,7 +19,7 @@ int Skeletons_Species::add_free_units(int current_units_number){
     return 0;
 }
 
-void Skeletons_Species::areas_conquered(Area* attacked_area){
+void Skeletons_Species::apply_conquest_effect(Area* attacked_area){
     if(attacked_area->get_units_number() != 0){
         non_empty_areas_conquered++;
     }
