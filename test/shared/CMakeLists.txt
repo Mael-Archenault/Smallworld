@@ -11,3 +11,5 @@
 add_custom_test(dwarves_species)
 add_custom_test(wizards_species)
 add_custom_test(humans_species)
+add_custom_test(amazons_species)
+add_custom_test(giants_species)

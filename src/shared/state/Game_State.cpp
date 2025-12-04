@@ -24,7 +24,7 @@ void Game_State::gather_free_units(int player_id)
     {
         if (players[i].id == player_id)
         {
-            players[i].gather_free_units();
+            players[i].gather_free_units(current_turn_phase);
             return;
         }
     }
@@ -216,10 +216,12 @@ bool Game_State::is_game_finished()
     return round > map.get_max_round();
 }
 
-std::vector<std::pair<int,int>> Game_State::get_all_player_id_money() {
-    std::vector<std::pair<int,int>> player_id_money;
-    for (Player player : players) {
-        player_id_money.emplace_back(player.id,player.get_money());
+std::vector<std::pair<int, int>> Game_State::get_all_player_id_money()
+{
+    std::vector<std::pair<int, int>> player_id_money;
+    for (Player player : players)
+    {
+        player_id_money.emplace_back(player.id, player.get_money());
     }
     return player_id_money;
 }

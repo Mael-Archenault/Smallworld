@@ -1,9 +1,10 @@
 #include "client.h"
 
-#include <cmath>
-#include <iostream>
 #include <ai/Ai_Heuristic.h>
 #include <ai/Ai_Random.h>
+
+#include <cmath>
+#include <iostream>
 
 #include "engine.h"
 
@@ -19,7 +20,9 @@ Client::Client(engine::Engine& engine)
     selected_area_id         = 0;
     tribe_info_window_opened = false;
     renderer.set_selected_area(selected_area_id);
-    ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Random(&state,1), new ai::Ai_Heuristic(&state,0)});
+    // ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Random(&state,1), new
+    // ai::Ai_Heuristic(&state,0)});
+    ais = std::vector<ai::Ai_Interface*>();
 }
 
 int Client::run()
@@ -48,7 +51,7 @@ int Client::run()
                 ai->update_state(&state);
                 engine.add_command(ai->give_command(state.get_current_turn_phase()));
                 event_happened = true;
-                //sf::sleep(sf::seconds(1));
+                // sf::sleep(sf::seconds(1));
             }
         }
         if (!is_ai_turn)
@@ -75,8 +78,6 @@ int Client::run()
                     event_happened         = true;
                     mouse_clicked          = true;
                     sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-                    std::cout << "Mouse clicked at: " << mouse_pos.x << ", " << mouse_pos.y
-                              << std::endl;
                     handle_mouse_click(mouse_pos);
                 }
                 if (event.type == sf::Event::MouseButtonReleased)
@@ -94,14 +95,18 @@ int Client::run()
             if (state.is_game_finished())
             {
                 std::cout << "Maximum rounds reached." << std::endl;
-                std::pair<int,int>  victorious_player_money = {0,-1};
-                for (std::pair<int,int> player_id_money : state.get_all_player_id_money()) {
-                    std::cout << "Player "<< player_id_money.first << " has " << player_id_money.second << " money." << std::endl;
-                    if (player_id_money.second >= victorious_player_money.second) {
+                std::pair<int, int> victorious_player_money = {0, -1};
+                for (std::pair<int, int> player_id_money : state.get_all_player_id_money())
+                {
+                    std::cout << "Player " << player_id_money.first << " has "
+                              << player_id_money.second << " money." << std::endl;
+                    if (player_id_money.second >= victorious_player_money.second)
+                    {
                         victorious_player_money = player_id_money;
                     }
                 }
-                std::cout << "\nVictory goes to " << victorious_player_money.first << ", with " << victorious_player_money.second<<" money !"<<std::endl;
+                std::cout << "\nVictory goes to " << victorious_player_money.first << ", with "
+                          << victorious_player_money.second << " money !" << std::endl;
                 window.close();
                 return victorious_player_money.first;
             }
@@ -253,7 +258,6 @@ void Client::handle_map_click(sf::Vector2i position, sf::FloatRect map_layout)
 
 void Client::handle_tribe_stack_click(sf::Vector2i position, sf::FloatRect tribe_stack_layout)
 {
-    std::cout << "handling click on tribe stack" << std::endl;
     std::vector<sf::Vector2f> card_positions = renderer.get_on_screen_tribe_positions();
 
     std::vector<float> distances;
@@ -272,8 +276,6 @@ void Client::handle_tribe_stack_click(sf::Vector2i position, sf::FloatRect tribe
         if (distances.at(i) < distances.at(min_index)) min_index = i;
     }
 
-    std::cout << "Clicked on tribe card index: " << min_index << std::endl;
-
     renderer.open_tribe_info_window(*state.get_tribes_on_top().at(min_index));
     selected_position_in_stack = static_cast<int>(min_index);
     tribe_info_window_opened   = true;
@@ -282,17 +284,13 @@ void Client::handle_tribe_stack_click(sf::Vector2i position, sf::FloatRect tribe
 void Client::handle_player_area_click(sf::Vector2i                                   position,
                                       std::unordered_map<std::string, sf::FloatRect> layout_infos)
 {
-    std::cout << "handling click on player area" << std::endl;
-
     if (layout_infos["active_tribe"].contains(static_cast<sf::Vector2f>(position)))
     {
-        std::cout << "Clicked on active tribe" << std::endl;
         renderer.open_tribe_info_window(*state.get_current_player().get_tribes().first);
         tribe_info_window_opened = true;
     }
     else if (layout_infos["in_decline_tribe"].contains(static_cast<sf::Vector2f>(position)))
     {
-        std::cout << "Clicked on in decline tribe" << std::endl;
         renderer.open_tribe_info_window(*state.get_current_player().get_tribes().second);
         tribe_info_window_opened = true;
     }
@@ -304,7 +302,6 @@ void Client::handle_info_window_click(sf::Vector2i                              
     if (layout_infos["tribe_info_window_close_button"].contains(
             static_cast<sf::Vector2f>(position)))
     {
-        std::cout << "Closing info window" << std::endl;
         renderer.close_tribe_info_window();
         tribe_info_window_opened = false;
     }
@@ -315,7 +312,6 @@ void Client::handle_info_window_click(sf::Vector2i                              
         if (state.get_current_turn_phase() == state::Turn_Phase::START &&
             state.get_current_player().get_tribes().first == nullptr)
         {
-            std::cout << "Buying" << std::endl;
             engine.add_command(std::make_unique<engine::Choose_Species_Command>(
                 state.get_current_player().id, selected_position_in_stack));
             renderer.close_tribe_info_window();

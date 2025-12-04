@@ -16,6 +16,10 @@ void Start_Conquest_Command::execute(state::Game_State& state)
         throw std::runtime_error("Player has no active tribe!");
     }
     state.set_current_turn_phase(state::Turn_Phase::CONQUER);
+    if (state.get_current_player().get_tribes().first != nullptr)
+    {
+        state.gather_free_units(state.get_current_player().id);
+    }
 };
 
 int Start_Conquest_Command::get_id()

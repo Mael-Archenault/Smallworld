@@ -2,9 +2,17 @@
   "Species": [
     "Amazons",
     "Dwarves",
+    "Elves",
+    "Ghouls",
     "Giants",
+    "Halflings",
     "Humans",
+    "Orcs",
     "Ratmen",
+    "Skeletons",
+    "Sorcerers",
+    "Tritons",
+    "Trolls",
     "Wizards"
   ],
   "Powers": [

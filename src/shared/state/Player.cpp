@@ -15,11 +15,11 @@ Player::Player(int id) : id(id)
 
 Player::~Player() {}
 
-void Player::gather_free_units()
+void Player::gather_free_units(Turn_Phase turn_phase)
 {
     if (active_tribe != nullptr)
     {
-        active_tribe->gather_free_units();
+        active_tribe->gather_free_units(turn_phase);
         return;
     }
     throw std::invalid_argument("gather_free_units:there is no active tribe for this player");

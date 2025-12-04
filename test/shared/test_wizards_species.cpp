@@ -1,5 +1,6 @@
 #include <boost/test/unit_test.hpp>
 
+#include "effects.h"
 #include "state.h"
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
@@ -17,9 +18,9 @@ BOOST_AUTO_TEST_CASE(Test_Wizards_Species)
     owned_areas.push_back(&area1);
     owned_areas.push_back(&area2);
 
-    state::Wizards_Species wizards_species;
+    effects::Wizards_Species wizards_species;
 
-    BOOST_CHECK_EQUAL(wizards_species.get_bonus_rewards(owned_areas), 1);
-    wizards_species.disable_effects(owned_areas);
-    BOOST_CHECK_EQUAL(wizards_species.get_bonus_rewards(owned_areas), 0);
+    BOOST_CHECK_EQUAL(wizards_species.rewards_effect(owned_areas), 1);
+    wizards_species.decline_effect(owned_areas);
+    BOOST_CHECK_EQUAL(wizards_species.rewards_effect(owned_areas), 0);
 }
