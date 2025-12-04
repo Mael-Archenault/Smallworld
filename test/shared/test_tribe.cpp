@@ -52,8 +52,8 @@ BOOST_AUTO_TEST_CASE(Tribe_Test)
     BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 4);
     BOOST_CHECK_EQUAL(tribe.get_redeployable_areas().size(), 1);
 
-    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 1, 0), std::invalid_argument);
-    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 10, 0), std::invalid_argument);
+    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 1, -1), std::invalid_argument);
+    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 10, -1), std::invalid_argument);
 
     std::vector<std::pair<int, int>> price_infos = tribe.get_conquest_prices(nullptr);
 

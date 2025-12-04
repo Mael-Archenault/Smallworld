@@ -121,6 +121,15 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
         {
             return;
         }
+        else
+        {
+            attacked_area->set_owner_tribe(this);
+            attacked_area->set_units_number(n_units);
+            species_description->areas_conquered(attacked_area);
+            free_units_number -= n_units;
+            owned_areas.push_back(attacked_area);
+            return;
+        }
     }
     if (n_units < attacked_area->get_conquest_price(*this))
     {
