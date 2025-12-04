@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 {
     {
         state::Game_State state(2);
-        engine::Engine    engine;
+        engine::Engine    engine(2);
 
         // ---------------- error testing ------------------------------
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 
         // ---------------------- simulate game turns -------------------------
 
-        engine = engine::Engine();  // reset engine
+        engine = engine::Engine(2);  // reset engine
 
         // choose species for player 0
 
