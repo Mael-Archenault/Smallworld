@@ -3,7 +3,6 @@
 //
 
 #include <memory>
-#include <stdexcept>
 #include <engine/Conquer_Command.h>
 #include <engine/Decline_Command.h>
 #include <engine/End_Conquer_Command.h>
@@ -12,6 +11,8 @@
 
 #include "random"
 #include "Ai_Random.h"
+
+#include <limits.h>
 
 #include "engine/Choose_Species_Command.h"
 
@@ -71,10 +72,18 @@ std::unique_ptr<engine::Command> ai::Ai_Random::give_command_Redeploy ()
 {
     std::random_device rd;
     std::mt19937       rng(rd());
+    int available_units = state->get_free_units_number(id);
+    if (available_units == 0)
+    {
+        available_units = INT_MAX;      // Putting an absurd value, as we must use the redeploy method to end the turn. the value is never used as the number is detected too high.
+    }
+
+
+    int random_available_units = rng() % available_units+1;
     auto Areas = state->get_current_player().get_redeployable_areas();
     int random_area_id = Areas.at(rng() % Areas.size());
-    int available_units = state->get_free_units_number(id);
-    int random_available_units = rng() % available_units+1;
+
+
 
     return std::make_unique<engine::Redeploy_Command>(id,random_area_id,random_available_units);
 }
