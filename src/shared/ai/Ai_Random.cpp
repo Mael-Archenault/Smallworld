@@ -1,25 +1,21 @@
 //
 // Created by julien on 11/20/25.
 //
-
-#include <engine/Conquer_Command.h>
-#include <engine/Decline_Command.h>
-#include <engine/End_Conquer_Command.h>
-#include <engine/Redeploy_Command.h>
-#include <engine/Start_Conquest_Command.h>
 #include <limits.h>
 
 #include <memory>
+#include <random>
 #include <stdexcept>
 
-#include "engine/Choose_Species_Command.h"
-#include "random"
+#include "ai.h"
+#include "engine.h"
 
-ai::Ai_Random::Ai_Random(state::Game_State* state, int player_id) : Ai_Interface(state, player_id)
+namespace ai
 {
-}
 
-std::unique_ptr<engine::Command> ai::Ai_Random::give_command_Start()
+Ai_Random::Ai_Random(state::Game_State* state, int player_id) : Ai_Interface(state, player_id) {}
+
+std::unique_ptr<engine::Command> Ai_Random::give_command_Start()
 {
     std::random_device rd;
     if (state->get_current_player().get_tribes().first == nullptr)
@@ -40,7 +36,7 @@ std::unique_ptr<engine::Command> ai::Ai_Random::give_command_Start()
     }
 }
 
-std::unique_ptr<engine::Command> ai::Ai_Random::give_command_Conquer()
+std::unique_ptr<engine::Command> Ai_Random::give_command_Conquer()
 {
     std::random_device rd;
     std::mt19937       rng(rd());
@@ -68,7 +64,7 @@ std::unique_ptr<engine::Command> ai::Ai_Random::give_command_Conquer()
     }
 }
 
-std::unique_ptr<engine::Command> ai::Ai_Random::give_command_Redeploy()
+std::unique_ptr<engine::Command> Ai_Random::give_command_Redeploy()
 {
     std::random_device rd;
     std::mt19937       rng(rd());
@@ -86,3 +82,4 @@ std::unique_ptr<engine::Command> ai::Ai_Random::give_command_Redeploy()
 
     return std::make_unique<engine::Redeploy_Command>(id, random_area_id, random_available_units);
 }
+}  // namespace ai
