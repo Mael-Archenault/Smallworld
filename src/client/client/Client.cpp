@@ -1,8 +1,9 @@
 #include "client.h"
 
+#include <ai/Ai_Random.h>
+
 #include <cmath>
 #include <iostream>
-#include <ai/Ai_Random.h>
 
 #include "engine.h"
 
@@ -18,7 +19,7 @@ Client::Client(engine::Engine& engine)
     selected_area_id         = 0;
     tribe_info_window_opened = false;
     renderer.set_selected_area(selected_area_id);
-    ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Random(&state,1)});
+    ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Random(&state, 1)});
 }
 
 void Client::run()
@@ -36,15 +37,18 @@ void Client::run()
     sf::View view           = window.getDefaultView();  // store your base view
     bool     mouse_clicked  = false;
     bool     event_happened = false;
-    while (window.isOpen()) {
+    while (window.isOpen())
+    {
         bool is_ai_turn = false;
-        for (auto ai : ais) {
+        for (auto ai : ais)
+        {
             if (ai->id == state.get_current_player().id)
             {
                 is_ai_turn = true;
                 ai->update_state(&state);
                 engine.add_command(ai->give_command(state.get_current_turn_phase()));
                 event_happened = true;
+                sf::sleep(sf::seconds(1));
             }
         }
         if (!is_ai_turn)
@@ -68,7 +72,7 @@ void Client::run()
 
                 if (event.type == sf::Event::MouseButtonPressed && mouse_clicked == false)
                 {
-                    event_happened = true;
+                    event_happened         = true;
                     mouse_clicked          = true;
                     sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
                     std::cout << "Mouse clicked at: " << mouse_pos.x << ", " << mouse_pos.y
