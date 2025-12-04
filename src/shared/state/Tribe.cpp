@@ -125,7 +125,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
         {
             attacked_area->set_owner_tribe(this);
             attacked_area->set_units_number(n_units);
-            species_description->areas_conquered(attacked_area);
+            species_description->apply_conquest_effect(attacked_area);
             free_units_number -= n_units;
             owned_areas.push_back(attacked_area);
             return;
@@ -149,8 +149,9 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
 void Tribe::go_in_decline()
 {
     in_decline = true;
-    species_description->disable_effects();
-    power_description->disable_effects();
+    species_description->disable_effects(owned_areas);
+
+    power_description->disable_effects(owned_areas);
 }
 int Tribe::get_rewards()
 {

@@ -1,0 +1,24 @@
+#include <boost/test/unit_test.hpp>
+
+#include "state.h"
+
+BOOST_AUTO_TEST_CASE(TestStaticAssert)
+{
+    BOOST_CHECK(1);
+}
+
+BOOST_AUTO_TEST_CASE(Test_Humans_Species)
+{
+    std::vector<state::Area*> owned_areas;
+    state::Area               area1(0, 5, state::Area_Biome::FARM, {}, false);
+    state::Area               area2(1, 3, state::Area_Biome::HILL, {}, false);
+
+    owned_areas.push_back(&area1);
+    owned_areas.push_back(&area2);
+
+    state::Humans_Species humans_species;
+
+    BOOST_CHECK_EQUAL(humans_species.get_bonus_rewards(owned_areas), 1);
+    humans_species.disable_effects(owned_areas);
+    BOOST_CHECK_EQUAL(humans_species.get_bonus_rewards(owned_areas), 0);
+}
