@@ -1,11 +1,12 @@
 {
   "Species": [
-    "Amazons",
+    "Orcs",
+    "Ratmen",
+    "Skeletons",
+    "Sorcerers",
+    "Tritons",
     "Trolls",
-    "Giants",
-    "Halflings",
-    "Elves",
-    "Skeletons"
+    "Wizards"
   ],
   "Powers": [
     "Alchemist",

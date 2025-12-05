@@ -31,29 +31,13 @@ std::vector<std::pair<int, int>> Tritons_Species::conquest_prices_effect(
     std::vector<std::pair<int, int>> initial_conquest_prices, std::vector<state::Area*> owned_areas,
     state::Map* map)
 {
-    std::unordered_set<int> seen;
-
-    state::Tribe*    effect_owner = nullptr;
     std::vector<int> reduced_price_area_ids;
 
-    // getting all neighbors areas
-    for (state::Area* area : owned_areas)
+    for (auto& price_info : initial_conquest_prices)
     {
-        if (!area) continue;
-        if (effect_owner == nullptr)
+        if (is_coastal(&map->get_area(price_info.first)))
         {
-            effect_owner = area->get_owner_tribe();
-        }
-        for (state::Area* neighbor : area->get_neighbors())
-        {
-            if (!neighbor) continue;
-            if (neighbor->get_owner_tribe() == effect_owner) continue;
-            if (seen.find(neighbor->id) != seen.end()) continue;
-
-            if (is_coastal(neighbor))
-            {
-                reduced_price_area_ids.push_back(neighbor->id);
-            }
+            reduced_price_area_ids.push_back(price_info.first);
         }
     }
 

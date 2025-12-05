@@ -11,29 +11,26 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
 BOOST_AUTO_TEST_CASE(Test_Tritons_Species)
 {
     std::vector<state::Area*> owned_areas;
-    state::Area               area1(0, 5, state::Area_Biome::HILL, {}, false);
-    state::Area               area2(1, 3, state::Area_Biome::HILL, {}, false);
-    state::Area               area3(2, 4, state::Area_Biome::WATER, {}, false);
-    state::Area               area4(2, 4, state::Area_Biome::FARM, {}, false);
-    state::Area               area5(3, 2, state::Area_Biome::HILL, {}, false);
+    state::Map                map("4_players");
+    state::Area               area0 = map.get_area(25);
+    state::Area               area1 = map.get_area(27);  // coastal
+    state::Area               area2 = map.get_area(11);
+    state::Area               area3 = map.get_area(13);  // non coastal
 
     state::Tribe tribe(0, new effects::Tritons_Species(),
                        new effects::Power_Description("Test Power", 3));
-    area1.set_owner_tribe(&tribe);
-    area3.set_owner_tribe(&tribe);
 
-    area1.add_neighbor(&area2);
-    area2.add_neighbor(&area3);
-    area4.add_neighbor(&area5);
+    area0.set_owner_tribe(&tribe);
+    area2.set_owner_tribe(&tribe);
 
     owned_areas.push_back(&area1);
-    owned_areas.push_back(&area4);
+    owned_areas.push_back(&area3);
 
     effects::Tritons_Species tritons_species;
 
-    std::vector<std::pair<int, int>> initial_conquest_prices = {{area2.id, 5}, {area4.id, 6}};
+    std::vector<std::pair<int, int>> initial_conquest_prices = {{area1.id, 2}, {area3.id, 2}};
     std::vector<std::pair<int, int>> modified_prices =
-        tritons_species.conquest_prices_effect(initial_conquest_prices, owned_areas, nullptr);
-    BOOST_CHECK_EQUAL(modified_prices.at(0).second, 4);  // price reduced by 1
-    BOOST_CHECK_EQUAL(modified_prices.at(1).second, 6);  // initial price
+        tritons_species.conquest_prices_effect(initial_conquest_prices, owned_areas, &map);
+    BOOST_CHECK_EQUAL(modified_prices.at(0).second, 1);  // price reduced by 1
+    BOOST_CHECK_EQUAL(modified_prices.at(1).second, 2);  // initial price
 }
