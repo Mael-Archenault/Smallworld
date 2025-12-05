@@ -180,6 +180,12 @@ void Tribe::go_in_decline()
     in_decline = true;
     species_description->decline_effect(owned_areas);
     power_description->decline_effect(owned_areas);
+
+    // removing pawns from owned_areas
+    for (Area* area : owned_areas)
+    {
+        area->gather_free_units();
+    }
 }
 int Tribe::get_rewards()
 {
