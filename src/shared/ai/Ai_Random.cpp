@@ -28,7 +28,7 @@ std::unique_ptr<engine::Command> ai::Ai_Random::give_command_Start ()
         return std::make_unique<engine::Choose_Species_Command>(id, random_tribe_position);
     }
     std::mt19937       rng(rd());
-    long random_command = rng() % 2;
+    long random_command = rng() % 3;
     if (random_command == 0)
     {
         return std::make_unique<engine::Decline_Command>(id);
@@ -59,7 +59,7 @@ std::unique_ptr<engine::Command> ai::Ai_Random::give_command_Conquer ()
 
                 return std::make_unique<engine::Conquer_Command>(id,random_area_id,
                                                                  std::min(required_units,available_units),
-                                                                 std::max(-1,required_units - available_units));
+                                                                 (required_units - available_units > 0));
 
             }
         }

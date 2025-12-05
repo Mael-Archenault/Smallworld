@@ -53,7 +53,7 @@ std::unique_ptr<engine::Command> ai::Ai_Heuristic::give_command_Conquer ()
     int available_units = state->get_free_units_number(id);
     return std::make_unique<engine::Conquer_Command>(id,area_id_cost_to_attack.first,
                                                                  std::min(required_units,available_units),
-                                                                 std::max(-1,required_units - available_units));
+                                                                 (required_units - available_units > 0));
 
 }
 
