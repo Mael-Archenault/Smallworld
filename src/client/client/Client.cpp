@@ -93,17 +93,7 @@ int Client::run()
 
             if (state.is_game_finished())
             {
-                std::cout << "Maximum rounds reached." << std::endl;
-                std::pair<int,int>  victorious_player_money = {0,-1};
-                for (std::pair<int,int> player_id_money : state.get_all_player_id_money()) {
-                    std::cout << "Player "<< player_id_money.first << " has " << player_id_money.second << " money." << std::endl;
-                    if (player_id_money.second >= victorious_player_money.second) {
-                        victorious_player_money = player_id_money;
-                    }
-                }
-                std::cout << "\nVictory goes to " << victorious_player_money.first << ", with " << victorious_player_money.second<<" money !"<<std::endl;
-                window.close();
-                return victorious_player_money.first;
+                return game_end();
             }
         }
         catch (const std::exception& e)
@@ -323,4 +313,17 @@ void Client::handle_info_window_click(sf::Vector2i                              
         }
     }
 }
+    int Client::game_end() {
+    std::cout << "Maximum rounds reached." << std::endl;
+    std::pair<int,int>  victorious_player_money = {0,-1};
+    for (std::pair<int,int> player_id_money : state.get_all_player_id_money()) {
+        std::cout << "Player "<< player_id_money.first << " has " << player_id_money.second << " money." << std::endl;
+        if (player_id_money.second >= victorious_player_money.second) {
+            victorious_player_money = player_id_money;
+        }
+    }
+    std::cout << "\nVictory goes to " << victorious_player_money.first << ", with " << victorious_player_money.second<<" money !"<<std::endl;
+    return victorious_player_money.first;
+    }
+
 }  // namespace client

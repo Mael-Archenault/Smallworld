@@ -30,4 +30,5 @@ int main(int argc, char* argv[])
         std::cout << "Player " << i << " won " << victory_count.at(i) << " times." << std::endl;
     }
 
+    return 0;
 }
