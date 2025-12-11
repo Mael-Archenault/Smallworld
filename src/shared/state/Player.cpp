@@ -6,7 +6,7 @@
 namespace state
 {
 
-Player::Player(int id) : id(id)
+Player::Player(int id, std::string name) : id(id), name(name)
 {
     money            = 5;
     active_tribe     = nullptr;
@@ -119,6 +119,11 @@ std::pair<Tribe*, Tribe*> Player::get_tribes()
 int Player::get_money()
 {
     return money;
+}
+
+std::string Player::get_name()
+{
+    return name;
 }
 
 }  // namespace state

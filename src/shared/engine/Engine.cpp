@@ -22,7 +22,7 @@ std::unordered_map<int, state::Turn_Phase> phase_command_map = {
     {End_Conquer_Command::id, state::Turn_Phase::CONQUER},
     {Redeploy_Command::id, state::Turn_Phase::REDEPLOY}};
 
-Engine::Engine(int nb_player) : state(nb_player) {};
+Engine::Engine(int nb_player, std::vector<std::string> names) : state(nb_player, names) {};
 
 void Engine::add_command(std::unique_ptr<Command> command)
 {

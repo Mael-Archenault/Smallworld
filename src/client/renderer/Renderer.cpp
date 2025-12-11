@@ -13,7 +13,7 @@ Renderer::Renderer(state::Game_State& state, sf::RenderWindow& window)
       map_renderer(window),
       tribe_stack_renderer(window),
       player_area_renderer(window),
-      UI_renderer(window) {};
+      UI_renderer(window, state) {};
 
 void Renderer::render(state::Game_State& state)
 {

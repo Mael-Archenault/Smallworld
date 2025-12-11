@@ -1,17 +1,18 @@
-#include "Game_State.h"
-
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
+#include "state.h"
+
 namespace state
 {
 
-Game_State::Game_State(int n_players) : n_players(n_players), round(1), map(Map("4_players"))
+Game_State::Game_State(int n_players, std::vector<std::string> names)
+    : n_players(n_players), round(1), map(Map("4_players"))
 {
     for (int i = 0; i < n_players; i++)
     {
-        players.push_back(Player(i));
+        players.push_back(Player(i, names.at(i)));
     }
     current_player     = &players[0];
     current_turn_phase = Turn_Phase::START;
@@ -224,5 +225,10 @@ std::vector<std::pair<int, int>> Game_State::get_all_player_id_money()
         player_id_money.emplace_back(player.id, player.get_money());
     }
     return player_id_money;
+}
+
+std::vector<Player>& Game_State::get_players()
+{
+    return players;
 }
 }  // namespace state

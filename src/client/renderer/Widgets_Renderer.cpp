@@ -10,33 +10,18 @@ Widgets_Renderer::Widgets_Renderer(sf::RenderWindow& window) : window(window)
     int font_size = 18;
     ;
     conquer_button.set_content("Conquer");
-    conquer_button.set_character_size(font_size);
-    conquer_button.set_position(sf::Vector2f(0.f, 0.f));
-    conquer_button.set_size(sf::Vector2f(button_width, button_height));
     conquer_button.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
 
     end_conquests_button.set_content("End Conquests");
-    end_conquests_button.set_character_size(font_size);
-    end_conquests_button.set_position(sf::Vector2f(0.f, 0.f));
-    end_conquests_button.set_size(sf::Vector2f(button_width, button_height));
     end_conquests_button.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
 
     decline_button.set_content("Decline");
-    decline_button.set_character_size(font_size);
-    decline_button.set_position(sf::Vector2f(0.f, 0.f));
-    decline_button.set_size(sf::Vector2f(button_width, button_height));
     decline_button.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
 
     start_conquests_button.set_content("Start conquests");
-    start_conquests_button.set_character_size(font_size);
-    start_conquests_button.set_position(sf::Vector2f(0.f, 0.f));
-    start_conquests_button.set_size(sf::Vector2f(button_width, button_height));
     start_conquests_button.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
 
     redeploy_button.set_content("Redeploy");
-    redeploy_button.set_character_size(font_size);
-    redeploy_button.set_position(sf::Vector2f(0.f, 0.f));
-    redeploy_button.set_size(sf::Vector2f(button_width, button_height));
     redeploy_button.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
 }
 
@@ -56,13 +41,13 @@ void Widgets_Renderer::render(state::Game_State& state)
             sf::Vector2f(section_width * 4 / 6, 2 * section_height / 7));
         start_conquests_button.set_position(
             sf::Vector2f(position_x + section_width / 6, position_y + 1 * section_height / 7));
-
+        start_conquests_button.set_character_size(section_width / 20);
         start_conquests_button.render(window);
 
         decline_button.set_size(sf::Vector2f(section_width * 4 / 6, 2 * section_height / 7));
         decline_button.set_position(
             sf::Vector2f(position_x + section_width / 6, position_y + 4 * section_height / 7));
-
+        decline_button.set_character_size(section_width / 20);
         decline_button.render(window);
     }
 
@@ -71,13 +56,13 @@ void Widgets_Renderer::render(state::Game_State& state)
         conquer_button.set_size(sf::Vector2f(section_width * 4 / 6, 2 * section_height / 7));
         conquer_button.set_position(
             sf::Vector2f(position_x + section_width / 6, position_y + 1 * section_height / 7));
-
+        conquer_button.set_character_size(section_width / 20);
         conquer_button.render(window);
 
         end_conquests_button.set_size(sf::Vector2f(section_width * 4 / 6, 2 * section_height / 7));
         end_conquests_button.set_position(
             sf::Vector2f(position_x + section_width / 6, position_y + 4 * section_height / 7));
-
+        end_conquests_button.set_character_size(section_width / 20);
         end_conquests_button.render(window);
     }
 
@@ -86,7 +71,7 @@ void Widgets_Renderer::render(state::Game_State& state)
         redeploy_button.set_size(sf::Vector2f(section_width * 4 / 6, section_height / 3));
         redeploy_button.set_position(
             sf::Vector2f(position_x + section_width / 6, position_y + section_height / 3));
-
+        redeploy_button.set_character_size(section_width / 20);
         redeploy_button.render(window);
     }
 }
