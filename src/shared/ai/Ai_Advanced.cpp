@@ -17,7 +17,7 @@
 
 using namespace ai;
 
-Ai_Advanced::Ai_Advanced(state::Game_State* state,int player_id) : Ai_Interface(state, player_id), engine(state, player_id) {
+Ai_Advanced::Ai_Advanced(state::Game_State* state,int player_id) : Ai_Interface(state, player_id), engine(*state, player_id) {
     command_queue = {};
 }
 

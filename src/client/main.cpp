@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 {
     int nb_players = 2;
     std::vector<int> victory_count = std::vector<int>(nb_players);
-    int nb_of_games = 1;
+    int nb_of_games = 10;
 
 
     for (int i = 0; i < nb_of_games; i++) {
