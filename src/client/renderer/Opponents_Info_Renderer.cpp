@@ -8,12 +8,12 @@ Opponents_Info_Renderer::Opponents_Info_Renderer(sf::RenderWindow& window, state
     : window(window), players(state.get_players())
 {
     // Reserve space to avoid vector reallocation which invalidates font pointers
-    names.reserve(players.size());
-    coins.reserve(players.size());
-    active_tribes_renderers.reserve(players.size());
-    decline_tribes_renderers.reserve(players.size());
-    int i = 0;
-    for (auto& player : players)
+    names.reserve(players.size() - 1);
+    coins.reserve(players.size() - 1);
+    active_tribes_renderers.reserve(players.size() - 1);
+    decline_tribes_renderers.reserve(players.size() - 1);
+
+    for (int i = 0; i < players.size() - 1; i++)
     {
         names.emplace_back();
         names.at(i).set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
@@ -23,8 +23,6 @@ Opponents_Info_Renderer::Opponents_Info_Renderer(sf::RenderWindow& window, state
 
         active_tribes_renderers.emplace_back();
         decline_tribes_renderers.emplace_back();
-
-        i++;
     }
 }
 
@@ -98,5 +96,23 @@ void Opponents_Info_Renderer::render(state::Game_State& state)
         render_one_player_area(player, rendered_players);
         rendered_players++;
     }
+}
+
+std::unordered_map<std::string, sf::FloatRect> Opponents_Info_Renderer::get_layout()
+{
+    std::unordered_map<std::string, sf::FloatRect> layout_infos;
+
+    layout_infos["opponents_info_area"] =
+        sf::FloatRect(position.x, position.y, section_width, section_height);
+
+    for (size_t i = 0; i < players.size() - 1; i++)
+    {
+        layout_infos["player_" + std::to_string(i) + "_active_tribe"] =
+            active_tribes_renderers.at(i).get_rect();
+        layout_infos["player_" + std::to_string(i) + "_in_decline_tribe"] =
+            decline_tribes_renderers.at(i).get_rect();
+    }
+
+    return layout_infos;
 }
 }  // namespace renderer

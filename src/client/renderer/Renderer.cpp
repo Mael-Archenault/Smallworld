@@ -44,12 +44,7 @@ std::unordered_map<std::string, sf::FloatRect> Renderer::get_layout_infos()
     result["map"]         = map_renderer.get_layout();
     result["tribe_stack"] = tribe_stack_renderer.get_layout();
 
-    for (const auto& [key, value] : UI_renderer.get_widgets_layout())
-    {
-        result[key] = value;
-    }
-
-    for (const auto& [key, value] : UI_renderer.get_tribe_info_window_layout())
+    for (const auto& [key, value] : UI_renderer.get_layout())
     {
         result[key] = value;
     }
@@ -58,6 +53,7 @@ std::unordered_map<std::string, sf::FloatRect> Renderer::get_layout_infos()
     {
         result[key] = value;
     }
+
     return result;
 }
 
@@ -71,9 +67,9 @@ std::vector<sf::Vector2f> Renderer::get_on_screen_tribe_positions()
     return tribe_stack_renderer.get_on_screen_tribe_positions();
 }
 
-void Renderer::open_tribe_info_window(state::Tribe& tribe)
+void Renderer::open_tribe_info_window(state::Tribe& tribe, bool is_buying_possible)
 {
-    UI_renderer.open_tribe_info_window(tribe);
+    UI_renderer.open_tribe_info_window(tribe, is_buying_possible);
 }
 
 void Renderer::close_tribe_info_window()

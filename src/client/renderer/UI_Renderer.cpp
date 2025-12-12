@@ -34,19 +34,42 @@ std::unordered_map<std::string, sf::FloatRect> UI_Renderer::get_widgets_layout()
     return widgets_renderer.get_layout();
 }
 
-void UI_Renderer::open_tribe_info_window(state::Tribe& tribe)
+void UI_Renderer::open_tribe_info_window(state::Tribe& tribe, bool is_buying_possible)
 {
     tribe_info_window.set_values(tribe);
-    tribe_info_window.set_visibility(true);
+    tribe_info_window.set_visibility(true, is_buying_possible);
 }
 
 void UI_Renderer::close_tribe_info_window()
 {
-    tribe_info_window.set_visibility(false);
+    tribe_info_window.set_visibility(false, false);
 }
 
 std::unordered_map<std::string, sf::FloatRect> UI_Renderer::get_tribe_info_window_layout()
 {
     return tribe_info_window.get_layout();
+}
+
+std::unordered_map<std::string, sf::FloatRect> UI_Renderer::get_layout()
+{
+    // returns layout infos: map area, tribe stack area, player area
+
+    std::unordered_map<std::string, sf::FloatRect> result;
+
+    for (const auto& [key, value] : widgets_renderer.get_layout())
+    {
+        result[key] = value;
+    }
+
+    for (const auto& [key, value] : tribe_info_window.get_layout())
+    {
+        result[key] = value;
+    }
+
+    for (const auto& [key, value] : opponents_info_renderer.get_layout())
+    {
+        result[key] = value;
+    }
+    return result;
 }
 }  // namespace renderer

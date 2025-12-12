@@ -59,6 +59,12 @@ void Click_Handler::handle_click(sf::Vector2i position)
         handle_button_area_click(position, layout_infos);
         return;
     }
+
+    if (layout_infos["opponents_info_area"].contains(static_cast<sf::Vector2f>(position)))
+    {
+        handle_opponent_area_click(position, layout_infos);
+        return;
+    }
 }
 
 void Click_Handler::handle_map_click(sf::Vector2i position, sf::FloatRect map_layout)
@@ -106,7 +112,13 @@ void Click_Handler::handle_tribe_stack_click(sf::Vector2i  position,
         if (distances.at(i) < distances.at(min_index)) min_index = i;
     }
 
-    renderer.open_tribe_info_window(*state.get_tribes_on_top().at(min_index));
+    bool is_buying_possible = false;
+    if (state.get_current_turn_phase() == state::Turn_Phase::START &&
+        state.get_current_player().get_tribes().first == nullptr)
+    {
+        is_buying_possible = true;
+    }
+    renderer.open_tribe_info_window(*state.get_tribes_on_top().at(min_index), is_buying_possible);
     client.set_selected_position_in_stack(static_cast<int>(min_index));
     client.set_tribe_info_window_state(true);
 }
@@ -116,12 +128,12 @@ void Click_Handler::handle_player_area_click(
 {
     if (layout_infos["active_tribe"].contains(static_cast<sf::Vector2f>(position)))
     {
-        renderer.open_tribe_info_window(*state.get_current_player().get_tribes().first);
+        renderer.open_tribe_info_window(*state.get_current_player().get_tribes().first, false);
         client.set_tribe_info_window_state(true);
     }
     else if (layout_infos["in_decline_tribe"].contains(static_cast<sf::Vector2f>(position)))
     {
-        renderer.open_tribe_info_window(*state.get_current_player().get_tribes().second);
+        renderer.open_tribe_info_window(*state.get_current_player().get_tribes().second, false);
         client.set_tribe_info_window_state(true);
     }
 }
@@ -214,6 +226,43 @@ void Click_Handler::handle_button_area_click(
         engine.add_command(std::make_unique<engine::Redeploy_Command>(
             state.get_current_player().id, client.get_selected_area_id(), 1));
         return;
+    }
+}
+
+void Click_Handler::handle_opponent_area_click(
+    sf::Vector2i position, std::unordered_map<std::string, sf::FloatRect> layout_infos)
+{
+    std::cout << "Clicked on opponent info area" << std::endl;
+
+    int i = 0;
+
+    for (auto& player : state.get_players())
+    {
+        if (player.id == state.get_current_player().id)
+        {
+            continue;
+        }
+
+        bool clicked_on_active_tribe =
+            layout_infos["player_" + std::to_string(i) + "_active_tribe"].contains(
+                static_cast<sf::Vector2f>(position));
+        bool clicked_on_decline_tribe =
+            layout_infos["player_" + std::to_string(i) + "_in_decline_tribe"].contains(
+                static_cast<sf::Vector2f>(position));
+
+        if (clicked_on_active_tribe && player.get_tribes().first != nullptr)
+        {
+            renderer.open_tribe_info_window(*player.get_tribes().first, false);
+            client.set_tribe_info_window_state(true);
+            return;
+        }
+        if (clicked_on_decline_tribe && player.get_tribes().second != nullptr)
+        {
+            renderer.open_tribe_info_window(*player.get_tribes().second, false);
+            client.set_tribe_info_window_state(true);
+            return;
+        }
+        i++;
     }
 }
 
