@@ -54,6 +54,7 @@ int Client::run()
                 // sf::sleep(sf::seconds(1));
             }
         }
+
         if (!is_ai_turn)
         {
             sf::Event event;

@@ -14,8 +14,8 @@ void testSFML()
 
 int main(int argc, char* argv[])
 {
-    int                      nb_players    = 4;
-    std::vector<std::string> names         = {"Victor", "Julien", "Tarek", "Maël"};
+    int                      nb_players    = 3;
+    std::vector<std::string> names         = {"Victor", "Julien", "Tarek"};
     std::vector<int>         victory_count = std::vector<int>(nb_players);
     int                      nb_of_games   = 1;
 

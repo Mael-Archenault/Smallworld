@@ -10,6 +10,8 @@ Opponents_Info_Renderer::Opponents_Info_Renderer(sf::RenderWindow& window, state
     // Reserve space to avoid vector reallocation which invalidates font pointers
     names.reserve(players.size());
     coins.reserve(players.size());
+    active_tribes_renderers.reserve(players.size());
+    decline_tribes_renderers.reserve(players.size());
     int i = 0;
     for (auto& player : players)
     {
@@ -18,6 +20,10 @@ Opponents_Info_Renderer::Opponents_Info_Renderer(sf::RenderWindow& window, state
 
         coins.emplace_back();
         coins.at(i).set_colors(sf::Color(0, 0, 0, 0), sf::Color(0, 0, 0, 0), sf::Color::White);
+
+        active_tribes_renderers.emplace_back();
+        decline_tribes_renderers.emplace_back();
+
         i++;
     }
 }
@@ -26,18 +32,51 @@ void Opponents_Info_Renderer::render_one_player_area(state::Player& player, int 
 {
     names.at(position).set_content(player.get_name());
     names.at(position).set_size(sf::Vector2f(section_width * 2 / 3, sub_section_height / 10));
-    names.at(position).set_character_size(sub_section_height / 10);
+    names.at(position).set_character_size(section_width / 10);
     names.at(position).set_position(this->position +
                                     sf::Vector2f(0.f, position * sub_section_height));
     names.at(position).render(window);
 
     coins.at(position).set_content("Money: " + std::to_string(player.get_money()));
     coins.at(position).set_size(sf::Vector2f(section_width * 1 / 3, sub_section_height / 10));
-    coins.at(position).set_character_size(sub_section_height / 15);
+    coins.at(position).set_character_size(section_width / 15);
     coins.at(position).set_position(
         this->position + sf::Vector2f(section_width * 2 / 3, position * sub_section_height));
 
     coins.at(position).render(window);
+
+    float active_tribe_scaling_factor =
+        std::min(section_width / 500, (sub_section_height * 10 / 15) / 194);
+    float decline_tribe_scaling_factor =
+        std::min(section_width / (2 * 500), (sub_section_height * 5 / 15) / 194);
+
+    std::pair<state::Tribe*, state::Tribe*> player_tribes = player.get_tribes();
+    if (player_tribes.first != nullptr)
+    {
+        active_tribes_renderers.at(position).set_sprite(
+            player.get_tribes().first->get_species_name(),
+            player.get_tribes().first->get_power_name(), false);
+
+        active_tribes_renderers.at(position).scale(active_tribe_scaling_factor,
+                                                   active_tribe_scaling_factor);
+        active_tribes_renderers.at(position).render(
+            window, this->position +
+                        sf::Vector2f(0.f, position * sub_section_height + sub_section_height / 10));
+    }
+
+    if (player_tribes.second != nullptr)
+    {
+        decline_tribes_renderers.at(position).set_sprite(
+            player.get_tribes().second->get_species_name(),
+            player.get_tribes().second->get_power_name(), true);
+
+        decline_tribes_renderers.at(position).scale(decline_tribe_scaling_factor,
+                                                    decline_tribe_scaling_factor);
+        decline_tribes_renderers.at(position).render(
+            window, this->position +
+                        sf::Vector2f(0.f, position * sub_section_height + sub_section_height / 10 +
+                                              active_tribe_scaling_factor * 194));
+    }
 }
 
 void Opponents_Info_Renderer::render(state::Game_State& state)
