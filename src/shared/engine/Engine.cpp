@@ -5,12 +5,6 @@
 
 #include "state.h"
 
-bool player_has_an_active_tribe(state::Game_State& state, int player_id)
-{
-    state::Player& player = state.get_current_player();
-    return player.get_tribes().first != nullptr;
-}
-
 namespace engine
 {
 

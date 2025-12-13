@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
                              new effects::Power_Description("TestPower", 3));
         static state::Area area(0, 1, state::Area_Biome::HILL,
                                 std::vector<state::Area_Specialization>(), false);
-        state::Player      player(0);
+        state::Player      player(0, "Alice");
 
         // testing initialization
         BOOST_CHECK_EQUAL(player.get_money(), 5);

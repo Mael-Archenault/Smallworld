@@ -14,8 +14,8 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
 BOOST_AUTO_TEST_CASE(Test_Engine)
 {
     {
-        state::Game_State state(2);
-        engine::Engine    engine(2);
+        state::Game_State state(2, {"Alice", "Bob"});
+        engine::Engine    engine(2, {"Alice", "Bob"});
 
         // ---------------- error testing ------------------------------
 
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 
         // ---------------------- simulate game turns -------------------------
 
-        engine = engine::Engine(2);  // reset engine
+        engine = engine::Engine(2, {"Alice", "Bob"});  // reset engine
 
         // choose species for player 0
 
@@ -63,6 +63,16 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
                 {
                     attackable_areas.push_back(price_info);
                 }
+            }
+
+            if (attackable_areas.empty())
+            {
+                // no more areas can be conquered, end conquest phase
+                engine.add_command(
+                    std::make_unique<engine::End_Conquer_Command>(state.get_current_player().id));
+                engine.update();
+                state = state::Game_State(engine.get_state());
+                break;
             }
 
             std::pair<int, int> area_to_attack =
