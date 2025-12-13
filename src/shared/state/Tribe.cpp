@@ -182,11 +182,14 @@ void Tribe::remove_from_map()
 }
 void Tribe::remove_from_owned_areas(Area* area)
 {
-    if (std::find(owned_areas.begin(), owned_areas.end(), area) == owned_areas.end())
+    if (int i = std::find_if(owned_areas.begin(), owned_areas.end(),
+        [area](Area* area_to_test) {return area_to_test->id == area->id;}) != owned_areas.end())
     {
-        throw std::invalid_argument("Tribe : remove_from_owned_areas: area not owned by the tribe");
+        owned_areas.erase(owned_areas.begin() + i);
+        return;
+
     }
-    owned_areas.erase(std::find(owned_areas.begin(), owned_areas.end(), area));
+    throw std::invalid_argument("Tribe : remove_from_owned_areas: area not owned by the tribe");
 }
 
 void Tribe::gather_units_after_losing(Area* on_area)

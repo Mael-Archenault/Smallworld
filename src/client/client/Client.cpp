@@ -6,6 +6,7 @@
 #include <ai/Ai_Random.h>
 
 #include "engine.h"
+#include "ai/Ai_Advanced.h"
 
 namespace client
 {
@@ -19,7 +20,7 @@ Client::Client(engine::Engine& engine)
     selected_area_id         = 0;
     tribe_info_window_opened = false;
     renderer.set_selected_area(selected_area_id);
-    ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Random(&state,1), new ai::Ai_Heuristic(&state,0)});
+    ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Advanced(&state,1), new ai::Ai_Heuristic(&state,0)});
 }
 
 int Client::run()
@@ -175,15 +176,13 @@ void Client::handle_mouse_click(sf::Vector2i position)
         int available_units = state.get_free_units_number(state.get_current_player().id);
         if (price > available_units)
         {
-            int dice_units = state.roll_dice_for_bonus_units();
-            std::cout << "No more area attackable, rolled the dice : " << dice_units << std::endl;
             engine.add_command(std::make_unique<engine::Conquer_Command>(
-                state.get_current_player().id, selected_area_id, available_units, dice_units));
+                state.get_current_player().id, selected_area_id, available_units, true));
         }
         else
         {
             engine.add_command(std::make_unique<engine::Conquer_Command>(
-                state.get_current_player().id, selected_area_id, price, -1));
+                state.get_current_player().id, selected_area_id, price, false));
         }
         return;
     }

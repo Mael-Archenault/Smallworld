@@ -4,11 +4,11 @@
 
 #include "Engine_Ai.h"
 namespace engine {
-    Engine_Ai::Engine_Ai(state::Game_State state, int nb_players) : Engine(nb_players){
-        this->state = state;
+    Engine_Ai::Engine_Ai(state::Game_State& state, int nb_players) : Engine(nb_players){
+        this->state = state::Game_State(state);
     }
 
-    void Engine_Ai::set_state(state::Game_State new_state) {
-        state = new_state;
+    void Engine_Ai::set_state(state::Game_State& new_state) {
+        Engine::state = state::Game_State(new_state);
     }
 }
