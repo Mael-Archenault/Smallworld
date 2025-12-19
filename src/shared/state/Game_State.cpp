@@ -13,10 +13,11 @@ Game_State::Game_State(int n_players) : n_players(n_players), round(1), map(Map(
     {
         players.push_back(Player(i));
     }
-    current_player     = &players[0];
+    current_player     = &players.at(0);
     current_turn_phase = Turn_Phase::START;
     tribe_stack        = Tribe_Stack();
 }
+
 
 void Game_State::gather_free_units(int player_id)
 {
@@ -54,18 +55,6 @@ std::vector<std::pair<int, int>> Game_State::get_conquest_prices(int player_id)
         }
     }
     throw std::invalid_argument("get_conquest_prices: Player id not found");
-}
-
-std::vector<int> Game_State::get_redeployable_areas(int player_id)
-{
-    for (size_t i = 0; i < players.size(); i++)
-    {
-        if (players[i].id == player_id)
-        {
-            return players[i].get_redeployable_areas();
-        }
-    }
-    throw std::invalid_argument("get_redeployable_areas: Player id not found");
 }
 
 void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_units, int dice_units)
@@ -183,6 +172,18 @@ Tribe_Stack& Game_State::get_tribe_stack()
 Player& Game_State::get_current_player()
 {
     return *current_player;
+}
+
+std::vector<int> Game_State::get_redeployable_areas(int player_id)
+{
+    for (size_t i = 0; i < players.size(); i++)
+    {
+        if (players[i].id == player_id)
+        {
+            return players[i].get_redeployable_areas();
+        }
+    }
+    throw std::invalid_argument("get_redeployable_areas: Player id not found");
 }
 
 Turn_Phase Game_State::get_current_turn_phase()

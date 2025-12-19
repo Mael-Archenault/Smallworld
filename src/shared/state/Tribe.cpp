@@ -69,7 +69,7 @@ std::vector<std::pair<int, int>> Tribe::get_conquest_prices(Map* map)
         for (Area* neighbor : area->get_neighbors())
         {
             if (!neighbor) continue;
-            if (neighbor->get_owner_tribe() == this) continue;
+            if (neighbor->get_owner_tribe()!=nullptr && (neighbor->get_owner_tribe()->id == this->id)) continue;
             int nid = neighbor->id;
             if (neighbor->get_biome() == Area_Biome::WATER) continue;
             if (seen.find(nid) != seen.end()) continue;

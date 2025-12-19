@@ -13,6 +13,8 @@
 #include "random"
 #include "Ai_Advanced.h"
 
+#include <algorithm>
+#include <iostream>
 #include <stack>
 
 #include "engine/Choose_Species_Command.h"
@@ -22,34 +24,41 @@ using namespace ai;
 
 Ai_Advanced::Ai_Advanced(state::Game_State* state,int player_id) : Ai_Interface(state, player_id), engine(*state, player_id) {
     command_stack = {};
+    engine.set_state(*state);
 }
 
-std::pair<int,std::stack<std::unique_ptr<engine::Command>>> Ai_Advanced::calcul_stack(std::unique_ptr<engine::Command> command, state::Game_State &new_state) {
-    engine.set_state(new_state);
+std::pair<int,std::stack<std::unique_ptr<engine::Command>>> Ai_Advanced::calcul_stack(std::unique_ptr<engine::Command> command, state::Game_State new_state) {
     if (command != nullptr) {
         engine.add_command(std::move(command));
         try {
-            engine.update(); // problem with state when going to ENgine
+            engine.update(); // problem with state when going to Engine
         }
-        catch (Json::Exception &e) {
+        catch (std::invalid_argument &e) {
+            std::cout<<e.what()<<std::endl;
             return {0, std::stack<std::unique_ptr<engine::Command>>()};
         }
     }
+    else {
+        engine.set_state(new_state);
+    }
     std::pair<float,std::stack<std::unique_ptr<engine::Command>>>  current_best_node_value_command = {0,std::stack<std::unique_ptr<engine::Command>>()};
 
-    if (engine.get_state().get_free_units_number(id) == 0) {
+    if (engine.get_state().get_free_units_number(id) == 0 || engine.get_state().get_current_turn_phase() == state::REDEPLOY) {
         current_best_node_value_command.first = engine.get_state().get_current_player().get_money();
+        current_best_node_value_command.second.push(std::move(command));
+        return current_best_node_value_command;
     }
 
-    for (std::pair<int,int> area : state->get_conquest_prices(id)) {
+    for (std::pair<int,int> area : engine.get_state().get_conquest_prices(id)) {
+        if (area.first == 1) continue;
         int required_units = area.second;
         int available_units = engine.get_state().get_free_units_number(id);
         command = std::make_unique<engine::Conquer_Command>(id,area.first,
                                                     std::min(required_units,available_units),
                                                     (required_units - available_units > 0));
 
-        std::pair<float,std::stack<std::unique_ptr<engine::Command>>> new_node_value_command = calcul_stack(std::move(command),engine.get_state());
-
+        std::pair<float,std::stack<std::unique_ptr<engine::Command>>> new_node_value_command = calcul_stack(std::move(command), engine.get_state());
+        engine.set_state(new_state);
         if (required_units - available_units > 0) {
             float current_gain = state->get_current_player().get_money();
             new_node_value_command.first = current_gain + (new_node_value_command.first - current_gain) * unit_to_proba(required_units - available_units) ;

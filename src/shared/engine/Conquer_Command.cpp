@@ -24,10 +24,9 @@ void Conquer_Command::execute(state::Game_State& state)
     if (need_dice_units) {
         dice_units = state.roll_dice_for_bonus_units();
     }
-    try {
-        state.conquer(player_id, attacked_area_id, n_units, dice_units);
-    }
-    catch (std::invalid_argument e) {}
+
+    state.conquer(player_id, attacked_area_id, n_units, dice_units);
+
 
     if ((dice_units != -1) | (state.get_free_units_number(player_id) == 0))  // dice has been rolled : it's the last conquest
     {

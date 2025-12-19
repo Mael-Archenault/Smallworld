@@ -8,7 +8,7 @@ namespace engine {
         this->state = state::Game_State(state);
     }
 
-    void Engine_Ai::set_state(state::Game_State& new_state) {
-        Engine::state = state::Game_State(new_state);
+    void Engine_Ai::set_state(state::Game_State& state) {
+        this->state = state::Game_State (state);
     }
 }
