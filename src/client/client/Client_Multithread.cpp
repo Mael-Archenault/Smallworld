@@ -1,12 +1,10 @@
-//
-// Created by julien on 12/19/25.
-//
-#include "Client_Multithread.h"
+
+#include <unistd.h>
 
 #include <iostream>
 #include <thread>
-#include <unistd.h>
 
+#include "client.h"
 #include "engine.h"
 
 namespace client
@@ -37,8 +35,8 @@ int Client_Multithread::run()
     renderer.render(state);
     window.display();
 
-    sf::View view           = window.getDefaultView();  // store your base view
-    bool     mouse_clicked  = false;
+    sf::View view          = window.getDefaultView();  // store your base view
+    bool     mouse_clicked = false;
     while (window.isOpen())
     {
         sf::Event event;
@@ -61,6 +59,8 @@ int Client_Multithread::run()
             {
                 mouse_clicked          = true;
                 sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+                std::cout << "Mouse clicked at position: " << mouse_pos.x << ", " << mouse_pos.y
+                          << std::endl;
                 // handle_mouse_click(mouse_pos);
                 click_handler.handle_click(mouse_pos);
             }
@@ -69,39 +69,7 @@ int Client_Multithread::run()
                 mouse_clicked = false;
             }
         }
-
-
-        try
-        {
-            engine.update();
-            state = state::Game_State(engine.get_state());
-
-            if (state.is_game_finished())
-            {
-                std::cout << "Maximum rounds reached." << std::endl;
-                std::pair<int, int> victorious_player_money = {0, -1};
-                for (std::pair<int, int> player_id_money : state.get_all_player_id_money())
-                {
-                    std::cout << "Player " << player_id_money.first << " has "
-                              << player_id_money.second << " money." << std::endl;
-                    if (player_id_money.second >= victorious_player_money.second)
-                    {
-                        victorious_player_money = player_id_money;
-                    }
-                }
-                std::cout << "\nVictory goes to " << victorious_player_money.first << ", with "
-                          << victorious_player_money.second << " money !" << std::endl;
-                window.close();
-                return victorious_player_money.first;
-            }
-        }
-        catch (const std::exception& e)
-        {
-            engine.remove_last_command();
-            std::cerr << "Error executing command: " << e.what() << std::endl;
-        }
-
-
+        renderer_process();
     }
 }
 
@@ -146,11 +114,44 @@ engine::Engine& Client_Multithread::get_engine()
     return engine;
 }
 
-
-void Client_Multithread::renderer_process() {
-        window.clear(sf::Color::Black);
-        renderer.render(state);
-        window.display();
-        usleep(50000/3);       //60 frames per secound
+void Client_Multithread::renderer_process()
+{
+    window.clear(sf::Color::Black);
+    renderer.render(state);
+    window.display();
 }
-}  // namespace Client_Multithread
+
+void Client_Multithread::update_process()
+{
+    try
+    {
+        engine.update();
+        state = state::Game_State(engine.get_state());
+
+        // if (state.is_game_finished())
+        // {
+        //     std::cout << "Maximum rounds reached." << std::endl;
+        //     std::pair<int, int> victorious_player_money = {0, -1};
+        //     for (std::pair<int, int> player_id_money : state.get_all_player_id_money())
+        //     {
+        //         std::cout << "Player " << player_id_money.first << " has " <<
+        //         player_id_money.second
+        //                   << " money." << std::endl;
+        //         if (player_id_money.second >= victorious_player_money.second)
+        //         {
+        //             victorious_player_money = player_id_money;
+        //         }
+        //     }
+        //     std::cout << "\nVictory goes to " << victorious_player_money.first << ", with "
+        //               << victorious_player_money.second << " money !" << std::endl;
+        //     window.close();
+        //     return victorious_player_money.first;
+        // }
+    }
+    catch (const std::exception& e)
+    {
+        engine.remove_last_command();
+        std::cerr << "Error executing command: " << e.what() << std::endl;
+    }
+}
+}  // namespace client

@@ -95,7 +95,7 @@ void Click_Handler_Multithread::handle_map_click(sf::Vector2i position, sf::Floa
 }
 
 void Click_Handler_Multithread::handle_tribe_stack_click(sf::Vector2i  position,
-                                             sf::FloatRect tribe_stack_layout)
+                                                         sf::FloatRect tribe_stack_layout)
 {
     std::vector<sf::Vector2f> card_positions = renderer.get_on_screen_tribe_positions();
 
