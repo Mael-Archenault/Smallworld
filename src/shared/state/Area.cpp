@@ -49,7 +49,7 @@ void Area::set_owner_tribe(Tribe* new_owner_tribe)
     }
     owner_tribe = new_owner_tribe;
 }
-
+    
 void Area::set_units_number(int n_units)
 {
     units_number = n_units;
