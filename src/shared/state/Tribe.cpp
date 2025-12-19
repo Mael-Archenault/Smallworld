@@ -191,7 +191,6 @@ int Tribe::get_rewards()
 {
     int total_rewards = owned_areas.size() + species_description->rewards_effect(owned_areas) +
                         power_description->rewards_effect(owned_areas);
-    std::cout << total_rewards << std::endl;
     return total_rewards;
 }
 
