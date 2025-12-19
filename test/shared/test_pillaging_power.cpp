@@ -27,16 +27,21 @@ BOOST_AUTO_TEST_CASE(Test_Pillaging_Power)
     
     BOOST_CHECK_EQUAL(pillaging_power.reward_effect(owned_areas), 0);
 
-    
     pillaging_power.conquest_effect(&area1);
     BOOST_CHECK_EQUAL(pillaging_power.reward_effect(owned_areas), 0);
 
+    pillaging_power.conquest_effect(&area1);
     pillaging_power.conquest_effect(&area2);
     BOOST_CHECK_EQUAL(pillaging_power.reward_effect(owned_areas), 1);
 
+    pillaging_power.conquest_effect(&area1);
+    pillaging_power.conquest_effect(&area2);
     pillaging_power.conquest_effect(&area3);
     BOOST_CHECK_EQUAL(pillaging_power.reward_effect(owned_areas), 2);
 
+    pillaging_power.conquest_effect(&area1);
+    pillaging_power.conquest_effect(&area2);
+    pillaging_power.conquest_effect(&area3);
     pillaging_power.conquest_effect(&area4);
     BOOST_CHECK_EQUAL(pillaging_power.reward_effect(owned_areas), 2);
 

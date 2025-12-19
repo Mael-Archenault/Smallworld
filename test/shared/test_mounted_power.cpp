@@ -18,10 +18,15 @@ BOOST_AUTO_TEST_CASE(Test_Mounted_Power)
 
     effects::Mounted_Power mounted_power;
 
-    std::vector<state::Area*> initial_areas = { &area1, &area2, &area3, &area4 };
+    std::vector<std::pair<int,int>> initial_prices = {
+        {area1.id, 2},
+        {area2.id, 6},
+        {area3.id, 4},
+        {area4.id, 10}
+    };
 
     std::vector<std::pair<int,int>> modified_prices =
-        mounted_power.conquest_prices_effect(initial_areas, owned_areas, nullptr);
+        mounted_power.conquest_prices_effect(initial_prices, owned_areas, nullptr);
 
     for (auto& p : modified_prices)
     {

@@ -5,7 +5,7 @@
 namespace effects
 {
 
-Mounted_Power::Mounted_Power() : Power_Description("Mounted", 5)
+Mounted_Power::Mounted_Power() : Power_Description("Underworld", 5)
 {
     effect_disabled = false;
 }
@@ -55,7 +55,7 @@ std::vector<std::pair<int,int>> Mounted_Power::conquest_prices_effect(
         if (!area) continue;
 
         auto biome = area->get_biome();
-        if (biome == state::Area_Biome::HILL || biome == state::Area_Biome::FARM)
+        if (biome == state::Area_Specialization::CAVERN)
             reduced_price_area_ids.push_back(area_id);
     }
 

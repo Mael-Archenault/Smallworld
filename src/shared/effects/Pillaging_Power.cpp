@@ -16,8 +16,9 @@ int Pillaging_Power::reward_effect(std::vector<state::Area*> owned_areas)
     {
         return 0;
     }
-    
-    return pillaged_this_turn;
+    int reward = pillaged_this_turn;
+    pillaged_this_turn = 0;
+    return reward;
 }
 
 void Pillaging_Power::conquest_effect (state::Area* attacked_area){
