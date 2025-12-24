@@ -12,7 +12,10 @@ namespace state
 Tribe_Stack::Tribe_Stack()
 {
     stack.clear();
-    stack = stack_builder.get_tribe_stack();
+    for (int i = 0; i < 6; ++i)
+    {
+        stack.push_back(stack_builder.get_next_tribe());
+    }
 }
 
 Tribe* Tribe_Stack::take_tribe_at_position(int position)
@@ -28,6 +31,7 @@ Tribe* Tribe_Stack::take_tribe_at_position(int position)
     }
     Tribe tribe_copy = stack[position];
     stack.erase(stack.begin() + position);
+    stack.push_back(stack_builder.get_next_tribe());
     Tribe* tribe_out = new Tribe(tribe_copy);
     return tribe_out;
 }

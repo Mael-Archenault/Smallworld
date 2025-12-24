@@ -8,7 +8,7 @@ namespace state
 {
 
 Game_State::Game_State(int n_players, std::vector<std::string> names)
-    : n_players(n_players), round(1), map(Map("4_players"))
+    : n_players(n_players), round(1), map("4_players")
 {
     for (int i = 0; i < n_players; i++)
     {

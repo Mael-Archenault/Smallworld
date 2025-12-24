@@ -54,26 +54,33 @@ std::unordered_map<std::string, std::function<effects::Power_Description*()>> st
 Tribe_Stack_Builder::Tribe_Stack_Builder()
 {
     load_species_and_powers();
-}
 
-std::vector<Tribe> Tribe_Stack_Builder::get_tribe_stack()
-{
-    std::vector<Tribe> stack;
+    available_species = species;
+    available_powers  = powers;
+
     // build of the stack: pair each species with a unique power (no duplicates)
     std::random_device rd;
     std::mt19937       rng(rd());
 
     // shuffle species and powers independently
-    std::shuffle(species.begin(), species.end(), rng);
-    std::shuffle(powers.begin(), powers.end(), rng);
+    std::shuffle(available_species.begin(), available_species.end(), rng);
+    std::shuffle(available_powers.begin(), available_powers.end(), rng);
+}
 
-    // Pair the first 'number_of_species' species with the first same number of powers
-    for (size_t i = 0; i < species.size(); i++)
+Tribe Tribe_Stack_Builder::get_next_tribe()
+{
+    std::vector<Tribe> stack;
+
+    if (available_species.empty() || available_powers.empty())
     {
-        Tribe tribe(i, species.at(i), powers.at(i));
-        stack.push_back(tribe);
+        throw std::out_of_range("No more tribes available in the stack builder");
     }
-    return stack;
+
+    Tribe result(n_created_tribes, available_species.at(0), available_powers.at(0));
+    available_species.erase(available_species.begin());
+    available_powers.erase(available_powers.begin());
+    n_created_tribes += 1;
+    return result;
 }
 
 void Tribe_Stack_Builder::load_species_and_powers()
