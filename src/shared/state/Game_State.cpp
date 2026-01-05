@@ -8,15 +8,18 @@ namespace state
 {
 
 Game_State::Game_State(int n_players, std::vector<std::string> names)
-    : n_players(n_players), round(1), map("4_players")
+    : n_players(n_players),
+      round(1),
+      map("4_players"),
+      names(names),
+      tribe_stack(n_players),
+      current_turn_phase(Turn_Phase::START)
 {
     for (int i = 0; i < n_players; i++)
     {
         players.push_back(Player(i, names.at(i)));
     }
-    current_player     = &players[0];
-    current_turn_phase = Turn_Phase::START;
-    tribe_stack        = Tribe_Stack();
+    current_player = &players[0];
 }
 
 void Game_State::gather_free_units(int player_id)
@@ -152,7 +155,11 @@ void Game_State::go_in_decline(int player_id)
     {
         if (players[i].id == player_id)
         {
-            players[i].go_in_decline();
+            if (players.at(i).get_tribes().second != nullptr)
+            {
+                tribe_stack.remove_from_in_game_tribes(players.at(i).get_tribes().second->id);
+            }
+            players.at(i).go_in_decline();
             return;
         }
     }
@@ -230,5 +237,14 @@ std::vector<std::pair<int, int>> Game_State::get_all_player_id_money()
 std::vector<Player>& Game_State::get_players()
 {
     return players;
+}
+
+Game_State Game_State::deep_copy()
+{
+    Game_State copy(n_players, names);
+    copy.round              = round;
+    copy.current_turn_phase = current_turn_phase;
+
+    return copy;
 }
 }  // namespace state

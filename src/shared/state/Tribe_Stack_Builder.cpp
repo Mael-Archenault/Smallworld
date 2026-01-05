@@ -107,4 +107,11 @@ void Tribe_Stack_Builder::load_species_and_powers()
         this->powers.push_back(p);
     }
 }
+
+void Tribe_Stack_Builder::return_tribe(Tribe* returned_tribe)
+{
+    available_species.push_back(returned_tribe->get_species_description());
+    available_powers.push_back(returned_tribe->get_power_description());
+}
+
 }  // namespace state
