@@ -101,7 +101,7 @@ void Player::go_in_decline()
     throw std::invalid_argument("go_in_decline:there is no active tribe for this player");
 }
 
-void Player::set_active_tribe(Tribe* tribe, int cost)
+void Player::choose_active_tribe(Tribe* tribe, int cost)
 {
     if (money < cost)
     {
@@ -109,6 +109,15 @@ void Player::set_active_tribe(Tribe* tribe, int cost)
     }
     money -= cost;
     active_tribe = tribe;
+}
+void Player::set_active_tribe(Tribe* tribe)
+{
+    active_tribe = tribe;
+}
+
+void Player::set_in_decline_tribe(Tribe* tribe)
+{
+    tribe_in_decline = tribe;
 }
 
 std::pair<Tribe*, Tribe*> Player::get_tribes()

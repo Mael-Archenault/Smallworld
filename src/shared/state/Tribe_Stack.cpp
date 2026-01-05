@@ -70,7 +70,8 @@ Tribe_Stack Tribe_Stack::deep_copy()
     copy.stack_builder = stack_builder.deep_copy();
     for (Tribe* tribe : in_game_tribes)
     {
-        Tribe* tribe_copy = new Tribe(tribe->id, nullptr, nullptr);
+        Tribe* tribe_copy =
+            new Tribe(tribe->id, tribe->get_species_description(), tribe->get_power_description());
         // restoring species_description and power_description pointers
         for (auto power : stack_builder.get_powers())
         {
@@ -118,6 +119,11 @@ Tribe_Stack Tribe_Stack::deep_copy()
     }
 
     return copy;
+}
+
+std::vector<Tribe*> Tribe_Stack::get_in_game_tribes()
+{
+    return in_game_tribes;
 }
 
 }  // namespace state

@@ -138,11 +138,11 @@ void Game_State::take_tribe_at_position(int position, int player_id)
 {
     for (size_t i = 0; i < players.size(); i++)
     {
-        if (players[i].id == player_id)
+        if (players.at(i).id == player_id)
         {
             Tribe* tribe = tribe_stack.take_tribe_at_position(position);
             tribe->set_owner(&players[i]);
-            players[i].set_active_tribe(tribe, position);
+            players.at(i).choose_active_tribe(tribe, position);
             return;
         }
     }
@@ -244,9 +244,35 @@ Game_State Game_State::deep_copy()
     Game_State copy(n_players, names);
     copy.round              = round;
     copy.current_turn_phase = current_turn_phase;
+    copy.tribe_stack        = tribe_stack.deep_copy();
 
-    copy.tribe_stack = tribe_stack.deep_copy();
-
+    // restoring active and decline tribes pointers for each player
+    for (size_t i = 0; i < players.size(); i++)
+    {
+        std::vector<Tribe*>       in_game_tribes = copy.tribe_stack.get_in_game_tribes();
+        std::pair<Tribe*, Tribe*> tribes         = players.at(i).get_tribes();
+        if (tribes.first != nullptr)
+        {
+            for (Tribe* tribe : in_game_tribes)
+            {
+                if (tribe->id == tribes.first->id)
+                {
+                    tribes.first = tribe;
+                }
+            }
+            copy.players.at(i).set_active_tribe(tribes.first);
+        }
+        if (tribes.second != nullptr)
+        {
+            for (Tribe* tribe : in_game_tribes)
+            {
+                if (tribe->id == tribes.second->id)
+                {
+                    tribes.second = tribe;
+                }
+            }
+        }
+    }
     return copy;
 }
 }  // namespace state
