@@ -93,8 +93,8 @@ int Client::run()
         try
         {
             engine.update();
-            state = state::Game_State(engine.get_state());
-
+            // state = state::Game_State(engine.get_state());
+            state = engine.get_state().deep_copy();
             if (state.is_game_finished())
             {
                 std::cout << "Maximum rounds reached." << std::endl;

@@ -9,7 +9,9 @@
 #include "Game_State.h"
 #include "Map.h"
 #include "effects.h"
-using namespace state;
+
+namespace state
+{
 
 Tribe::Tribe(int id, effects::Species_Description* base_species_description,
              effects::Power_Description* base_power_description)
@@ -246,3 +248,15 @@ void Tribe::set_owner(Player* player)
 {
     owner = player;
 }
+
+void Tribe::set_species_description(effects::Species_Description* species_desc)
+{
+    species_description = species_desc;
+}
+
+void Tribe::set_power_description(effects::Power_Description* power_desc)
+{
+    power_description = power_desc;
+}
+
+}  // namespace state

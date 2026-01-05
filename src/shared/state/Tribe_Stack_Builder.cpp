@@ -114,4 +114,56 @@ void Tribe_Stack_Builder::return_tribe(Tribe* returned_tribe)
     available_powers.push_back(returned_tribe->get_power_description());
 }
 
+std::vector<effects::Species_Description*> Tribe_Stack_Builder::get_species()
+{
+    return species;
+}
+
+std::vector<effects::Power_Description*> Tribe_Stack_Builder::get_powers()
+{
+    return powers;
+}
+
+Tribe_Stack_Builder Tribe_Stack_Builder::deep_copy()
+{
+    Tribe_Stack_Builder copy;
+
+    copy.n_created_tribes = n_created_tribes;
+    // recreating powers and species in the heap
+    for (auto species_desc : species)
+    {
+        copy.species.push_back(str_to_species[species_desc->get_name()]());
+    }
+    for (auto power_desc : powers)
+    {
+        copy.powers.push_back(str_to_power[power_desc->get_name()]());
+    }
+
+    for (auto available_species_desc : available_species)
+    {
+        for (auto species_copy : copy.species)
+        {
+            if (available_species_desc->get_name() == species_copy->get_name())
+            {
+                copy.available_species.push_back(species_copy);
+                break;
+            }
+        }
+    }
+
+    for (auto available_power_desc : available_powers)
+    {
+        for (auto power_copy : copy.powers)
+        {
+            if (available_power_desc->get_name() == power_copy->get_name())
+            {
+                copy.available_powers.push_back(power_copy);
+                break;
+            }
+        }
+    }
+    // restoring available powers and species
+    return copy;
+}
+
 }  // namespace state

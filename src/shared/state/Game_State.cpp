@@ -245,6 +245,8 @@ Game_State Game_State::deep_copy()
     copy.round              = round;
     copy.current_turn_phase = current_turn_phase;
 
+    copy.tribe_stack = tribe_stack.deep_copy();
+
     return copy;
 }
 }  // namespace state

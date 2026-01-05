@@ -57,6 +57,7 @@ void Tribe_Stack::remove_from_in_game_tribes(int tribe_id)
         if (in_game_tribes.at(i)->id == tribe_id)
         {
             stack_builder.return_tribe(in_game_tribes.at(i));
+            free(in_game_tribes.at(i));
             in_game_tribes.erase(in_game_tribes.begin() + i);
             return;
         }
@@ -66,9 +67,56 @@ void Tribe_Stack::remove_from_in_game_tribes(int tribe_id)
 Tribe_Stack Tribe_Stack::deep_copy()
 {
     Tribe_Stack copy(in_game_tribes.capacity() / 2);
-    copy.stack          = stack;
-    copy.in_game_tribes = in_game_tribes;
-    copy.stack_builder  = stack_builder;
+    copy.stack_builder = stack_builder.deep_copy();
+    for (Tribe* tribe : in_game_tribes)
+    {
+        Tribe* tribe_copy = new Tribe(tribe->id, nullptr, nullptr);
+        // restoring species_description and power_description pointers
+        for (auto power : stack_builder.get_powers())
+        {
+            if (power->get_name() == tribe->get_power_description()->get_name())
+            {
+                tribe_copy->set_power_description(power);
+                break;
+            }
+        }
+
+        for (auto species : stack_builder.get_species())
+        {
+            if (species->get_name() == tribe->get_species_description()->get_name())
+            {
+                tribe_copy->set_species_description(species);
+                break;
+            }
+        }
+        copy.in_game_tribes.push_back(tribe_copy);
+    }
+
+    copy.stack.clear();
+    for (Tribe tribe : stack)
+    {
+        // restoring species_description and power_description pointers
+        Tribe tribe_copy(tribe.id, tribe.get_species_description(), tribe.get_power_description());
+        for (auto power : stack_builder.get_powers())
+        {
+            if (power->get_name() == tribe.get_power_description()->get_name())
+            {
+                tribe_copy.set_power_description(power);
+                break;
+            }
+        }
+
+        for (auto species : stack_builder.get_species())
+        {
+            if (species->get_name() == tribe.get_species_description()->get_name())
+            {
+                tribe_copy.set_species_description(species);
+                break;
+            }
+        }
+        copy.stack.push_back(tribe_copy);
+    }
+
     return copy;
 }
 
