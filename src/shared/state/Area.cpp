@@ -103,3 +103,8 @@ void Area::clear_units()
 {
     units_number = 0;
 }
+
+bool Area::get_is_border()
+{
+    return is_border;
+}

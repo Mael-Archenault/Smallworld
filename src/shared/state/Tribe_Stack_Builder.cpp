@@ -54,26 +54,33 @@ std::unordered_map<std::string, std::function<effects::Power_Description*()>> st
 Tribe_Stack_Builder::Tribe_Stack_Builder()
 {
     load_species_and_powers();
-}
 
-std::vector<Tribe> Tribe_Stack_Builder::get_tribe_stack()
-{
-    std::vector<Tribe> stack;
+    available_species = species;
+    available_powers  = powers;
+
     // build of the stack: pair each species with a unique power (no duplicates)
     std::random_device rd;
     std::mt19937       rng(rd());
 
     // shuffle species and powers independently
-    std::shuffle(species.begin(), species.end(), rng);
-    std::shuffle(powers.begin(), powers.end(), rng);
+    std::shuffle(available_species.begin(), available_species.end(), rng);
+    std::shuffle(available_powers.begin(), available_powers.end(), rng);
+}
 
-    // Pair the first 'number_of_species' species with the first same number of powers
-    for (size_t i = 0; i < species.size(); i++)
+Tribe Tribe_Stack_Builder::get_next_tribe()
+{
+    std::vector<Tribe> stack;
+
+    if (available_species.empty() || available_powers.empty())
     {
-        Tribe tribe(i, species.at(i), powers.at(i));
-        stack.push_back(tribe);
+        throw std::out_of_range("No more tribes available in the stack builder");
     }
-    return stack;
+
+    Tribe result(n_created_tribes, available_species.at(0), available_powers.at(0));
+    available_species.erase(available_species.begin());
+    available_powers.erase(available_powers.begin());
+    n_created_tribes += 1;
+    return result;
 }
 
 void Tribe_Stack_Builder::load_species_and_powers()
@@ -100,4 +107,63 @@ void Tribe_Stack_Builder::load_species_and_powers()
         this->powers.push_back(p);
     }
 }
+
+void Tribe_Stack_Builder::return_tribe(Tribe* returned_tribe)
+{
+    available_species.push_back(returned_tribe->get_species_description());
+    available_powers.push_back(returned_tribe->get_power_description());
+}
+
+std::vector<effects::Species_Description*> Tribe_Stack_Builder::get_species()
+{
+    return species;
+}
+
+std::vector<effects::Power_Description*> Tribe_Stack_Builder::get_powers()
+{
+    return powers;
+}
+
+Tribe_Stack_Builder Tribe_Stack_Builder::deep_copy()
+{
+    Tribe_Stack_Builder copy;
+
+    copy.n_created_tribes = n_created_tribes;
+    // recreating powers and species in the heap
+    for (auto species_desc : species)
+    {
+        copy.species.push_back(str_to_species[species_desc->get_name()]());
+    }
+    for (auto power_desc : powers)
+    {
+        copy.powers.push_back(str_to_power[power_desc->get_name()]());
+    }
+
+    for (auto available_species_desc : available_species)
+    {
+        for (auto species_copy : copy.species)
+        {
+            if (available_species_desc->get_name() == species_copy->get_name())
+            {
+                copy.available_species.push_back(species_copy);
+                break;
+            }
+        }
+    }
+
+    for (auto available_power_desc : available_powers)
+    {
+        for (auto power_copy : copy.powers)
+        {
+            if (available_power_desc->get_name() == power_copy->get_name())
+            {
+                copy.available_powers.push_back(power_copy);
+                break;
+            }
+        }
+    }
+    // restoring available powers and species
+    return copy;
+}
+
 }  // namespace state

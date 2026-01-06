@@ -96,7 +96,7 @@ void Area_Info_Renderer::render(state::Game_State& state)
             area_info += "Owner: " + std::to_string(tribe->get_owner()->id) + "\n";
             area_info +=
                 "Tribe: " + tribe->get_power_name() + " " + tribe->get_species_name() + "\n";
-            std::string is_in_decline = tribe->is_in_decline() ? " Yes\n" : " No\n";
+            std::string is_in_decline = tribe->get_is_in_decline() ? " Yes\n" : " No\n";
             area_info += "In decline:" + is_in_decline;
         }
     }
