@@ -144,7 +144,7 @@ void Map_Renderer::render(state::Map& map)
                 (owner_tribe == nullptr) ? "Lost Tribe" : owner_tribe->get_species_name();
             units_renderer.set_sprite(name);
 
-            if (owner_tribe != nullptr && owner_tribe->is_in_decline())
+            if (owner_tribe != nullptr && owner_tribe->get_is_in_decline())
             {
                 units_renderer.color(sf::Color(39, 224, 245));
             }

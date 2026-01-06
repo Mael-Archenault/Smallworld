@@ -20,8 +20,8 @@ Tribe::Tribe(int id, effects::Species_Description* base_species_description,
       power_description(base_power_description),
       owner(nullptr)
 {
-    owned_areas = std::vector<Area*>();
-    in_decline  = false;
+    owned_areas   = std::vector<Area*>();
+    is_in_decline = false;
 
     free_units_number = species_description->get_initial_units_number() +
                         power_description->get_initial_units_number();
@@ -179,7 +179,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
 
 void Tribe::go_in_decline()
 {
-    in_decline = true;
+    is_in_decline = true;
     species_description->decline_effect(owned_areas);
     power_description->decline_effect(owned_areas);
 
@@ -188,6 +188,11 @@ void Tribe::go_in_decline()
     {
         area->gather_free_units();
     }
+}
+
+void Tribe::set_is_in_decline(bool new_state)
+{
+    is_in_decline = new_state;
 }
 int Tribe::get_rewards()
 {
@@ -205,9 +210,9 @@ std::string Tribe::get_power_name()
     return power_description->get_name();
 }
 
-bool Tribe::is_in_decline()
+bool Tribe::get_is_in_decline()
 {
-    return in_decline;
+    return is_in_decline;
 }
 
 void Tribe::remove_from_map()
@@ -257,6 +262,16 @@ void Tribe::set_species_description(effects::Species_Description* species_desc)
 void Tribe::set_power_description(effects::Power_Description* power_desc)
 {
     power_description = power_desc;
+}
+
+void Tribe::set_free_units_number(int units_number)
+{
+    free_units_number = units_number;
+}
+
+void Tribe::add_to_owned_areas(Area* area)
+{
+    owned_areas.push_back(area);
 }
 
 }  // namespace state

@@ -245,6 +245,29 @@ Game_State Game_State::deep_copy()
     copy.round              = round;
     copy.current_turn_phase = current_turn_phase;
     copy.tribe_stack        = tribe_stack.deep_copy();
+    copy.map                = map.deep_copy();
+
+    // restoring owner tribe in areas
+    for (Area& area : map.get_areas())
+    {
+        Area& area_copy = copy.map.get_area(area.id);
+        if (area.get_owner_tribe() != nullptr)
+        {
+            std::vector<Tribe*> in_game_tribes = copy.tribe_stack.get_in_game_tribes();
+            for (Tribe* tribe : in_game_tribes)
+            {
+                if (tribe->id == area.get_owner_tribe()->id)
+                {
+                    area_copy.set_owner_tribe(tribe);
+                    tribe->add_to_owned_areas(&area_copy);
+                }
+            }
+        }
+    }
+
+    // restoring current player
+
+    copy.current_player = &copy.players.at(current_player->id);
 
     // restoring active and decline tribes pointers for each player
     for (size_t i = 0; i < players.size(); i++)
@@ -257,6 +280,7 @@ Game_State Game_State::deep_copy()
             {
                 if (tribe->id == tribes.first->id)
                 {
+                    tribe->set_owner(&copy.players.at(i));
                     tribes.first = tribe;
                 }
             }
@@ -268,11 +292,15 @@ Game_State Game_State::deep_copy()
             {
                 if (tribe->id == tribes.second->id)
                 {
+                    tribe->set_owner(&copy.players.at(i));
                     tribes.second = tribe;
                 }
             }
         }
+        copy.players.at(i).set_active_tribe(tribes.first);
+        copy.players.at(i).set_in_decline_tribe(tribes.second);
     }
+
     return copy;
 }
 }  // namespace state

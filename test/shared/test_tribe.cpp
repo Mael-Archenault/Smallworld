@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(Tribe_Test)
     BOOST_CHECK_EQUAL(tribe.get_species_description(), species_description);
     BOOST_CHECK_EQUAL(tribe.get_power_description(), power_description);
     BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 9);
-    BOOST_CHECK_EQUAL(tribe.is_in_decline(), false);
+    BOOST_CHECK_EQUAL(tribe.get_is_in_decline(), false);
     BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(), 0);
     BOOST_CHECK_EQUAL(tribe.get_owner(), nullptr);
 
@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE(Tribe_Test)
     BOOST_CHECK_EQUAL(tribe.get_power_name(), "test_Power");
 
     tribe.go_in_decline();
-    BOOST_CHECK_EQUAL(tribe.is_in_decline(), true);
+    BOOST_CHECK_EQUAL(tribe.get_is_in_decline(), true);
     tribe.remove_from_map();
     BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(), 0);
 }

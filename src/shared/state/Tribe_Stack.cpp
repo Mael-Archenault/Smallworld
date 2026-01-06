@@ -72,19 +72,22 @@ Tribe_Stack Tribe_Stack::deep_copy()
     {
         Tribe* tribe_copy =
             new Tribe(tribe->id, tribe->get_species_description(), tribe->get_power_description());
+        tribe_copy->set_is_in_decline(tribe->get_is_in_decline());
+        tribe_copy->set_free_units_number(tribe->get_free_units_number());
+
         // restoring species_description and power_description pointers
-        for (auto power : stack_builder.get_powers())
+        for (auto power : copy.stack_builder.get_powers())
         {
-            if (power->get_name() == tribe->get_power_description()->get_name())
+            if (power->get_name() == tribe->get_power_name())
             {
                 tribe_copy->set_power_description(power);
                 break;
             }
         }
 
-        for (auto species : stack_builder.get_species())
+        for (auto species : copy.stack_builder.get_species())
         {
-            if (species->get_name() == tribe->get_species_description()->get_name())
+            if (species->get_name() == tribe->get_species_name())
             {
                 tribe_copy->set_species_description(species);
                 break;
