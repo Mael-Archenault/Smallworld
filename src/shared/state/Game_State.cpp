@@ -26,9 +26,9 @@ void Game_State::gather_free_units(int player_id)
 {
     for (size_t i = 0; i < players.size(); i++)
     {
-        if (players[i].id == player_id)
+        if (players.at(i).id == player_id)
         {
-            players[i].gather_free_units(current_turn_phase);
+            players.at(i).gather_free_units(current_turn_phase);
             return;
         }
     }
@@ -39,9 +39,9 @@ int Game_State::get_free_units_number(int player_id)
 {
     for (size_t i = 0; i < players.size(); i++)
     {
-        if (players[i].id == player_id)
+        if (players.at(i).id == player_id)
         {
-            return players[i].get_free_units_number();
+            return players.at(i).get_free_units_number();
         }
     }
     throw std::invalid_argument("get_free_units_number: Player id not found");
@@ -52,9 +52,9 @@ std::vector<std::pair<int, int>> Game_State::get_conquest_prices(int player_id)
     std::vector<std::vector<int>> result;
     for (size_t i = 0; i < players.size(); i++)
     {
-        if (players[i].id == player_id)
+        if (players.at(i).id == player_id)
         {
-            return players[i].get_conquest_prices(&map);
+            return players.at(i).get_conquest_prices(&map);
         }
     }
     throw std::invalid_argument("get_conquest_prices: Player id not found");
@@ -64,9 +64,9 @@ std::vector<int> Game_State::get_redeployable_areas(int player_id)
 {
     for (size_t i = 0; i < players.size(); i++)
     {
-        if (players[i].id == player_id)
+        if (players.at(i).id == player_id)
         {
-            return players[i].get_redeployable_areas();
+            return players.at(i).get_redeployable_areas();
         }
     }
     throw std::invalid_argument("get_redeployable_areas: Player id not found");
@@ -91,9 +91,9 @@ void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_un
     Area& attacked_area = map.get_area(attacked_area_id);
     for (size_t i = 0; i < players.size(); i++)
     {
-        if (players[i].id == attacking_player_id)
+        if (players.at(i).id == attacking_player_id)
         {
-            players[i].conquer(&attacked_area, n_units, dice_units, &map);
+            players.at(i).conquer(&attacked_area, n_units, dice_units, &map);
             return;
         }
     }
@@ -112,9 +112,9 @@ void Game_State::redeploy_units(int player_id, int area_id, int n_added_units)
 {
     for (size_t i = 0; i < players.size(); i++)
     {
-        if (players[i].id == player_id)
+        if (players.at(i).id == player_id)
         {
-            players[i].redeploy_units(area_id, n_added_units);
+            players.at(i).redeploy_units(area_id, n_added_units);
             return;
         }
     }
@@ -125,9 +125,9 @@ void Game_State::get_rewards(int player_id)
 {
     for (size_t i = 0; i < players.size(); i++)
     {
-        if (players[i].id == player_id)
+        if (players.at(i).id == player_id)
         {
-            players[i].get_rewards();
+            players.at(i).get_rewards();
             return;
         }
     }
@@ -141,7 +141,7 @@ void Game_State::take_tribe_at_position(int position, int player_id)
         if (players.at(i).id == player_id)
         {
             Tribe* tribe = tribe_stack.take_tribe_at_position(position);
-            tribe->set_owner(&players[i]);
+            tribe->set_owner(&players.at(i));
             players.at(i).choose_active_tribe(tribe, position);
             return;
         }
@@ -153,7 +153,7 @@ void Game_State::go_in_decline(int player_id)
 {
     for (size_t i = 0; i < players.size(); i++)
     {
-        if (players[i].id == player_id)
+        if (players.at(i).id == player_id)
         {
             if (players.at(i).get_tribes().second != nullptr)
             {

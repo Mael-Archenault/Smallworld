@@ -2,17 +2,20 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <mutex>
 #include <thread>
 
 #include "client.h"
 #include "engine.h"
+
+extern std::mutex mtx;
 
 namespace client
 {
 
 Client_Multithread::Client_Multithread(engine::Engine& engine)
     : window(sf::VideoMode(1720, 820), "Smallworld"),
-      state(engine.get_state()),
+      state(engine.get_state().deep_copy()),
       renderer(state, window),
       engine(engine),
       click_handler(*this)
@@ -32,7 +35,9 @@ int Client_Multithread::run()
     }  // purge early events
 
     window.clear(sf::Color::Black);
+    mtx.lock();
     renderer.render(state);
+    mtx.unlock();
     window.display();
 
     sf::View view          = window.getDefaultView();  // store your base view
@@ -59,10 +64,9 @@ int Client_Multithread::run()
             {
                 mouse_clicked          = true;
                 sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-                std::cout << "Mouse clicked at position: " << mouse_pos.x << ", " << mouse_pos.y
-                          << std::endl;
-                // handle_mouse_click(mouse_pos);
+                mtx.lock();
                 click_handler.handle_click(mouse_pos);
+                mtx.unlock();
             }
             if (event.type == sf::Event::MouseButtonReleased)
             {
@@ -117,7 +121,9 @@ engine::Engine& Client_Multithread::get_engine()
 void Client_Multithread::renderer_process()
 {
     window.clear(sf::Color::Black);
+    mtx.lock();
     renderer.render(state);
+    mtx.unlock();
     window.display();
 }
 
@@ -125,8 +131,7 @@ void Client_Multithread::update_process()
 {
     try
     {
-        engine.update();
-        state = state::Game_State(engine.get_state());
+        state = engine.get_state().deep_copy();
 
         // if (state.is_game_finished())
         // {

@@ -18,22 +18,51 @@ void testSFML()
     sf::Texture texture;
 }
 
-void update_process(client::Client_Multithread& client)
+void engine_process(engine::Engine& engine)
 {
     while (running)
     {
         mtx.lock();
-        client.update_process();
+        try
+        {
+            engine.update();
+        }
+        catch (std::exception& e)
+        {
+            engine.remove_last_command();
+            std::cerr << e.what() << std::endl;
+        }
         mtx.unlock();
-        usleep(50000 / 3);  // 60 frames per secound
+        usleep(50000 / 3);  // 60 updates per secound
+    }
+}
+
+void update_process(client::Client_Multithread& client)
+{
+    while (running)
+    {
+        try
+        {
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                client.update_process();
+            }
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
+        usleep(100000);  // 10 updates per secound
     }
 }
 void client_process(engine::Engine& engine)
 {
     client::Client_Multithread client = client::Client_Multithread(engine);
-    // std::thread                update_thread = std::thread(
-    //     [](client::Client_Multithread& client) { update_process(client); }, std::ref(client));
-    // update_thread.detach();
+
+    std::thread update_thread = std::thread(
+        [](client::Client_Multithread& client) { update_process(client); }, std::ref(client));
+    update_thread.detach();
+
     client.run();
     running = false;
 }
@@ -57,10 +86,14 @@ int main(int argc, char* argv[])
     {
         engine::Engine engine(nb_players, names);
 
+        std::thread engine_thread =
+            std::thread([](engine::Engine& engine) { engine_process(engine); }, std::ref(engine));
+        engine_thread.detach();
+
         std::thread client1 =
             std::thread([](engine::Engine& engine) { client_process(engine); }, std::ref(engine));
         client1.detach();
-        sleep(7);
+
         std::thread client2 =
             std::thread([](engine::Engine& engine) { client_process(engine); }, std::ref(engine));
         client2.join();

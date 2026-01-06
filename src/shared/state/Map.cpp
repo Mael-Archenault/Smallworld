@@ -36,7 +36,7 @@ Area& Map::get_area(int area_id)
 {
     for (size_t i = 0; i < areas.size(); i++)
     {
-        if (area_id == areas[i].id) return areas[i];
+        if (area_id == areas.at(i).id) return areas.at(i);
     }
     throw std::invalid_argument("get_area:there is no area_id matching for this map");
 }

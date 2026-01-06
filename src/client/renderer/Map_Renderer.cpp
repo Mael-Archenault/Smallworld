@@ -80,19 +80,20 @@ void Map_Renderer::render(state::Map& map)
 
     for (size_t i = 0; i < areas.size(); i++)
     {
-        sf::Vector2f area_position = map_position + area_positions[areas[i].id] * scaling_factor;
+        sf::Vector2f area_position = map_position + area_positions[areas.at(i).id] * scaling_factor;
 
         // area specialisation
 
         std::vector<state::Area_Specialization> specializations =
-            areas[i].get_area_specialization();
+            areas.at(i).get_area_specialization();
         if (specializations.size() != 0)
         {
             for (size_t j = 0; j < specializations.size(); j++)
             {
                 area_specialization_renderer.scale(scaling_factor, scaling_factor);
                 area_specialization_renderer.set_sprite(
-                    area_specializations_names.at(specializations[j]));
+
+                    area_specializations_names.at(specializations.at(j)));
                 sf::Vector2f position =
                     area_position -
                     sf::Vector2f(
@@ -108,16 +109,16 @@ void Map_Renderer::render(state::Map& map)
 
         // special tokens
 
-        std::vector<state::Area_Special_Token> tokens = areas[i].get_special_tokens();
+        std::vector<state::Area_Special_Token> tokens = areas.at(i).get_special_tokens();
         if (tokens.size() != 0)
         {
             for (size_t j = 0; j < tokens.size(); j++)
             {
                 special_tokens_renderer.scale(scaling_factor, scaling_factor);
-                special_tokens_renderer.set_sprite(special_tokens_names.at(tokens[j]));
+                special_tokens_renderer.set_sprite(special_tokens_names.at(tokens.at(j)));
 
                 sf::Vector2f position =
-                    (tokens[j] == state::Area_Special_Token::MOUNTAIN)
+                    (tokens.at(j) == state::Area_Special_Token::MOUNTAIN)
                         ? area_position -
                               sf::Vector2f(
                                   (special_tokens_renderer.get_sprite_width() * scaling_factor) / 2,
@@ -134,11 +135,11 @@ void Map_Renderer::render(state::Map& map)
             }
         }
         // units pawns
-        if (areas[i].get_units_number() != 0)
+        if (areas.at(i).get_units_number() != 0)
         {
-            state::Tribe* owner_tribe = areas[i].get_owner_tribe();
+            state::Tribe* owner_tribe = areas.at(i).get_owner_tribe();
 
-            units_renderer.set_number(areas[i].get_units_number());
+            units_renderer.set_number(areas.at(i).get_units_number());
             units_renderer.scale(scaling_factor, scaling_factor);
             std::string name =
                 (owner_tribe == nullptr) ? "Lost Tribe" : owner_tribe->get_species_name();

@@ -42,7 +42,7 @@ void Tribe::gather_free_units(Turn_Phase turn_phase)
     for (size_t i = 0; i < owned_areas.size(); i++)
     {
         // Remove all units except one from each area and add them to free_units_number
-        free_units_number += owned_areas[i]->gather_free_units();
+        free_units_number += owned_areas.at(i)->gather_free_units();
     }
     // apply effect
     if (turn_phase == Turn_Phase::CONQUER)
@@ -119,9 +119,9 @@ void Tribe::redeploy_units(int area_id, int n_added_units)
     // Find the area by ID
     for (size_t i = 0; i < owned_areas.size(); i++)
     {
-        if (owned_areas[i]->id == area_id)
+        if (owned_areas.at(i)->id == area_id)
         {
-            owned_areas[i]->deploy_units(n_added_units);
+            owned_areas.at(i)->deploy_units(n_added_units);
             free_units_number -= n_added_units;
             return;
         }
