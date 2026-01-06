@@ -35,7 +35,7 @@ int Client::run()
     }  // purge early events
 
     window.clear(sf::Color::Black);
-    renderer.render(state);
+    renderer.render(state, state.get_current_player().id);
     window.display();
 
     sf::View view           = window.getDefaultView();  // store your base view
@@ -122,7 +122,7 @@ int Client::run()
                 std::cerr << "Error executing command: " << e.what() << std::endl;
             }
             window.clear(sf::Color::Black);
-            renderer.render(state);
+            renderer.render(state, state.get_current_player().id);
             window.display();
             event_happened = false;
         }

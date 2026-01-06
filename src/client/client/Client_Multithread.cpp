@@ -13,11 +13,12 @@ extern std::mutex mtx;
 namespace client
 {
 
-Client_Multithread::Client_Multithread(engine::Engine& engine)
+Client_Multithread::Client_Multithread(engine::Engine& engine, int player_id)
     : window(sf::VideoMode(1720, 820), "Smallworld"),
       state(engine.get_state().deep_copy()),
       renderer(state, window),
       engine(engine),
+      player_id(player_id),
       click_handler(*this)
 {
     selected_area_id         = 0;
@@ -35,9 +36,10 @@ int Client_Multithread::run()
     }  // purge early events
 
     window.clear(sf::Color::Black);
-    mtx.lock();
-    renderer.render(state);
-    mtx.unlock();
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        renderer.render(state, player_id);
+    }
     window.display();
 
     sf::View view          = window.getDefaultView();  // store your base view
@@ -64,17 +66,27 @@ int Client_Multithread::run()
             {
                 mouse_clicked          = true;
                 sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-                mtx.lock();
-                click_handler.handle_click(mouse_pos);
-                mtx.unlock();
+                {
+                    std::lock_guard<std::mutex> lock(mtx);
+                    click_handler.handle_click(mouse_pos);
+                }
             }
             if (event.type == sf::Event::MouseButtonReleased)
             {
                 mouse_clicked = false;
             }
         }
-        renderer_process();
+
+        window.clear(sf::Color::Black);
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            renderer.render(state, player_id);
+        }
+
+        window.display();
     }
+
+    return 0;
 }
 
 int Client_Multithread::get_selected_area_id()
@@ -118,45 +130,13 @@ engine::Engine& Client_Multithread::get_engine()
     return engine;
 }
 
-void Client_Multithread::renderer_process()
+void Client_Multithread::update_state()
 {
-    window.clear(sf::Color::Black);
-    mtx.lock();
-    renderer.render(state);
-    mtx.unlock();
-    window.display();
+    state = engine.get_state().deep_copy();
 }
 
-void Client_Multithread::update_process()
+int Client_Multithread::get_player_id()
 {
-    try
-    {
-        state = engine.get_state().deep_copy();
-
-        // if (state.is_game_finished())
-        // {
-        //     std::cout << "Maximum rounds reached." << std::endl;
-        //     std::pair<int, int> victorious_player_money = {0, -1};
-        //     for (std::pair<int, int> player_id_money : state.get_all_player_id_money())
-        //     {
-        //         std::cout << "Player " << player_id_money.first << " has " <<
-        //         player_id_money.second
-        //                   << " money." << std::endl;
-        //         if (player_id_money.second >= victorious_player_money.second)
-        //         {
-        //             victorious_player_money = player_id_money;
-        //         }
-        //     }
-        //     std::cout << "\nVictory goes to " << victorious_player_money.first << ", with "
-        //               << victorious_player_money.second << " money !" << std::endl;
-        //     window.close();
-        //     return victorious_player_money.first;
-        // }
-    }
-    catch (const std::exception& e)
-    {
-        engine.remove_last_command();
-        std::cerr << "Error executing command: " << e.what() << std::endl;
-    }
+    return player_id;
 }
 }  // namespace client

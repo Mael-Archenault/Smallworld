@@ -13,13 +13,13 @@ UI_Renderer::UI_Renderer(sf::RenderWindow& window, state::Game_State& state)
 {
     set_selected_area(0);
 }
-void UI_Renderer::render(state::Game_State& state)
+void UI_Renderer::render(state::Game_State& state, int rendering_player_id)
 {
     turn_info_renderer.render(state);
-    map_overlay_renderer.render(state);
-    widgets_renderer.render(state);
+    map_overlay_renderer.render(state, rendering_player_id);
+    widgets_renderer.render(state, rendering_player_id);
     area_info_renderer.render(state);
-    opponents_info_renderer.render(state);
+    opponents_info_renderer.render(state, rendering_player_id);
     tribe_info_window.render(state);
 }
 

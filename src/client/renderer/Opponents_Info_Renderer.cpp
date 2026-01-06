@@ -77,7 +77,7 @@ void Opponents_Info_Renderer::render_one_player_area(state::Player& player, int 
     }
 }
 
-void Opponents_Info_Renderer::render(state::Game_State& state)
+void Opponents_Info_Renderer::render(state::Game_State& state, int rendering_player_id)
 {
     position       = sf::Vector2f(4.f, window.getSize().y * 1 / 6);
     section_width  = window.getSize().x / 6.f;
@@ -88,7 +88,7 @@ void Opponents_Info_Renderer::render(state::Game_State& state)
     int rendered_players = 0;
     for (auto& player : players)
     {
-        if (player.id == state.get_current_player().id)
+        if (player.id == rendering_player_id)
         {
             continue;
         }

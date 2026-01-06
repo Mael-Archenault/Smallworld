@@ -10,8 +10,9 @@
 #include <mutex>
 #include <thread>
 
-std::mutex mtx;
-bool       running = false;
+std::mutex        mtx;
+bool              engine_running;
+std::vector<bool> client_running;
 
 void testSFML()
 {
@@ -20,58 +21,81 @@ void testSFML()
 
 void engine_process(engine::Engine& engine)
 {
-    while (running)
+    while (engine_running)
     {
-        mtx.lock();
-        try
         {
-            engine.update();
+            std::lock_guard<std::mutex> lock(mtx);
+            try
+            {
+                engine.update();
+            }
+            catch (std::exception& e)
+            {
+                engine.remove_last_command();
+                std::cerr << e.what() << std::endl;
+            }
         }
-        catch (std::exception& e)
-        {
-            engine.remove_last_command();
-            std::cerr << e.what() << std::endl;
-        }
-        mtx.unlock();
         usleep(50000 / 3);  // 60 updates per secound
     }
 }
 
-void update_process(client::Client_Multithread& client)
+void state_update_process(client::Client_Multithread& client)
 {
-    while (running)
+    while (true)
     {
-        try
         {
+            std::lock_guard<std::mutex> lock(mtx);
+            if (!client_running.at(client.get_player_id()))
             {
-                std::lock_guard<std::mutex> lock(mtx);
-                client.update_process();
-            }
-        }
-        catch (std::exception& e)
-        {
-            std::cerr << e.what() << std::endl;
+                break;
+            };
+            client.update_state();
         }
         usleep(100000);  // 10 updates per secound
     }
 }
-void client_process(engine::Engine& engine)
+void client_process(engine::Engine& engine, int player_id)  // contains 2 threads
+//      - state update (request to the engine at 10 ips)
+//      - handle click, send commands then rendering (at 60 ips)
 {
-    client::Client_Multithread client = client::Client_Multithread(engine);
+    client::Client_Multithread client = client::Client_Multithread(engine, player_id);
 
-    std::thread update_thread = std::thread(
-        [](client::Client_Multithread& client) { update_process(client); }, std::ref(client));
-    update_thread.detach();
+    std::thread state_update_thread = std::thread(
+        [](client::Client_Multithread& client) { state_update_process(client); }, std::ref(client));
 
     client.run();
-    running = false;
+
+    // Signal state_update_thread to exit
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        client_running.at(client.get_player_id()) = false;
+    }
+
+    // Wait for state_update_thread to exit before client object is destroyed
+    state_update_thread.join();
+
+    std::cout << "Stopped client " << client.get_player_id() << std::endl;
+
+    // if all clients stopped running, stop engine
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        bool                        all_clients_stopped = true;
+        for (bool client_state : client_running)
+        {
+            if (client_state)
+            {
+                all_clients_stopped = false;
+                break;
+            }
+        }
+        if (all_clients_stopped)
+        {
+            engine_running = false;
+            std::cout << "No more clients -> Stopped engine" << std::endl;
+        }
+    }
 }
 
-int test_thread()
-{
-    std::cout << "test_thread" << std::endl;
-    return 0;
-}
 // end of test SFML
 
 int main(int argc, char* argv[])
@@ -81,28 +105,38 @@ int main(int argc, char* argv[])
     std::vector<int>         victory_count = std::vector<int>(nb_players);
     int                      nb_of_games   = 1;
 
-    running = true;
+    for (int i = 0; i < nb_players; i++)
+    {
+        client_running.push_back(false);
+    }
+
     for (int i = 0; i < nb_of_games; i++)
     {
+        engine_running = true;
         engine::Engine engine(nb_players, names);
 
         std::thread engine_thread =
             std::thread([](engine::Engine& engine) { engine_process(engine); }, std::ref(engine));
-        engine_thread.detach();
 
-        std::thread client1 =
-            std::thread([](engine::Engine& engine) { client_process(engine); }, std::ref(engine));
-        client1.detach();
+        client_running.at(0)       = true;
+        std::thread client1_thread = std::thread(
+            [](engine::Engine& engine) { client_process(engine, 0); }, std::ref(engine));
 
-        std::thread client2 =
-            std::thread([](engine::Engine& engine) { client_process(engine); }, std::ref(engine));
-        client2.join();
+        sleep(1);
+        client_running.at(1)       = true;
+        std::thread client2_thread = std::thread(
+            [](engine::Engine& engine) { client_process(engine, 1); }, std::ref(engine));
+
+        client1_thread.detach();
+        client2_thread.detach();
+        engine_thread.join();
+
+        // sleep(1);
+        // std::thread client2 = std::thread([](engine::Engine& engine) { client_process(engine, 1);
+        // },
+        //                                   std::ref(engine));
+        // client2.join();
 
         // victory_count.at(client.run()) += 1;
-    }
-
-    for (int i = 0; i < victory_count.size(); i++)
-    {
-        std::cout << "Player " << i << " won " << victory_count.at(i) << " times." << std::endl;
     }
 }

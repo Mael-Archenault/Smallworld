@@ -4,12 +4,12 @@ namespace renderer
 {
 Widgets_Renderer::Widgets_Renderer(sf::RenderWindow& window) : window(window)
 {
-    background.setFillColor(sf::Color::Red);
+    background.setFillColor(sf::Color::Black);
     int button_width  = 200;
     int button_height = 50;
 
     int font_size = 18;
-    ;
+
     conquer_button.set_content("Conquer");
     conquer_button.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
 
@@ -26,7 +26,7 @@ Widgets_Renderer::Widgets_Renderer(sf::RenderWindow& window) : window(window)
     redeploy_button.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
 }
 
-void Widgets_Renderer::render(state::Game_State& state)
+void Widgets_Renderer::render(state::Game_State& state, int rendering_player_id)
 {
     section_width  = window.getSize().x / 6.f;
     section_height = window.getSize().y / 6.f;
@@ -38,7 +38,12 @@ void Widgets_Renderer::render(state::Game_State& state)
     background.setPosition(position);
     window.draw(background);
 
-    state::Turn_Phase current_phase = state.get_current_turn_phase();
+    state::Turn_Phase current_phase    = state.get_current_turn_phase();
+    state::Player&    rendering_player = state.get_players().at(rendering_player_id);
+    if (rendering_player.id != state.get_current_player().id)
+    {
+        return;
+    }
 
     if (current_phase == state::Turn_Phase::START)
     {

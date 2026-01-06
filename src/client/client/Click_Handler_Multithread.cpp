@@ -97,7 +97,8 @@ void Click_Handler_Multithread::handle_map_click(sf::Vector2i position, sf::Floa
 void Click_Handler_Multithread::handle_tribe_stack_click(sf::Vector2i  position,
                                                          sf::FloatRect tribe_stack_layout)
 {
-    std::vector<sf::Vector2f> card_positions = renderer.get_on_screen_tribe_positions();
+    state::Player&            actioning_player = state.get_players().at(client.get_player_id());
+    std::vector<sf::Vector2f> card_positions   = renderer.get_on_screen_tribe_positions();
 
     std::vector<float> distances;
     for (size_t i = 0; i < card_positions.size(); i++)
@@ -117,7 +118,7 @@ void Click_Handler_Multithread::handle_tribe_stack_click(sf::Vector2i  position,
 
     bool is_buying_possible = false;
     if (state.get_current_turn_phase() == state::Turn_Phase::START &&
-        state.get_current_player().get_tribes().first == nullptr)
+        actioning_player.get_tribes().first == nullptr)
     {
         is_buying_possible = true;
     }
@@ -127,16 +128,18 @@ void Click_Handler_Multithread::handle_tribe_stack_click(sf::Vector2i  position,
 }
 
 void Click_Handler_Multithread::handle_player_area_click(
+
     sf::Vector2i position, std::unordered_map<std::string, sf::FloatRect> layout_infos)
 {
+    state::Player& actioning_player = state.get_players().at(client.get_player_id());
     if (layout_infos["active_tribe"].contains(static_cast<sf::Vector2f>(position)))
     {
-        renderer.open_tribe_info_window(*state.get_current_player().get_tribes().first, false);
+        renderer.open_tribe_info_window(*actioning_player.get_tribes().first, false);
         client.set_tribe_info_window_state(true);
     }
     else if (layout_infos["in_decline_tribe"].contains(static_cast<sf::Vector2f>(position)))
     {
-        renderer.open_tribe_info_window(*state.get_current_player().get_tribes().second, false);
+        renderer.open_tribe_info_window(*actioning_player.get_tribes().second, false);
         client.set_tribe_info_window_state(true);
     }
 }
@@ -144,6 +147,7 @@ void Click_Handler_Multithread::handle_player_area_click(
 void Click_Handler_Multithread::handle_info_window_click(
     sf::Vector2i position, std::unordered_map<std::string, sf::FloatRect> layout_infos)
 {
+    state::Player& actioning_player = state.get_players().at(client.get_player_id());
     if (layout_infos["tribe_info_window_close_button"].contains(
             static_cast<sf::Vector2f>(position)))
     {
@@ -155,10 +159,10 @@ void Click_Handler_Multithread::handle_info_window_click(
                  static_cast<sf::Vector2f>(position)))
     {
         if (state.get_current_turn_phase() == state::Turn_Phase::START &&
-            state.get_current_player().get_tribes().first == nullptr)
+            actioning_player.get_tribes().first == nullptr)
         {
             engine.add_command(std::make_unique<engine::Choose_Species_Command>(
-                state.get_current_player().id, client.get_selected_position_in_stack()));
+                actioning_player.id, client.get_selected_position_in_stack()));
             renderer.close_tribe_info_window();
             client.set_tribe_info_window_state(false);
         }
@@ -168,15 +172,15 @@ void Click_Handler_Multithread::handle_info_window_click(
 void Click_Handler_Multithread::handle_button_area_click(
     sf::Vector2i position, std::unordered_map<std::string, sf::FloatRect> layout_infos)
 {
-    state::Turn_Phase current_phase = state.get_current_turn_phase();
+    state::Player&    actioning_player = state.get_players().at(client.get_player_id());
+    state::Turn_Phase current_phase    = state.get_current_turn_phase();
 
     if (layout_infos["conquer_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::CONQUER)
     {
         // getting attackable areas
-        std::vector<std::pair<int, int>> prices =
-            state.get_conquest_prices(state.get_current_player().id);
-        int price;
+        std::vector<std::pair<int, int>> prices = state.get_conquest_prices(actioning_player.id);
+        int                              price;
         for (const auto& price_info : prices)
         {
             if (price_info.first == client.get_selected_area_id())
@@ -186,48 +190,44 @@ void Click_Handler_Multithread::handle_button_area_click(
         }
 
         std::pair<int, int> area_to_attack;
-        int available_units = state.get_free_units_number(state.get_current_player().id);
+        int                 available_units = state.get_free_units_number(actioning_player.id);
         if (price > available_units)
         {
             int dice_units = state.roll_dice_for_bonus_units();
             std::cout << "No more area attackable, rolled the dice : " << dice_units << std::endl;
             engine.add_command(std::make_unique<engine::Conquer_Command>(
-                state.get_current_player().id, client.get_selected_area_id(), available_units,
-                dice_units));
+                actioning_player.id, client.get_selected_area_id(), available_units, dice_units));
         }
         else
         {
             engine.add_command(std::make_unique<engine::Conquer_Command>(
-                state.get_current_player().id, client.get_selected_area_id(), price, -1));
+                actioning_player.id, client.get_selected_area_id(), price, -1));
         }
         return;
     }
     if (layout_infos["decline_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        engine.add_command(
-            std::make_unique<engine::Decline_Command>(state.get_current_player().id));
+        engine.add_command(std::make_unique<engine::Decline_Command>(actioning_player.id));
         return;
     }
     if (layout_infos["start_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        engine.add_command(
-            std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id));
+        engine.add_command(std::make_unique<engine::Start_Conquest_Command>(actioning_player.id));
         return;
     }
     if (layout_infos["end_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::CONQUER)
     {
-        engine.add_command(
-            std::make_unique<engine::End_Conquer_Command>(state.get_current_player().id));
+        engine.add_command(std::make_unique<engine::End_Conquer_Command>(actioning_player.id));
         return;
     }
     if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::REDEPLOY)
     {
         engine.add_command(std::make_unique<engine::Redeploy_Command>(
-            state.get_current_player().id, client.get_selected_area_id(), 1));
+            actioning_player.id, client.get_selected_area_id(), 1));
         return;
     }
 }
@@ -235,13 +235,14 @@ void Click_Handler_Multithread::handle_button_area_click(
 void Click_Handler_Multithread::handle_opponent_area_click(
     sf::Vector2i position, std::unordered_map<std::string, sf::FloatRect> layout_infos)
 {
+    state::Player& actioning_player = state.get_players().at(client.get_player_id());
     std::cout << "Clicked on opponent info area" << std::endl;
 
     int i = 0;
 
     for (auto& player : state.get_players())
     {
-        if (player.id == state.get_current_player().id)
+        if (player.id == actioning_player.id)
         {
             continue;
         }
