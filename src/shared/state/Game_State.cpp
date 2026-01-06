@@ -269,9 +269,12 @@ Game_State Game_State::deep_copy()
 
     copy.current_player = &copy.players.at(current_player->id);
 
-    // restoring active and decline tribes pointers for each player
     for (size_t i = 0; i < players.size(); i++)
     {
+        // restoring money
+        copy.players.at(i).set_money(players.at(i).get_money());
+
+        // restoring active and decline tribes pointers
         std::vector<Tribe*>       in_game_tribes = copy.tribe_stack.get_in_game_tribes();
         std::pair<Tribe*, Tribe*> tribes         = players.at(i).get_tribes();
         if (tribes.first != nullptr)

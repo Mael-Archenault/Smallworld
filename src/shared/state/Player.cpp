@@ -135,4 +135,9 @@ std::string Player::get_name()
     return name;
 }
 
+void Player::set_money(int new_money)
+{
+    money = new_money;
+}
+
 }  // namespace state
