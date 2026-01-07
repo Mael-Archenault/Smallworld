@@ -127,6 +127,7 @@ int Client::run()
             event_happened = false;
         }
     }
+    return 0;
 }
 
 int Client::get_selected_area_id()
