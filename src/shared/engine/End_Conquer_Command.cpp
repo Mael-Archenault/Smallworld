@@ -15,8 +15,8 @@ void End_Conquer_Command::execute(state::Game_State& state)
     {
         throw std::runtime_error("No areas to redeploy from!");
     }
-    state.gather_free_units(player_id);
     state.set_current_turn_phase(state::Turn_Phase::REDEPLOY);
+    state.gather_free_units(player_id);
 };
 
 int End_Conquer_Command::get_id()

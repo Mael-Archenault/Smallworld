@@ -1,17 +1,18 @@
-#include "Game_State.h"
-
 #include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
+#include "state.h"
+
 namespace state
 {
 
-Game_State::Game_State(int n_players) : n_players(n_players), round(1), map(Map("4_players"))
+Game_State::Game_State(int n_players, std::vector<std::string> names)
+    : n_players(n_players), round(1), map(Map("4_players"))
 {
     for (int i = 0; i < n_players; i++)
     {
-        players.push_back(Player(i));
+        players.push_back(Player(i, names.at(i)));
     }
     current_player     = &players.at(0);
     current_turn_phase = Turn_Phase::START;
@@ -25,7 +26,7 @@ void Game_State::gather_free_units(int player_id)
     {
         if (players[i].id == player_id)
         {
-            players[i].gather_free_units();
+            players[i].gather_free_units(current_turn_phase);
             return;
         }
     }
@@ -78,7 +79,7 @@ void Game_State::conquer(int attacking_player_id, int attacked_area_id, int n_un
     {
         if (players[i].id == attacking_player_id)
         {
-            players[i].conquer(&attacked_area, n_units, dice_units);
+            players[i].conquer(&attacked_area, n_units, dice_units, &map);
             return;
         }
     }
@@ -217,11 +218,18 @@ bool Game_State::is_game_finished()
     return round > map.get_max_round();
 }
 
-std::vector<std::pair<int,int>> Game_State::get_all_player_id_money() {
-    std::vector<std::pair<int,int>> player_id_money;
-    for (Player player : players) {
-        player_id_money.emplace_back(player.id,player.get_money());
+std::vector<std::pair<int, int>> Game_State::get_all_player_id_money()
+{
+    std::vector<std::pair<int, int>> player_id_money;
+    for (Player player : players)
+    {
+        player_id_money.emplace_back(player.id, player.get_money());
     }
     return player_id_money;
+}
+
+std::vector<Player>& Game_State::get_players()
+{
+    return players;
 }
 }  // namespace state

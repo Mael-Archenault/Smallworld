@@ -1,49 +1,61 @@
 #include "Tribe.h"
 
 #include <algorithm>
+#include <iostream>
 #include <stdexcept>
 #include <unordered_set>
 
 #include "Area_Biome.h"
-#include "Effects_Bundle.h"
 #include "Game_State.h"
 #include "Map.h"
-#include "Power_Description.h"
-#include "Species_Description.h"
-
+#include "effects.h"
 using namespace state;
 
-Tribe::Tribe(int id, Species_Description* species_description, Power_Description* power_description)
+Tribe::Tribe(int id, effects::Species_Description* base_species_description,
+             effects::Power_Description* base_power_description)
     : id(id),
-      species_description(species_description),
-      power_description(power_description),
+      species_description(base_species_description),
+      power_description(base_power_description),
       owner(nullptr)
 {
-    owned_areas       = std::vector<Area*>();
-    in_decline        = false;
+    owned_areas = std::vector<Area*>();
+    in_decline  = false;
+
     free_units_number = species_description->get_initial_units_number() +
                         power_description->get_initial_units_number();
 }
 
-Species_Description* Tribe::get_species_description()
+effects::Species_Description* Tribe::get_species_description()
 {
     return species_description;
 }
 
-Power_Description* Tribe::get_power_description()
+effects::Power_Description* Tribe::get_power_description()
 {
     return power_description;
 }
 
-void Tribe::gather_free_units()
+void Tribe::gather_free_units(Turn_Phase turn_phase)
 {
     for (size_t i = 0; i < owned_areas.size(); i++)
     {
         // Remove all units except one from each area and add them to free_units_number
         free_units_number += owned_areas[i]->gather_free_units();
     }
-    free_units_number +=
-        species_description->add_free_units(free_units_number + owned_areas.size());
+    // apply effect
+    if (turn_phase == Turn_Phase::CONQUER)
+    {
+        free_units_number = species_description->first_gather_effect(free_units_number);
+        free_units_number = power_description->first_gather_effect(free_units_number);
+    }
+    else if (turn_phase == Turn_Phase::REDEPLOY)
+    {
+        free_units_number = species_description->second_gather_effect(free_units_number);
+        free_units_number = power_description->second_gather_effect(free_units_number);
+
+        species_description->redeploy_effect(owned_areas);
+        power_description->redeploy_effect(owned_areas);
+    }
 }
 
 int Tribe::get_free_units_number()
@@ -53,31 +65,35 @@ int Tribe::get_free_units_number()
 
 std::vector<std::pair<int, int>> Tribe::get_conquest_prices(Map* map)
 {
+    std::vector<std::pair<int, int>> prices;
     if (owned_areas.size() == 0)
     {
-        return map->get_starting_points_prices(*this,
-                                               false /*species_description.can_start_anywhere();*/);
+        prices = map->get_starting_points_prices(*this, false);
     }
-
-    std::vector<std::pair<int, int>> prices;
-    std::unordered_set<int>          seen;
-    prices.reserve(owned_areas.size() * 3);
-
-    for (Area* area : owned_areas)
+    else
     {
-        if (!area) continue;
-        for (Area* neighbor : area->get_neighbors())
+        std::unordered_set<int> seen;
+        prices.reserve(owned_areas.size() * 3);
+
+        for (Area* area : owned_areas)
         {
-            if (!neighbor) continue;
-            if (neighbor->get_owner_tribe()!=nullptr && (neighbor->get_owner_tribe()->id == this->id)) continue;
-            int nid = neighbor->id;
-            if (neighbor->get_biome() == Area_Biome::WATER) continue;
-            if (seen.find(nid) != seen.end()) continue;
-            seen.insert(nid);
-            int price = neighbor->get_conquest_price(*this);
-            prices.push_back(std::pair<int, int>{nid, price});
+            if (!area) continue;
+            for (Area* neighbor : area->get_neighbors())
+            {
+                if (!neighbor) continue;
+                if (neighbor->get_owner_tribe() == this) continue;
+                int nid = neighbor->id;
+                if (neighbor->get_biome() == Area_Biome::WATER) continue;
+                if (seen.find(nid) != seen.end()) continue;
+                seen.insert(nid);
+                int price = neighbor->get_conquest_price(*this);
+                prices.push_back(std::pair<int, int>{nid, price});
+            }
         }
     }
+
+    prices = species_description->conquest_prices_effect(prices, owned_areas, map);
+    prices = power_description->conquest_prices_effect(prices, owned_areas, map);
     return prices;
 }
 
@@ -104,8 +120,6 @@ void Tribe::redeploy_units(int area_id, int n_added_units)
         if (owned_areas[i]->id == area_id)
         {
             owned_areas[i]->deploy_units(n_added_units);
-            species_description->apply_additional_defense(owned_areas[i]);
-            power_description->apply_additional_defense(owned_areas[i]);
             free_units_number -= n_added_units;
             return;
         }
@@ -113,25 +127,39 @@ void Tribe::redeploy_units(int area_id, int n_added_units)
     throw std::invalid_argument("redeploy_units: area_id not found in owned_areas");
 }
 
-void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
+void Tribe::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
 {
+    // getting price for attacked area (with effects)
+    std::pair<int, int> price_info =
+        std::make_pair(attacked_area->id, attacked_area->get_conquest_price(*this));
+    price_info =
+        species_description
+            ->conquest_prices_effect(std::vector<std::pair<int, int>>{price_info}, owned_areas, map)
+            .at(0);
+    price_info =
+        power_description
+            ->conquest_prices_effect(std::vector<std::pair<int, int>>{price_info}, owned_areas, map)
+            .at(0);
+    int needed_units = price_info.second;
     if (dice_units != -1)
     {
-        if (n_units + dice_units < attacked_area->get_conquest_price(*this))
+        if (n_units + dice_units < needed_units)
         {
             return;
         }
         else
         {
+            power_description->conquest_effect(attacked_area);
+            species_description->conquest_effect(attacked_area);
             attacked_area->set_owner_tribe(this);
             attacked_area->set_units_number(n_units);
-            species_description->areas_conquered(attacked_area);
             free_units_number -= n_units;
             owned_areas.push_back(attacked_area);
+
             return;
         }
     }
-    if (n_units < attacked_area->get_conquest_price(*this))
+    if (n_units < needed_units)
     {
         throw std::invalid_argument("Tribe : conquer: not enough units to conquer the area");
     }
@@ -139,9 +167,10 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
     {
         throw std::invalid_argument("Tribe : conquer: not enough free units to conquer the area");
     }
+    power_description->conquest_effect(attacked_area);
+    species_description->conquest_effect(attacked_area);
     attacked_area->set_owner_tribe(this);
     attacked_area->set_units_number(n_units);
-    species_description->areas_conquered(attacked_area);
     free_units_number -= n_units;
     owned_areas.push_back(attacked_area);
 }
@@ -149,12 +178,21 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units)
 void Tribe::go_in_decline()
 {
     in_decline = true;
+    species_description->decline_effect(owned_areas);
+    power_description->decline_effect(owned_areas);
+
+    // removing pawns from owned_areas
+    for (Area* area : owned_areas)
+    {
+        area->gather_free_units();
+    }
 }
 int Tribe::get_rewards()
 {
-    int reward = owned_areas.size() + species_description->get_bonus_rewards(owned_areas) +
-                 power_description->get_bonus_rewards(owned_areas);
-    return reward;
+    int total_rewards = owned_areas.size() + species_description->rewards_effect(owned_areas) +
+                        power_description->rewards_effect(owned_areas);
+    std::cout << total_rewards << std::endl;
+    return total_rewards;
 }
 
 std::string Tribe::get_species_name()
@@ -173,6 +211,8 @@ bool Tribe::is_in_decline()
 
 void Tribe::remove_from_map()
 {
+    power_description->disappearing_effect(owned_areas);
+    species_description->disappearing_effect(owned_areas);
     std::vector<Area*> copy(owned_areas);
     for (auto& area : copy)
     {
@@ -182,20 +222,20 @@ void Tribe::remove_from_map()
 }
 void Tribe::remove_from_owned_areas(Area* area)
 {
-    if (int i = std::find_if(owned_areas.begin(), owned_areas.end(),
-        [area](Area* area_to_test) {return area_to_test->id == area->id;}) != owned_areas.end())
+    if (std::find(owned_areas.begin(), owned_areas.end(), area) == owned_areas.end())
     {
-        owned_areas.erase(owned_areas.begin() + i);
-        return;
-
+        throw std::invalid_argument("Tribe : remove_from_owned_areas: area not owned by the tribe");
     }
-    throw std::invalid_argument("Tribe : remove_from_owned_areas: area not owned by the tribe");
+    owned_areas.erase(std::find(owned_areas.begin(), owned_areas.end(), area));
 }
 
 void Tribe::gather_units_after_losing(Area* on_area)
 {
     int gathered_units = on_area->get_units_number();
     free_units_number += gathered_units - 1;
+
+    free_units_number += power_description->lose_effect(on_area);
+    free_units_number += species_description->lose_effect(on_area);
 }
 
 Player* Tribe::get_owner()

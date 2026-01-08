@@ -6,7 +6,8 @@
 class Game_State_Observer : public state::Game_State
 {
    public:
-    Game_State_Observer(int n_players) : state::Game_State(n_players) {};
+    Game_State_Observer(int n_players, std::vector<std::string> names)
+        : state::Game_State(n_players, names) {};
     int get_n_players()
     {
         return n_players;
@@ -29,7 +30,7 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
 BOOST_AUTO_TEST_CASE(TestGameState)
 {
     {
-        Game_State_Observer state(4);
+        Game_State_Observer state(4, {"Alice", "Bob", "Charlie", "Diana"});
 
         // error_testing
         BOOST_CHECK_THROW(state.gather_free_units(100), std::invalid_argument);

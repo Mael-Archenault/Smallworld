@@ -6,9 +6,6 @@
 #include <stdexcept>
 #include <vector>
 
-#include "Dwarves_Species.h"
-#include "Power_Description.h"
-
 namespace state
 {
 

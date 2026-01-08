@@ -1,13 +1,14 @@
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 
+#include "effects.h"
 #include "state.h"
 
 class Tribe_Observer : public state::Tribe
 {
    public:
-    Tribe_Observer(int id, state::Species_Description* species_description,
-                   state::Power_Description* power_description)
+    Tribe_Observer(int id, effects::Species_Description* species_description,
+                   effects::Power_Description* power_description)
         : Tribe(id, species_description, power_description) {};
     std::vector<state::Area*> get_owned_areas()
     {
@@ -23,9 +24,9 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
 BOOST_AUTO_TEST_CASE(Tribe_Test)
 {
     // Initialization
-    state::Species_Description* species_description =
-        new state::Species_Description("test_Species", 5, 10);
-    state::Power_Description* power_description = new state::Power_Description("test_Power", 4);
+    effects::Species_Description* species_description =
+        new effects::Species_Description("test_Species", 5, 10);
+    effects::Power_Description* power_description = new effects::Power_Description("test_Power", 4);
 
     Tribe_Observer tribe(0, species_description, power_description);
 
@@ -45,15 +46,15 @@ BOOST_AUTO_TEST_CASE(Tribe_Test)
 
     BOOST_CHECK_THROW(tribe.remove_from_owned_areas(areas[0]), std::invalid_argument);
 
-    tribe.conquer(areas.at(0), 5, 0);
+    tribe.conquer(areas.at(0), 5, 0, nullptr);
 
     BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(), 1);
     BOOST_CHECK_EQUAL(tribe.get_owned_areas().at(0)->id, 0);
     BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 4);
     BOOST_CHECK_EQUAL(tribe.get_redeployable_areas().size(), 1);
 
-    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 1, -1), std::invalid_argument);
-    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 10, -1), std::invalid_argument);
+    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 1, -1, nullptr), std::invalid_argument);
+    BOOST_CHECK_THROW(tribe.conquer(areas.at(1), 10, -1, nullptr), std::invalid_argument);
 
     std::vector<std::pair<int, int>> price_infos = tribe.get_conquest_prices(nullptr);
 
@@ -61,7 +62,7 @@ BOOST_AUTO_TEST_CASE(Tribe_Test)
     BOOST_CHECK_EQUAL(price_infos.at(0).first, 1);
     BOOST_CHECK_EQUAL(price_infos.at(0).second, 4);
 
-    tribe.gather_free_units();
+    tribe.gather_free_units(state::Turn_Phase::START);
     BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 8);
 
     tribe.redeploy_units(0, 7);

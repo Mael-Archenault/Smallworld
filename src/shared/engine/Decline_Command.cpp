@@ -19,11 +19,6 @@ void Decline_Command::execute(state::Game_State& state)
     state.get_rewards(player_id);
     state.next_player();
     state.set_current_turn_phase(state::Turn_Phase::START);
-    if (state.get_current_player().get_tribes().first != nullptr)
-    {
-        state.gather_free_units(state.get_current_player().id);
-    }
-
 };
 
 int Decline_Command::get_id()

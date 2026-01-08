@@ -14,21 +14,21 @@ void testSFML()
 
 int main(int argc, char* argv[])
 {
-    int nb_players = 2;
-    std::vector<int> victory_count = std::vector<int>(nb_players);
-    int nb_of_games = 1;
+    int                      nb_players    = 2;
+    std::vector<std::string> names         = {"Mael", "Alice"};
+    std::vector<int>         victory_count = std::vector<int>(nb_players);
+    int                      nb_of_games   = 1;
 
-
-    for (int i = 0; i < nb_of_games; i++) {
-        engine::Engine engine(nb_players);
+    for (int i = 0; i < nb_of_games; i++)
+    {
+        engine::Engine engine(nb_players, names);
         client::Client client(engine);
 
-        victory_count.at(client.run()) +=1;
+        victory_count.at(client.run()) += 1;
     }
 
-    for (int i =0; i < victory_count.size(); i++) {
+    for (int i = 0; i < victory_count.size(); i++)
+    {
         std::cout << "Player " << i << " won " << victory_count.at(i) << " times." << std::endl;
     }
-
-    return 0;
 }

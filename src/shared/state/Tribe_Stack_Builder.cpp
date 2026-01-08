@@ -7,48 +7,49 @@
 #include <random>
 #include <unordered_map>
 
+#include "effects.h"
 #include "resources_dir.h"
 #include "state.h"
 
 namespace state
 {
-std::unordered_map<std::string, std::function<Species_Description()>> str_to_species = {
-    {"Amazons", []() { return Dwarves_Species(); }},
-    {"Dwarves", []() { return Dwarves_Species(); }},
-    {"Elves", []() { return Dwarves_Species(); }},
-    {"Ghouls", []() { return Dwarves_Species(); }},
-    {"Giants", []() { return Giants_Species(); }},
-    {"Halflings", []() { return Halflings_Species(); }},
-    {"Humans", []() { return Humans_Species(); }},
-    {"Orcs", []() { return Dwarves_Species(); }},
-    {"Ratmen", []() { return Ratmen_Species(); }},
-    {"Skeletons", []() { return Skeletons_Species(); }},
-    {"Sorcerers", []() { return Dwarves_Species(); }},
-    {"Tritons", []() { return Tritons_Species(); }},
-    {"Trolls", []() { return Trolls_Species(); }},
-    {"Wizards", []() { return Wizards_Species(); }}};
+std::unordered_map<std::string, std::function<effects::Species_Description*()>> str_to_species = {
+    {"Amazons", []() { return new effects::Amazons_Species(); }},
+    {"Dwarves", []() { return new effects::Dwarves_Species(); }},
+    {"Elves", []() { return new effects::Elves_Species(); }},
+    {"Ghouls", []() { return new effects::Dwarves_Species(); }},
+    {"Giants", []() { return new effects::Giants_Species(); }},
+    {"Halflings", []() { return new effects::Halflings_Species(); }},
+    {"Humans", []() { return new effects::Humans_Species(); }},
+    {"Orcs", []() { return new effects::Orcs_Species(); }},
+    {"Ratmen", []() { return new effects::Ratmen_Species(); }},
+    {"Skeletons", []() { return new effects::Skeletons_Species(); }},
+    {"Sorcerers", []() { return new effects::Dwarves_Species(); }},
+    {"Tritons", []() { return new effects::Tritons_Species(); }},
+    {"Trolls", []() { return new effects::Trolls_Species(); }},
+    {"Wizards", []() { return new effects::Wizards_Species(); }}};
 
-std::unordered_map<std::string, std::function<Power_Description()>> str_to_power = {
-    {"Alchemist", []() { return Power_Description("Alchemist", 4); }},
-    {"Berserk", []() { return Power_Description("Berserk", 4); }},
-    {"Bivouacking", []() { return Power_Description("Bivouacking", 5); }},
-    {"Commando", []() { return Power_Description("Commando", 4); }},
-    {"Heroic", []() { return Power_Description("Heroic", 5); }},
-    {"Hill", []() { return Power_Description("Hill", 4); }},
-    {"Merchant", []() { return Power_Description("Merchant", 2); }},
-    {"Mounted", []() { return Power_Description("Mounted", 5); }},
-    {"Pillaging", []() { return Power_Description("Pillaging", 5); }},
-    {"Seafaring", []() { return Power_Description("Seafaring", 5); }},
-    {"Spirit", []() { return Power_Description("Spirit", 5); }},
-    {"Stout", []() { return Power_Description("Stout", 4); }},
-    {"Swamp", []() { return Power_Description("Swamp", 4); }},
-    {"Underworld", []() { return Power_Description("Underworld", 5); }},
-    {"Wealthy", []() { return Power_Description("Wealthy", 4); }},
-    {"Diplomat", []() { return Power_Description("Diplomat", 5); }},
-    {"Dragon Master", []() { return Power_Description("Dragon Master", 5); }},
-    {"Flying", []() { return Power_Description("Flying", 5); }},
-    {"Forest", []() { return Power_Description("Forest", 4); }},
-    {"Fortified", []() { return Power_Description("Fortified", 3); }}};
+std::unordered_map<std::string, std::function<effects::Power_Description*()>> str_to_power = {
+    {"Alchemist", []() { return new effects::Power_Description("Alchemist", 4); }},
+    {"Berserk", []() { return new effects::Power_Description("Berserk", 4); }},
+    {"Bivouacking", []() { return new effects::Power_Description("Bivouacking", 5); }},
+    {"Commando", []() { return new effects::Power_Description("Commando", 4); }},
+    {"Heroic", []() { return new effects::Power_Description("Heroic", 5); }},
+    {"Hill", []() { return new effects::Power_Description("Hill", 4); }},
+    {"Merchant", []() { return new effects::Power_Description("Merchant", 2); }},
+    {"Mounted", []() { return new effects::Power_Description("Mounted", 5); }},
+    {"Pillaging", []() { return new effects::Power_Description("Pillaging", 5); }},
+    {"Seafaring", []() { return new effects::Power_Description("Seafaring", 5); }},
+    {"Spirit", []() { return new effects::Power_Description("Spirit", 5); }},
+    {"Stout", []() { return new effects::Power_Description("Stout", 4); }},
+    {"Swamp", []() { return new effects::Power_Description("Swamp", 4); }},
+    {"Underworld", []() { return new effects::Power_Description("Underworld", 5); }},
+    {"Wealthy", []() { return new effects::Power_Description("Wealthy", 4); }},
+    {"Diplomat", []() { return new effects::Power_Description("Diplomat", 5); }},
+    {"Dragon Master", []() { return new effects::Power_Description("Dragon Master", 5); }},
+    {"Flying", []() { return new effects::Power_Description("Flying", 5); }},
+    {"Forest", []() { return new effects::Power_Description("Forest", 4); }},
+    {"Fortified", []() { return new effects::Power_Description("Fortified", 3); }}};
 
 Tribe_Stack_Builder::Tribe_Stack_Builder()
 {
@@ -69,7 +70,7 @@ std::vector<Tribe> Tribe_Stack_Builder::get_tribe_stack()
     // Pair the first 'number_of_species' species with the first same number of powers
     for (size_t i = 0; i < species.size(); i++)
     {
-        Tribe tribe(i, &species.at(i), &powers.at(i));
+        Tribe tribe(i, species.at(i), powers.at(i));
         stack.push_back(tribe);
     }
     return stack;
@@ -90,13 +91,13 @@ void Tribe_Stack_Builder::load_species_and_powers()
 
     for (const auto& species_name : root["Species"])
     {
-        Species_Description species = str_to_species[species_name.asString()]();
-        this->species.push_back(species);
+        effects::Species_Description* s = str_to_species[species_name.asString()]();
+        this->species.push_back(s);
     }
     for (const auto& power_name : root["Powers"])
     {
-        Power_Description power = str_to_power[power_name.asString()]();
-        this->powers.push_back(power);
+        effects::Power_Description* p = str_to_power[power_name.asString()]();
+        this->powers.push_back(p);
     }
 }
 }  // namespace state

@@ -5,6 +5,7 @@ set(lib_shared_target shared_static)
 generate_dia_header("${CMAKE_CURRENT_SOURCE_DIR}/../state.dia")
 generate_dia_header("${CMAKE_CURRENT_SOURCE_DIR}/../engine.dia")
 generate_dia_header("${CMAKE_CURRENT_SOURCE_DIR}/../ai.dia")
+generate_dia_header("${CMAKE_CURRENT_SOURCE_DIR}/../effects.dia")
 
 # Find all source files to compile into a library
 file(GLOB_RECURSE shared_sources *.cpp)
@@ -25,7 +26,7 @@ target_include_directories(${lib_shared_target} PUBLIC
 
 # Ensure graphic resources are copied before building the shared library so
 # runtime code that expects RESOURCE_DIR or relative paths will find assets.
-add_dependencies(${lib_shared_target} copy_graphics)
+add_dependencies(${lib_shared_target} copy_resources)
 
 # vim: set sw=2 sts=2 et:
 

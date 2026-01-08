@@ -3,9 +3,6 @@
 #include <random>
 #include <stdexcept>
 
-#include "Power_Description.h"
-#include "Species_Description.h"
-
 using namespace state;
 
 const int default_attacking_units_required = 2;

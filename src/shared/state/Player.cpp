@@ -6,7 +6,7 @@
 namespace state
 {
 
-Player::Player(int id) : id(id)
+Player::Player(int id, std::string name) : id(id), name(name)
 {
     money            = 5;
     active_tribe     = nullptr;
@@ -15,11 +15,11 @@ Player::Player(int id) : id(id)
 
 Player::~Player() {}
 
-void Player::gather_free_units()
+void Player::gather_free_units(Turn_Phase turn_phase)
 {
     if (active_tribe != nullptr)
     {
-        active_tribe->gather_free_units();
+        active_tribe->gather_free_units(turn_phase);
         return;
     }
     throw std::invalid_argument("gather_free_units:there is no active tribe for this player");
@@ -62,11 +62,11 @@ void Player::redeploy_units(int area_id, int n_added_units)
     throw std::invalid_argument("redeploy_units:there is no active tribe for this player");
 }
 
-void Player::conquer(Area* attacked_area, int n_units, int dice_units)
+void Player::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
 {
     if (active_tribe != nullptr)
     {
-        active_tribe->conquer(attacked_area, n_units, dice_units);
+        active_tribe->conquer(attacked_area, n_units, dice_units, map);
         return;
     }
     throw std::invalid_argument("conquer:there is no active tribe for this player");
@@ -119,6 +119,11 @@ std::pair<Tribe*, Tribe*> Player::get_tribes()
 int Player::get_money()
 {
     return money;
+}
+
+std::string Player::get_name()
+{
+    return name;
 }
 
 }  // namespace state
