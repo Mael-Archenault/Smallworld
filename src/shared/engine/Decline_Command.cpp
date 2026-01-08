@@ -1,3 +1,5 @@
+#include <json/json.h>
+
 #include <stdexcept>
 
 #include "engine.h"
@@ -24,6 +26,21 @@ void Decline_Command::execute(state::Game_State& state)
 int Decline_Command::get_id()
 {
     return id;
+}
+
+void Decline_Command::to_json(Json::Value& root)
+{
+    root["command_name"] = "Decline_Command";
+    root["player_id"]    = player_id;
+}
+
+void Decline_Command::from_json(Json::Value& root)
+{
+    if (root["command_name"] != "Decline_Command")
+    {
+        throw std::invalid_argument("Decline_Command::from_json: command_name mismatch");
+    }
+    set_player_id(root["player_id"].asInt());
 }
 
 }  // namespace engine

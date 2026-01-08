@@ -1,3 +1,4 @@
+#include <json/json.h>
 #include <stdexcept>
 
 #include "engine.h"
@@ -22,6 +23,21 @@ void End_Conquer_Command::execute(state::Game_State& state)
 int End_Conquer_Command::get_id()
 {
     return id;
+}
+
+void End_Conquer_Command::to_json(Json::Value& root)
+{
+    root["command_name"] = "End_Conquer_Command";
+    root["player_id"]   = player_id;
+}
+
+void End_Conquer_Command::from_json(Json::Value& root)
+{
+    if (root["command_name"] != "End_Conquer_Command")
+    {
+        throw std::invalid_argument("End_Conquer_Command::from_json: command_name mismatch");
+    }
+    set_player_id(root["player_id"].asInt());
 }
 
 }  // namespace engine
