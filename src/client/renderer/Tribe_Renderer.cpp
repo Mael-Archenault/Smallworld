@@ -34,7 +34,8 @@ Tribe_Renderer::Tribe_Renderer()
         std::string(RESOURCE_DIR) + "/assets/power_spritesheet_indexing.json", "power");
 };
 
-void Tribe_Renderer::set_sprite(std::string species_name, std::string power_name, bool in_decline)
+void Tribe_Renderer::set_sprite(std::string species_name, std::string power_name,
+                                bool is_in_decline)
 {
     if (species_spritesheet_indexing.find(species_name) == species_spritesheet_indexing.end())
     {
@@ -87,7 +88,7 @@ void Tribe_Renderer::set_sprite(std::string species_name, std::string power_name
 
     this->texture->display();
     this->sprite.setTexture(this->texture->getTexture());
-    if (in_decline)
+    if (is_in_decline)
     {
         this->sprite.setColor(sf::Color(39, 224, 245));
     }

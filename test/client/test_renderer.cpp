@@ -17,5 +17,5 @@ BOOST_AUTO_TEST_CASE(Test_Renderer)
                               sf::Style::Titlebar | sf::Style::Close);
     renderer::Renderer renderer(state, window);
 
-    renderer.render(state);
+    renderer.render(state, state.get_current_player().id);
 }

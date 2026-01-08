@@ -37,15 +37,15 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
         BOOST_CHECK_THROW(player.redeploy_units(0, 10), std::invalid_argument);
         BOOST_CHECK_THROW(player.conquer(&area, 5, 2, nullptr), std::invalid_argument);
         BOOST_CHECK_THROW(player.get_redeployable_areas(), std::invalid_argument);
-        BOOST_CHECK_THROW(player.set_active_tribe(tribe0, 10), std::invalid_argument);
+        BOOST_CHECK_THROW(player.choose_active_tribe(tribe0, 10), std::invalid_argument);
 
         // methods testing
-        player.set_active_tribe(tribe0, 0);
+        player.choose_active_tribe(tribe0, 0);
         BOOST_CHECK_EQUAL(player.get_tribes().first, tribe0);
         BOOST_CHECK_EQUAL(player.get_tribes().second, nullptr);
         player.go_in_decline();
 
-        player.set_active_tribe(tribe1, 0);
+        player.choose_active_tribe(tribe1, 0);
         BOOST_CHECK_EQUAL(player.get_tribes().first, tribe1);
         BOOST_CHECK_EQUAL(player.get_tribes().second, tribe0);
 

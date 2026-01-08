@@ -15,7 +15,7 @@ Renderer::Renderer(state::Game_State& state, sf::RenderWindow& window)
       player_area_renderer(window),
       UI_renderer(window, state) {};
 
-void Renderer::render(state::Game_State& state)
+void Renderer::render(state::Game_State& state, int rendering_player_id)
 {
     sf::Vector2u window_size = window.getSize();
     map_renderer.render(state.get_map());
@@ -25,9 +25,10 @@ void Renderer::render(state::Game_State& state)
     tribe_stack_renderer.render(state.get_tribe_stack());
 
     player_area_renderer.set_position(sf::Vector2f(window_size.x / 6, window_size.y * 5 / 6));
-    player_area_renderer.render(state.get_current_player());
+    state::Player& rendering_player = state.get_players().at(rendering_player_id);
+    player_area_renderer.render(rendering_player);
 
-    UI_renderer.render(state);
+    UI_renderer.render(state, rendering_player_id);
 }
 
 void Renderer::set_selected_area(int area_id)

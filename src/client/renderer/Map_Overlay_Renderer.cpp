@@ -63,8 +63,9 @@ void Map_Overlay_Renderer::load_map_borders(state::Map& map)
         border_sprites.at(area_id).setTexture(border_textures.at(area_id));
     }
 }
-void Map_Overlay_Renderer::render(state::Game_State& state)
+void Map_Overlay_Renderer::render(state::Game_State& state, int rendering_player_id)
 {
+    state::Player& rendering_player = state.get_players().at(rendering_player_id);
     if (state.get_map().get_name() != loaded_map_name)
     {
         load_map_positions(state.get_map().get_name());
@@ -75,47 +76,50 @@ void Map_Overlay_Renderer::render(state::Game_State& state)
     float scaling_factor =
         std::min(((float) window.getSize().x * 5) / (6 * border_textures.at(0).getSize().x),
                  ((float) window.getSize().y * 5) / (6 * border_textures.at(0).getSize().y));
-
-    if (state.get_current_turn_phase() == state::Turn_Phase::CONQUER)
+    if (rendering_player.id == state.get_current_player().id)
     {
-        std::vector<std::pair<int, int>> conquest_prices =
-            state.get_conquest_prices(state.get_current_player().id);
-
-        for (auto& price_pair : conquest_prices)
+        if (state.get_current_turn_phase() == state::Turn_Phase::CONQUER)
         {
-            int area_id = price_pair.first;
+            std::vector<std::pair<int, int>> conquest_prices =
+                state.get_conquest_prices(rendering_player.id);
 
-            sf::Color border_color =
-                (price_pair.second <= state.get_free_units_number(state.get_current_player().id))
-                    ? sf::Color(0, 255, 0)
-                    : sf::Color(255, 255, 0);
-            border_sprites.at(area_id).setColor(border_color);
-            border_sprites.at(area_id).setScale(scaling_factor, scaling_factor);
-            border_sprites.at(area_id).setPosition(sf::Vector2f(
-                ((float) window.getSize().x - border_sprites.at(area_id).getGlobalBounds().width) /
-                    2,
-                0.f));
-            window.draw(border_sprites.at(area_id));
+            for (auto& price_pair : conquest_prices)
+            {
+                int area_id = price_pair.first;
+
+                sf::Color border_color =
+                    (price_pair.second <= state.get_free_units_number(rendering_player.id))
+                        ? sf::Color(0, 255, 0)
+                        : sf::Color(255, 255, 0);
+                border_sprites.at(area_id).setColor(border_color);
+                border_sprites.at(area_id).setScale(scaling_factor, scaling_factor);
+                border_sprites.at(area_id).setPosition(
+                    sf::Vector2f(((float) window.getSize().x -
+                                  border_sprites.at(area_id).getGlobalBounds().width) /
+                                     2,
+                                 0.f));
+                window.draw(border_sprites.at(area_id));
+            }
+        }
+
+        if (state.get_current_turn_phase() == state::Turn_Phase::REDEPLOY)
+        {
+            std::vector<int> redeployable_areas = rendering_player.get_redeployable_areas();
+
+            for (auto& area_id : redeployable_areas)
+            {
+                sf::Color border_color = sf::Color(0, 0, 255);
+                border_sprites.at(area_id).setColor(border_color);
+                border_sprites.at(area_id).setScale(scaling_factor, scaling_factor);
+                border_sprites.at(area_id).setPosition(
+                    sf::Vector2f(((float) window.getSize().x -
+                                  border_sprites.at(area_id).getGlobalBounds().width) /
+                                     2,
+                                 0.f));
+                window.draw(border_sprites.at(area_id));
+            }
         }
     }
-
-    if (state.get_current_turn_phase() == state::Turn_Phase::REDEPLOY)
-    {
-        std::vector<int> redeployable_areas = state.get_current_player().get_redeployable_areas();
-
-        for (auto& area_id : redeployable_areas)
-        {
-            sf::Color border_color = sf::Color(0, 0, 255);
-            border_sprites.at(area_id).setColor(border_color);
-            border_sprites.at(area_id).setScale(scaling_factor, scaling_factor);
-            border_sprites.at(area_id).setPosition(sf::Vector2f(
-                ((float) window.getSize().x - border_sprites.at(area_id).getGlobalBounds().width) /
-                    2,
-                0.f));
-            window.draw(border_sprites.at(area_id));
-        }
-    }
-
     if (selected_area_id == -1)
     {  // no area selected
         return;

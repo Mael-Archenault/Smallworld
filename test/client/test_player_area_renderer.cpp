@@ -23,9 +23,9 @@ BOOST_AUTO_TEST_CASE(TestPlayerAreaRenderer)
                             std::vector<state::Area_Specialization>(), false);
     state::Player      player(0, "Alice");
 
-    player.set_active_tribe(tribe0, 0);
-    player.set_active_tribe(tribe1, 0);
-    player.set_active_tribe(tribe2, 0);
+    player.choose_active_tribe(tribe0, 0);
+    player.choose_active_tribe(tribe1, 0);
+    player.choose_active_tribe(tribe2, 0);
 
     sf::RenderWindow               window(sf::VideoMode(800, 600), "Renderer Test");
     renderer::Player_Area_Renderer player_area_renderer(window);

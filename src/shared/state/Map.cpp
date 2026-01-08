@@ -36,7 +36,7 @@ Area& Map::get_area(int area_id)
 {
     for (size_t i = 0; i < areas.size(); i++)
     {
-        if (area_id == areas[i].id) return areas[i];
+        if (area_id == areas.at(i).id) return areas.at(i);
     }
     throw std::invalid_argument("get_area:there is no area_id matching for this map");
 }
@@ -128,6 +128,22 @@ std::vector<std::pair<int, int>> Map::get_starting_points_prices(Tribe& tribe,
         }
     }
     return ret;
+}
+
+Map Map::deep_copy()
+{
+    Map copy(name);
+
+    for (Area& area : areas)
+    {
+        Area& area_copy = copy.areas.at(area.id);
+        for (Area_Special_Token token : area.get_special_tokens())
+        {
+            area_copy.add_special_token(token);
+        }
+        area_copy.set_units_number(area.get_units_number());
+    }
+    return copy;
 }
 
 }  // namespace state

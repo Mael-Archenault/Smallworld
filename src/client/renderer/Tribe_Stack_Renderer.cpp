@@ -48,18 +48,19 @@ void Tribe_Stack_Renderer::render(state::Tribe_Stack& tribe_stack)
 
     for (size_t i = 0; i < top_tribes.size(); ++i)
     {
-        tribes[i]->set_sprite(top_tribes[i]->get_species_name(), top_tribes[i]->get_power_name(),
-                              false);
+        tribes.at(i)->set_sprite(top_tribes.at(i)->get_species_name(),
+                                 top_tribes.at(i)->get_power_name(), false);
         float scaling_factor = std::min(card_set_width / 500, card_set_height / 194);
-        tribes[i]->scale(scaling_factor, scaling_factor);
+        tribes.at(i)->scale(scaling_factor, scaling_factor);
 
         sf::Vector2f tribe_position = position + sf::Vector2f(0.0f, i * card_set_height);
-        tribes[i]->render(window, tribe_position);
+        tribes.at(i)->render(window, tribe_position);
 
-        prices[i].setPosition(tribe_position +
-                              sf::Vector2f(section_width * 7 / 8,
-                                           card_set_height / 2 - prices[i].getCharacterSize() / 2));
-        window.draw(prices[i]);
+        prices.at(i).setPosition(
+            tribe_position +
+            sf::Vector2f(section_width * 7 / 8,
+                         card_set_height / 2 - prices.at(i).getCharacterSize() / 2));
+        window.draw(prices.at(i));
     }
 }
 

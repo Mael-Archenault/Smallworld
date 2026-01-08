@@ -6,7 +6,7 @@
 
 BOOST_AUTO_TEST_CASE(TestTribeStackRenderer)
 {
-    state::Tribe_Stack tribe_stack;
+    state::Tribe_Stack tribe_stack(1);
 
     sf::RenderWindow               window(sf::VideoMode(800, 600), "Renderer Test");
     renderer::Tribe_Stack_Renderer tribe_stack_renderer(window);
