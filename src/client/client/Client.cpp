@@ -5,9 +5,10 @@
 
 #include <cmath>
 #include <iostream>
+#include <mutex>
 
 #include "engine.h"
-
+extern std::mutex mtx;
 namespace client
 {
 
@@ -35,7 +36,10 @@ int Client::run()
     }  // purge early events
 
     window.clear(sf::Color::Black);
-    renderer.render(state, state.get_current_player().id);
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        renderer.render(state, state.get_current_player().id);
+    }
     window.display();
 
     sf::View view           = window.getDefaultView();  // store your base view
@@ -81,7 +85,10 @@ int Client::run()
                     mouse_clicked          = true;
                     sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
                     // handle_mouse_click(mouse_pos);
-                    click_handler.handle_click(mouse_pos);
+                    {
+                        std::lock_guard<std::mutex> lock(mtx);
+                        click_handler.handle_click(mouse_pos);
+                    }
                 }
                 if (event.type == sf::Event::MouseButtonReleased)
                 {
@@ -90,42 +97,33 @@ int Client::run()
             }
         }
 
-        if (event_happened)
+        // if (state.is_game_finished())
+        // {
+        //     std::cout << "Maximum rounds reached." << std::endl;
+        //     std::pair<int, int> victorious_player_money = {0, -1};
+        //     for (std::pair<int, int> player_id_money : state.get_all_player_id_money())
+        //     {
+        //         std::cout << "Player " << player_id_money.first << " has "
+        //                   << player_id_money.second << " money." << std::endl;
+        //         if (player_id_money.second >= victorious_player_money.second)
+        //         {
+        //             victorious_player_money = player_id_money;
+        //         }
+        //     }
+        //     std::cout << "\nVictory goes to " << victorious_player_money.first << ", with "
+        //               << victorious_player_money.second << " money !" << std::endl;
+        //     window.close();
+        //     return victorious_player_money.first;
+        // }
+
+        window.clear(sf::Color::Black);
         {
-            try
-            {
-                engine.update();
-                // state = state::Game_State(engine.get_state());
-                state = engine.get_state().deep_copy();
-                if (state.is_game_finished())
-                {
-                    std::cout << "Maximum rounds reached." << std::endl;
-                    std::pair<int, int> victorious_player_money = {0, -1};
-                    for (std::pair<int, int> player_id_money : state.get_all_player_id_money())
-                    {
-                        std::cout << "Player " << player_id_money.first << " has "
-                                  << player_id_money.second << " money." << std::endl;
-                        if (player_id_money.second >= victorious_player_money.second)
-                        {
-                            victorious_player_money = player_id_money;
-                        }
-                    }
-                    std::cout << "\nVictory goes to " << victorious_player_money.first << ", with "
-                              << victorious_player_money.second << " money !" << std::endl;
-                    window.close();
-                    return victorious_player_money.first;
-                }
-            }
-            catch (const std::exception& e)
-            {
-                engine.remove_last_command();
-                std::cerr << "Error executing command: " << e.what() << std::endl;
-            }
-            window.clear(sf::Color::Black);
+            std::lock_guard<std::mutex> lock(mtx);
             renderer.render(state, state.get_current_player().id);
-            window.display();
-            event_happened = false;
         }
+
+        window.display();
+        event_happened = false;
     }
     return 0;
 }
@@ -169,5 +167,10 @@ renderer::Renderer& Client::get_renderer()
 engine::Engine& Client::get_engine()
 {
     return engine;
+}
+
+void Client::update_state()
+{
+    state = engine.get_state().deep_copy();
 }
 }  // namespace client
