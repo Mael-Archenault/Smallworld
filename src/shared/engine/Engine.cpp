@@ -57,7 +57,7 @@ void Engine::remove_last_command()
     command_queue.pop();
 }
 
-state::Game_State Engine::get_state()
+state::Game_State& Engine::get_state()
 {
     return state;
 }
