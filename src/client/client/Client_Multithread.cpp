@@ -135,6 +135,10 @@ engine::Engine& Client_Multithread::get_engine()
 
 void Client_Multithread::update_state()
 {
+    if (engine.get_state_version_id() == state.get_version_id())
+    {
+        return;
+    }
     state = engine.get_state().deep_copy();
 }
 

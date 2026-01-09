@@ -154,8 +154,9 @@ void Click_Handler::handle_info_window_click(
         if (state.get_current_turn_phase() == state::Turn_Phase::START &&
             state.get_current_player().get_tribes().first == nullptr)
         {
-            engine.add_command(std::make_unique<engine::Choose_Species_Command>(
-                state.get_current_player().id, client.get_selected_position_in_stack()));
+            auto command = std::make_unique<engine::Choose_Species_Command>(
+                state.get_current_player().id, client.get_selected_position_in_stack());
+            engine.add_command(std::move(command));
             renderer.close_tribe_info_window();
             client.set_tribe_info_window_state(false);
         }
@@ -188,43 +189,47 @@ void Click_Handler::handle_button_area_click(
         {
             int dice_units = state.roll_dice_for_bonus_units();
             std::cout << "No more area attackable, rolled the dice : " << dice_units << std::endl;
-            engine.add_command(std::make_unique<engine::Conquer_Command>(
-                state.get_current_player().id, client.get_selected_area_id(), available_units,
-                dice_units));
+            auto command = std::make_unique<engine::Conquer_Command>(state.get_current_player().id,
+                                                                     client.get_selected_area_id(),
+                                                                     available_units, dice_units);
+            engine.add_command(std::move(command));
         }
         else
         {
-            engine.add_command(std::make_unique<engine::Conquer_Command>(
-                state.get_current_player().id, client.get_selected_area_id(), price, -1));
+            auto command = std::make_unique<engine::Conquer_Command>(
+                state.get_current_player().id, client.get_selected_area_id(), price, -1);
+            engine.add_command(std::move(command));
         }
         return;
     }
     if (layout_infos["decline_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        engine.add_command(
-            std::make_unique<engine::Decline_Command>(state.get_current_player().id));
+        auto command = std::make_unique<engine::Decline_Command>(state.get_current_player().id);
+        engine.add_command(std::move(command));
         return;
     }
     if (layout_infos["start_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        engine.add_command(
-            std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id));
+        auto command =
+            std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id);
+        engine.add_command(std::move(command));
         return;
     }
     if (layout_infos["end_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::CONQUER)
     {
-        engine.add_command(
-            std::make_unique<engine::End_Conquer_Command>(state.get_current_player().id));
+        auto command = std::make_unique<engine::End_Conquer_Command>(state.get_current_player().id);
+        engine.add_command(std::move(command));
         return;
     }
     if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::REDEPLOY)
     {
-        engine.add_command(std::make_unique<engine::Redeploy_Command>(
-            state.get_current_player().id, client.get_selected_area_id(), 1));
+        auto command = std::make_unique<engine::Redeploy_Command>(state.get_current_player().id,
+                                                                  client.get_selected_area_id(), 1);
+        engine.add_command(std::move(command));
         return;
     }
 }

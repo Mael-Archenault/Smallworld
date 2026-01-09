@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
         std::thread client_thread = std::thread(
             [](engine::Engine& engine) { client_process(engine, 0); }, std::ref(engine));
 
-        client_thread.join();
+        client_thread.detach();
         engine_thread.join();
 
         // sleep(1);

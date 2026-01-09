@@ -161,8 +161,11 @@ void Click_Handler_Multithread::handle_info_window_click(
         if (state.get_current_turn_phase() == state::Turn_Phase::START &&
             actioning_player.get_tribes().first == nullptr)
         {
-            engine.add_command(std::make_unique<engine::Choose_Species_Command>(
-                actioning_player.id, client.get_selected_position_in_stack()));
+            auto command = std::make_unique<engine::Choose_Species_Command>(
+                actioning_player.id, client.get_selected_position_in_stack());
+            Json::Value command_json;
+            command->to_json(command_json);
+            engine.add_command(command_json);
             renderer.close_tribe_info_window();
             client.set_tribe_info_window_state(false);
         }
@@ -195,39 +198,57 @@ void Click_Handler_Multithread::handle_button_area_click(
         {
             int dice_units = state.roll_dice_for_bonus_units();
             std::cout << "No more area attackable, rolled the dice : " << dice_units << std::endl;
-            engine.add_command(std::make_unique<engine::Conquer_Command>(
-                actioning_player.id, client.get_selected_area_id(), available_units, dice_units));
+            auto command = std::make_unique<engine::Conquer_Command>(
+                actioning_player.id, client.get_selected_area_id(), available_units, dice_units);
+            Json::Value command_json;
+            command->to_json(command_json);
+            engine.add_command(command_json);
         }
         else
         {
-            engine.add_command(std::make_unique<engine::Conquer_Command>(
-                actioning_player.id, client.get_selected_area_id(), price, -1));
+            auto command = std::make_unique<engine::Conquer_Command>(
+                actioning_player.id, client.get_selected_area_id(), price, -1);
+            Json::Value command_json;
+            command->to_json(command_json);
+            engine.add_command(command_json);
         }
         return;
     }
     if (layout_infos["decline_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        engine.add_command(std::make_unique<engine::Decline_Command>(actioning_player.id));
+        auto command = std::make_unique<engine::Decline_Command>(actioning_player.id);
+        Json::Value command_json;
+        command->to_json(command_json);
+        engine.add_command(command_json);
         return;
     }
     if (layout_infos["start_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        engine.add_command(std::make_unique<engine::Start_Conquest_Command>(actioning_player.id));
+        auto command = std::make_unique<engine::Start_Conquest_Command>(actioning_player.id);
+        Json::Value command_json;
+        command->to_json(command_json);
+        engine.add_command(command_json);
         return;
     }
     if (layout_infos["end_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::CONQUER)
     {
-        engine.add_command(std::make_unique<engine::End_Conquer_Command>(actioning_player.id));
+        auto command = std::make_unique<engine::End_Conquer_Command>(actioning_player.id);
+        Json::Value command_json;
+        command->to_json(command_json);
+        engine.add_command(command_json);
         return;
     }
     if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::REDEPLOY)
     {
-        engine.add_command(std::make_unique<engine::Redeploy_Command>(
-            actioning_player.id, client.get_selected_area_id(), 1));
+        auto command = std::make_unique<engine::Redeploy_Command>(
+            actioning_player.id, client.get_selected_area_id(), 1);
+        Json::Value command_json;
+        command->to_json(command_json);
+        engine.add_command(command_json);
         return;
     }
 }

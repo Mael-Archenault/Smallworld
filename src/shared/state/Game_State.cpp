@@ -244,6 +244,7 @@ Game_State Game_State::deep_copy()
     Game_State copy(n_players, names);
     copy.round              = round;
     copy.current_turn_phase = current_turn_phase;
+    copy.version_id         = version_id;
     copy.tribe_stack        = tribe_stack.deep_copy();
     copy.map                = map.deep_copy();
 
@@ -313,6 +314,7 @@ void Game_State::to_json(Json::Value& root)
     root["round"]              = round;
     root["current_turn_phase"] = static_cast<int>(current_turn_phase);
     root["current_player_id"]  = current_player->id;
+    root["version_id"]         = version_id;
     for (const auto& name : names)
     {
         root["names"].append(name);
@@ -340,6 +342,7 @@ void Game_State::from_json(Json::Value& root)
     n_players          = root["n_players"].asInt();
     round              = root["round"].asInt();
     current_turn_phase = static_cast<Turn_Phase>(root["current_turn_phase"].asInt());
+    version_id         = root["version_id"].asInt();
 
     names.clear();
     for (const auto& name_json : root["names"])
@@ -404,5 +407,15 @@ void Game_State::from_json(Json::Value& root)
 
     // restoring current_player
     current_player = &players.at(root["current_player_id"].asInt());
+}
+
+int Game_State::get_version_id()
+{
+    return version_id;
+}
+
+void Game_State::new_version_id()
+{
+    version_id++;
 }
 }  // namespace state

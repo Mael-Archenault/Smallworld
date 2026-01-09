@@ -118,7 +118,6 @@ int main(int argc, char* argv[])
         std::thread engine_thread =
             std::thread([](engine::Engine& engine) { engine_process(engine); }, std::ref(engine));
 
-        client_running.at(0)       = true;
         std::thread client1_thread = std::thread(
             [](engine::Engine& engine) { client_process(engine, 0); }, std::ref(engine));
 
