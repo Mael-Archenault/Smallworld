@@ -129,4 +129,80 @@ std::vector<Tribe*> Tribe_Stack::get_in_game_tribes()
     return in_game_tribes;
 }
 
+void Tribe_Stack::to_json(Json::Value& root)
+{
+    Json::Value stack_json(Json::objectValue);
+    for (Tribe& tribe : stack)
+    {
+        Json::Value tribe_json;
+        tribe.to_json(tribe_json);
+        stack_json[std::to_string(tribe.id)] = tribe_json;
+    }
+    root["stack"] = stack_json;
+
+    Json::Value in_game_tribes_json(Json::objectValue);
+    for (Tribe* tribe : in_game_tribes)
+    {
+        Json::Value tribe_json;
+        tribe->to_json(tribe_json);
+        in_game_tribes_json[std::to_string(tribe->id)] = tribe_json;
+    }
+    root["in_game_tribes"] = in_game_tribes_json;
+}
+void Tribe_Stack::from_json(Json::Value& root)
+{
+    stack.clear();
+    for (const auto& tribe_json : root["stack"])
+    {
+        Tribe tribe(0, new effects::Species_Description("temp", 0, 0),
+                    new effects::Power_Description("temp", 0));
+        tribe.from_json(const_cast<Json::Value&>(tribe_json));
+        // restore species descriptions and power description
+        for (auto species : stack_builder.get_species())
+        {
+            if (species->get_name() == tribe_json["species_description_name"].asString())
+            {
+                tribe.set_species_description(species);
+                break;
+            }
+        }
+        for (auto power : stack_builder.get_powers())
+        {
+            if (power->get_name() == tribe_json["power_description_name"].asString())
+            {
+                tribe.set_power_description(power);
+                break;
+            }
+        }
+        stack.push_back(tribe);
+    }
+
+    in_game_tribes.clear();
+    for (const auto& tribe_json : root["in_game_tribes"])
+    {
+        Tribe* tribe = new Tribe(0, new effects::Species_Description("temp", 0, 0),
+                                 new effects::Power_Description("temp", 0));
+        tribe->from_json(const_cast<Json::Value&>(tribe_json));
+        // restore species descriptions and power description
+        for (auto species : stack_builder.get_species())
+        {
+            if (species->get_name() == tribe_json["species_description_name"].asString())
+            {
+                tribe->set_species_description(species);
+                break;
+            }
+        }
+
+        for (auto power : stack_builder.get_powers())
+        {
+            if (power->get_name() == tribe_json["power_description_name"].asString())
+            {
+                tribe->set_power_description(power);
+                break;
+            }
+        }
+        in_game_tribes.push_back(tribe);
+    }
+}
+
 }  // namespace state

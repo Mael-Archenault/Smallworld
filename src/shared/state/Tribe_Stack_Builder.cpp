@@ -65,6 +65,7 @@ Tribe_Stack_Builder::Tribe_Stack_Builder()
     // shuffle species and powers independently
     std::shuffle(available_species.begin(), available_species.end(), rng);
     std::shuffle(available_powers.begin(), available_powers.end(), rng);
+    n_created_tribes = 0;
 }
 
 Tribe Tribe_Stack_Builder::get_next_tribe()

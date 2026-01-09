@@ -30,11 +30,7 @@ void Engine::update()
         return;
     }
     // take the first command
-    std::unique_ptr<Command>& received_command = command_queue.front();
-    Json::Value               root;
-    received_command->to_json(root);
-
-    std::unique_ptr<Command> command = Command::create_from_json(root);
+    std::unique_ptr<Command>& command = command_queue.front();
 
     // Verify if turn's conditions
 

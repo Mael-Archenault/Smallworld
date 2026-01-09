@@ -99,7 +99,7 @@ std::vector<std::pair<int, int>> Tribe::get_conquest_prices(Map* map)
     return prices;
 }
 
-std::vector<int> Tribe::get_redeployable_areas()
+std::vector<int> Tribe::get_owned_areas()
 {
     std::vector<int> area_ids;
     area_ids.reserve(owned_areas.size());
@@ -108,6 +108,11 @@ std::vector<int> Tribe::get_redeployable_areas()
         area_ids.push_back(area->id);
     }
     return area_ids;
+}
+
+std::vector<int> Tribe::get_redeployable_areas()
+{
+    return get_owned_areas();
 }
 
 void Tribe::redeploy_units(int area_id, int n_added_units)
@@ -272,6 +277,31 @@ void Tribe::set_free_units_number(int units_number)
 void Tribe::add_to_owned_areas(Area* area)
 {
     owned_areas.push_back(area);
+}
+
+void Tribe::to_json(Json::Value& root)
+{
+    root["id"]                       = id;
+    root["is_in_decline"]            = is_in_decline;
+    root["free_units_number"]        = free_units_number;
+    root["species_description_name"] = species_description->get_name();
+    root["power_description_name"]   = power_description->get_name();
+
+    Json::Value owned_areas_json(Json::arrayValue);
+    for (Area* area : owned_areas)
+    {
+        owned_areas_json.append(area->id);
+    }
+    root["owned_areas"] = owned_areas_json;
+}
+
+void Tribe::from_json(Json::Value& root)
+{
+    id                = root["id"].asInt();
+    is_in_decline     = root["is_in_decline"].asBool();
+    free_units_number = root["free_units_number"].asInt();
+
+    owned_areas.clear();
 }
 
 }  // namespace state
