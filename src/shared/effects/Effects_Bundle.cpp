@@ -28,7 +28,9 @@ int Effects_Bundle::second_gather_effect(int initial_free_units_number)
     return initial_free_units_number;
 }
 
-void Effects_Bundle::redeploy_effect(std::vector<state::Area*> owned_areas) {}
+void Effects_Bundle::redeploy_effect(std::vector<state::Area*> owned_areas, int area_id, int n_added_tokens) {}
+
+int Effects_Bundle::get_nb_of_special_tokens(){return 0;}
 
 int Effects_Bundle::rewards_effect(std::vector<state::Area*> owned_areas)
 {

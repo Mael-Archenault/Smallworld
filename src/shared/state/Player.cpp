@@ -62,6 +62,16 @@ void Player::redeploy_units(int area_id, int n_added_units)
     throw std::invalid_argument("redeploy_units:there is no active tribe for this player");
 }
 
+void Player::redeploy_tokens(int area_id, int n_added_tokens)
+{
+    if (active_tribe != nullptr)
+    {
+        active_tribe->redeploy_tokens(area_id, n_added_tokens);
+        return;
+    }
+    throw std::invalid_argument("redeploy_tokens:there is no active tribe for this player");
+}
+
 void Player::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
 {
     if (active_tribe != nullptr)

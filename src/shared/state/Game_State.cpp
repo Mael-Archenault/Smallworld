@@ -117,6 +117,19 @@ void Game_State::redeploy_units(int player_id, int area_id, int n_added_units)
     throw std::invalid_argument("redeploy_units: Player id not found");
 }
 
+void Game_State::redeploy_tokens(int player_id, int area_id, int n_added_tokens)
+{
+    for (size_t i = 0; i < players.size(); i++)
+    {
+        if (players[i].id == player_id)
+        {
+            players[i].redeploy_tokens(area_id, n_added_tokens);
+            return;
+        }
+    }
+    throw std::invalid_argument("redeploy_tokens: Player id not found");
+}
+
 void Game_State::get_rewards(int player_id)
 {
     for (size_t i = 0; i < players.size(); i++)

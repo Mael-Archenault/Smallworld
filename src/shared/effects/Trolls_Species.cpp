@@ -13,7 +13,7 @@ Trolls_Species::Trolls_Species() : Species_Description("Trolls", 5, 10)
     max_troll_lairs    = 10;
 }
 
-void Trolls_Species::redeploy_effect(std::vector<state::Area*> owned_areas)
+void Trolls_Species::redeploy_effect(std::vector<state::Area*> owned_areas, int area_id, int n_added_tokens)
 {
     // making sure each owned area has a troll lair
     for (state::Area* area : owned_areas)

@@ -53,8 +53,6 @@ void Tribe::gather_free_units(Turn_Phase turn_phase)
         free_units_number = species_description->second_gather_effect(free_units_number);
         free_units_number = power_description->second_gather_effect(free_units_number);
 
-        species_description->redeploy_effect(owned_areas);
-        power_description->redeploy_effect(owned_areas);
     }
 }
 
@@ -125,6 +123,15 @@ void Tribe::redeploy_units(int area_id, int n_added_units)
         }
     }
     throw std::invalid_argument("redeploy_units: area_id not found in owned_areas");
+}
+
+void Tribe::redeploy_tokens(int area_id, int n_added_tokens)
+{  
+    if(n_added_tokens > power_description->get_nb_of_special_tokens()){
+        return;
+    }
+    species_description->redeploy_effect(owned_areas, area_id, n_added_tokens);
+    power_description->redeploy_effect(owned_areas, area_id, n_added_tokens);
 }
 
 void Tribe::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
