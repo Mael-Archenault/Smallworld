@@ -16,10 +16,6 @@ class Game_State_Observer : public state::Game_State
     {
         return round;
     }
-    std::vector<state::Player> get_players()
-    {
-        return players;
-    }
 };
 
 BOOST_AUTO_TEST_CASE(TestStaticAssert)
@@ -54,6 +50,12 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         BOOST_CHECK_EQUAL(state.get_current_turn_phase(), state::Turn_Phase::START);
         // methods testing
 
+        std::vector<std::pair<int, int>> money = state.get_all_player_id_money();
+        for (int i = 0; i < 4; i++)
+        {
+            BOOST_CHECK_EQUAL(money.at(i).first, i);
+            BOOST_CHECK_EQUAL(money.at(i).second, 5);
+        }
         std::vector<state::Tribe*> available_tribes = state.get_tribes_on_top();
         state.take_tribe_at_position(0, 0);
 
@@ -85,5 +87,10 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         BOOST_CHECK_EQUAL(state.get_current_player().id, 1);
         state.next_round();
         BOOST_CHECK_EQUAL(state.get_round(), 2);
+
+        state::Game_State copy = state.deep_copy();
+        Json::Value       root;
+        state.to_json(root);
+        state.from_json(root);
     }
 }

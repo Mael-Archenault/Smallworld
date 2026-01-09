@@ -13,7 +13,9 @@ Game_State::Game_State(int n_players, std::vector<std::string> names)
       map("4_players"),
       names(names),
       tribe_stack(n_players),
-      current_turn_phase(Turn_Phase::START)
+      current_turn_phase(Turn_Phase::START),
+      version_id(0)
+
 {
     for (int i = 0; i < n_players; i++)
     {
@@ -388,6 +390,7 @@ void Game_State::from_json(Json::Value& root)
     for (auto& key : players_json.getMemberNames())
     {
         Json::Value player_json = players_json[key];
+        players.at(player_json["id"].asInt()).from_json(player_json);
         // reconstructing active tribe and tribe in decline
         Player& player = players.at(player_json["id"].asInt());
         for (Tribe* tribe : tribe_stack.get_in_game_tribes())
