@@ -5,7 +5,7 @@
 namespace effects
 {
 
-Mounted_Power::Mounted_Power() : Power_Description("Underworld", 5)
+Underworld_Power::Underworld_Power() : Power_Description("Underworld", 5)
 {
     effect_disabled = false;
 }
@@ -26,7 +26,7 @@ std::vector<std::pair<int,int>> modify_price(
     return modified_prices;
 }
 
-std::vector<std::pair<int,int>> Mounted_Power::conquest_prices_effect(
+std::vector<std::pair<int,int>> Underworld_Power::conquest_prices_effect(
     std::vector<std::pair<int,int>> initial_conquest_price,
     std::vector<state::Area*> owned_areas,
     state::Map* map)
@@ -54,11 +54,14 @@ std::vector<std::pair<int,int>> Mounted_Power::conquest_prices_effect(
         }
         if (!area) continue;
 
-        auto biome = area->get_biome();
-        if (biome == state::Area_Specialization::CAVERN)
-            reduced_price_area_ids.push_back(area_id);
-    }
+        const auto& specs = area->get_area_specialization();
 
+        if (std::find(specs.begin(), specs.end(),
+                      state::Area_Specialization::CAVERN) != specs.end())
+        {
+            reduced_price_area_ids.push_back(area_id);
+        }
+    }
     std::vector<std::pair<int,int>> result = initial_conquest_price;
     for (int area_id : reduced_price_area_ids)
     {
@@ -74,7 +77,7 @@ std::vector<std::pair<int,int>> Mounted_Power::conquest_prices_effect(
     return result;
 }
 
-void Mounted_Power::decline_effect(std::vector<state::Area*> owned_areas)
+void Underworld_Power::decline_effect(std::vector<state::Area*> owned_areas)
 {
     effect_disabled = true;
 }
