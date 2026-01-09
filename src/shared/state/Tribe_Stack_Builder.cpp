@@ -167,4 +167,66 @@ Tribe_Stack_Builder Tribe_Stack_Builder::deep_copy()
     return copy;
 }
 
+void Tribe_Stack_Builder::to_json(Json::Value& root)
+{
+    root["n_created_tribes"] = n_created_tribes;
+
+    Json::Value available_species_json(Json::arrayValue);
+    for (auto species_desc : available_species)
+    {
+        available_species_json.append(species_desc->get_name());
+    }
+    root["available_species"] = available_species_json;
+
+    Json::Value available_powers_json(Json::arrayValue);
+    for (auto power_desc : available_powers)
+    {
+        available_powers_json.append(power_desc->get_name());
+    }
+    root["available_powers"] = available_powers_json;
+}
+
+void Tribe_Stack_Builder::from_json(Json::Value& root)
+{
+    n_created_tribes = root["n_created_tribes"].asInt();
+
+    for (auto species_desc : species)
+    {
+        delete species_desc;
+    }
+
+    available_species.clear();
+    for (const auto& species_name_json : root["available_species"])
+    {
+        std::string species_name = species_name_json.asString();
+        for (auto species_desc : species)
+        {
+            if (species_desc->get_name() == species_name)
+            {
+                available_species.push_back(species_desc);
+                break;
+            }
+        }
+    }
+
+    for (auto power_desc : powers)
+    {
+        delete power_desc;
+    }
+
+    available_powers.clear();
+    for (const auto& power_name_json : root["available_powers"])
+    {
+        std::string power_name = power_name_json.asString();
+        for (auto power_desc : powers)
+        {
+            if (power_desc->get_name() == power_name)
+            {
+                available_powers.push_back(power_desc);
+                break;
+            }
+        }
+    }
+}
+
 }  // namespace state

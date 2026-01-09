@@ -18,4 +18,16 @@ std::string Power_Description::get_name()
 {
     return name;
 }
+
+void Power_Description::to_json(Json::Value& root)
+{
+    root["name"]               = name;
+    root["given_units_number"] = given_units_number;
+}
+
+void Power_Description::from_json(Json::Value& root)
+{
+    name               = root["name"].asString();
+    given_units_number = root["given_units_number"].asInt();
+}
 }  // namespace effects

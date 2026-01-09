@@ -131,6 +131,8 @@ std::vector<Tribe*> Tribe_Stack::get_in_game_tribes()
 
 void Tribe_Stack::to_json(Json::Value& root)
 {
+    Json::Value stack_builder_json;
+    stack_builder.to_json(stack_builder_json);
     Json::Value stack_json(Json::objectValue);
     for (Tribe& tribe : stack)
     {
@@ -151,6 +153,9 @@ void Tribe_Stack::to_json(Json::Value& root)
 }
 void Tribe_Stack::from_json(Json::Value& root)
 {
+    Json::Value stack_builder_json = root["stack_builder"];
+    stack_builder.from_json(stack_builder_json);
+
     stack.clear();
     for (const auto& tribe_json : root["stack"])
     {
@@ -175,6 +180,12 @@ void Tribe_Stack::from_json(Json::Value& root)
             }
         }
         stack.push_back(tribe);
+    }
+
+    // deleting old tribes that are on the stack
+    for (Tribe* tribe : in_game_tribes)
+    {
+        delete tribe;
     }
 
     in_game_tribes.clear();
