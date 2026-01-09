@@ -53,7 +53,7 @@ int Client::run()
             if (ai->id == state.get_current_player().id)
             {
                 is_ai_turn = true;
-                ai->update_state(&state);
+                ai->update_state(state);
                 engine.add_command(ai->give_command(state.get_current_turn_phase()));
                 event_happened = true;
                 // sf::sleep(sf::seconds(1));

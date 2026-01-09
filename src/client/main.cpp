@@ -9,6 +9,10 @@
 #include <SFML/Graphics.hpp>
 #include <mutex>
 #include <thread>
+#include <ai/Ai_Random.h>
+
+#include "ai/Ai_Advanced.h"
+#include "ai/Ai_Heuristic.h"
 
 std::mutex        mtx;
 bool              engine_running;
@@ -35,7 +39,7 @@ void engine_process(engine::Engine& engine)
                 std::cerr << e.what() << std::endl;
             }
         }
-        usleep(50000 / 3);  // 60 updates per secound
+        usleep(50000 / 3);  // 60 updates per second
     }
 }
 
@@ -51,9 +55,70 @@ void state_update_process(client::Client_Multithread& client)
             };
             client.update_state();
         }
-        usleep(100000);  // 10 updates per secound
+        usleep(100000);  // 10 updates per second
     }
 }
+
+void state_update_process_ai(client::Client_AI& client)
+{
+    while (true)
+    {
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            if (!client_running.at(client.get_player_id()))
+            {
+                break;
+            };
+            client.update_state();
+        }
+        usleep(100000);  // 10 updates per second
+    }
+}
+
+
+void ai_process(engine::Engine& engine, int player_id)  // contains 2 threads
+//      - state update (request to the engine at 10 ips)
+//      - handle click, send commands then rendering (at 60 ips)
+{
+    client::Client_AI client = client::Client_AI(engine, player_id, new ai::Ai_Advanced(engine.get_state().deep_copy(),player_id));
+
+    std::thread state_update_thread = std::thread(
+        [](client::Client_AI& client) { state_update_process_ai(client); }, std::ref(client));
+
+    client.run();
+
+    // Signal state_update_thread to exit
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        client_running.at(client.get_player_id()) = false;
+    }
+
+    // Wait for state_update_thread to exit before client object is destroyed
+    state_update_thread.join();
+
+    std::cout << "Stopped client " << client.get_player_id() << std::endl;
+
+    // if all clients stopped running, stop engine
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        bool                        all_clients_stopped = true;
+        for (bool client_state : client_running)
+        {
+            if (client_state)
+            {
+                all_clients_stopped = false;
+                break;
+            }
+        }
+        if (all_clients_stopped)
+        {
+            engine_running = false;
+            std::cout << "No more clients -> Stopped engine" << std::endl;
+        }
+    }
+}
+
+
 void client_process(engine::Engine& engine, int player_id)  // contains 2 threads
 //      - state update (request to the engine at 10 ips)
 //      - handle click, send commands then rendering (at 60 ips)
@@ -100,8 +165,8 @@ void client_process(engine::Engine& engine, int player_id)  // contains 2 thread
 
 int main(int argc, char* argv[])
 {
-    int                      nb_players    = 2;
-    std::vector<std::string> names         = {"Mael", "Alice"};
+    int                      nb_players    = 3;
+    std::vector<std::string> names         = {"Mael", "Alice","Ia_Random"};
     std::vector<int>         victory_count = std::vector<int>(nb_players);
     int                      nb_of_games   = 1;
 
@@ -127,8 +192,14 @@ int main(int argc, char* argv[])
         std::thread client2_thread = std::thread(
             [](engine::Engine& engine) { client_process(engine, 1); }, std::ref(engine));
 
+
+        client_running.at(2)       = true;
+        std::thread client_AI_1_thread = std::thread(
+            [](engine::Engine& engine) { ai_process(engine, 2); }, std::ref(engine));
+
         client1_thread.detach();
         client2_thread.detach();
+        client_AI_1_thread.detach();
         engine_thread.join();
 
         // sleep(1);

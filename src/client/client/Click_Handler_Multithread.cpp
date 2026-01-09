@@ -201,7 +201,7 @@ void Click_Handler_Multithread::handle_button_area_click(
         else
         {
             engine.add_command(std::make_unique<engine::Conquer_Command>(
-                actioning_player.id, client.get_selected_area_id(), price, -1));
+                actioning_player.id, client.get_selected_area_id(), price, false));
         }
         return;
     }

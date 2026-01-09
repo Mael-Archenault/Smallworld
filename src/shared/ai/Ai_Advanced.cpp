@@ -22,9 +22,9 @@
 #define MIN_UNIT_FOR_DECLINE 3
 using namespace ai;
 
-Ai_Advanced::Ai_Advanced(state::Game_State* state,int player_id) : Ai_Interface(state, player_id), engine(*state, player_id) {
+Ai_Advanced::Ai_Advanced(state::Game_State state,int player_id) : Ai_Interface(state, player_id), engine(state, player_id) {
     command_stack = {};
-    engine.set_state(*state);
+    engine.set_state(state);
 }
 
 std::pair<int,std::stack<std::unique_ptr<engine::Command>>> Ai_Advanced::calcul_stack(std::unique_ptr<engine::Command> command, state::Game_State new_state) {
@@ -57,10 +57,10 @@ std::pair<int,std::stack<std::unique_ptr<engine::Command>>> Ai_Advanced::calcul_
                                                     std::min(required_units,available_units),
                                                     (required_units - available_units > 0));
 
-        std::pair<float,std::stack<std::unique_ptr<engine::Command>>> new_node_value_command = calcul_stack(std::move(command), engine.get_state());
+        std::pair<float,std::stack<std::unique_ptr<engine::Command>>> new_node_value_command = calcul_stack(std::move(command), engine.get_state().deep_copy());
         engine.set_state(new_state);
         if (required_units - available_units > 0) {
-            float current_gain = state->get_current_player().get_money();
+            float current_gain = state.get_current_player().get_money();
             new_node_value_command.first = current_gain + (new_node_value_command.first - current_gain) * unit_to_proba(required_units - available_units) ;
         }
 
@@ -86,11 +86,11 @@ float Ai_Advanced::unit_to_proba(int units) {
 }
 
 std::unique_ptr<engine::Command> Ai_Advanced::give_command_Start (){
-    if (state->get_current_player().get_tribes().first == nullptr) {
+    if (state.get_current_player().get_tribes().first == nullptr) {
         return std::make_unique<engine::Choose_Species_Command>(id, 0);
     }
 
-    if (state->get_free_units_number(id) <= MIN_UNIT_FOR_DECLINE)
+    if (state.get_free_units_number(id) <= MIN_UNIT_FOR_DECLINE)
     {
         return std::make_unique<engine::Decline_Command>(id);
     }
@@ -98,8 +98,9 @@ std::unique_ptr<engine::Command> Ai_Advanced::give_command_Start (){
     return std::make_unique<engine::Start_Conquest_Command>(id);
 }
 std::unique_ptr<engine::Command> Ai_Advanced::give_command_Conquer () {
+    engine.set_state(state);
     if (command_stack.empty()) {
-        command_stack = calcul_stack(nullptr,*state).second;
+        command_stack = calcul_stack(nullptr,state).second;
     }
     auto ret = std::move(command_stack.top());
     command_stack.pop();
@@ -108,16 +109,16 @@ std::unique_ptr<engine::Command> Ai_Advanced::give_command_Conquer () {
 
 
 std::unique_ptr<engine::Command> Ai_Advanced::give_command_Redeploy (){
-    int free_units_number = state->get_free_units_number(id);
-    std::vector<int> areas = state->get_redeployable_areas(id);
-    state::Area current_area = state->get_map().get_area(areas.at(0));
-    std::pair<int,int> area_id_units = {state->get_map().get_area(areas.at(0)).id,
-                                        state->get_map().get_area(areas.at(0)).get_units_number()};
+    int free_units_number = state.get_free_units_number(id);
+    std::vector<int> areas = state.get_redeployable_areas(id);
+    state::Area current_area = state.get_map().get_area(areas.at(0));
+    std::pair<int,int> area_id_units = {state.get_map().get_area(areas.at(0)).id,
+                                        state.get_map().get_area(areas.at(0)).get_units_number()};
 
     for (auto area_id : areas) {
-        if (state->get_map().get_area(area_id).get_units_number() < area_id_units.second) {
-            area_id_units = {state->get_map().get_area(areas.at(0)).id,
-                                state->get_map().get_area(areas.at(0)).get_units_number()};
+        if (state.get_map().get_area(area_id).get_units_number() < area_id_units.second) {
+            area_id_units = {state.get_map().get_area(areas.at(0)).id,
+                                state.get_map().get_area(areas.at(0)).get_units_number()};
         }
     }
     return std::make_unique<engine::Redeploy_Command>(id,area_id_units.first,1);};
