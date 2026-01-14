@@ -272,6 +272,8 @@ Game_State Game_State::deep_copy()
 
     copy.current_player = &copy.players.at(current_player->id);
 
+    // restoring players attributes
+
     for (size_t i = 0; i < players.size(); i++)
     {
         // restoring money

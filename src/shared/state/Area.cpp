@@ -41,13 +41,18 @@ void Area::deploy_units(int n_added_units)
     units_number += n_added_units;
 }
 
-void Area::set_owner_tribe(Tribe* new_owner_tribe)
+void Area::change_owner(Tribe* new_owner_tribe)
 {
     if (owner_tribe != nullptr)
     {
         owner_tribe->gather_units_after_losing(this);
         owner_tribe->remove_from_owned_areas(this);
     }
+    owner_tribe = new_owner_tribe;
+}
+
+void Area::set_owner_tribe(Tribe* new_owner_tribe)
+{
     owner_tribe = new_owner_tribe;
 }
 

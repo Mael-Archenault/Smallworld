@@ -23,8 +23,15 @@ Tribe::Tribe(int id, effects::Species_Description* base_species_description,
     owned_areas   = std::vector<Area*>();
     is_in_decline = false;
 
-    free_units_number = species_description->get_initial_units_number() +
-                        power_description->get_initial_units_number();
+    free_units_number = 0;
+    if (species_description != nullptr)
+    {
+        free_units_number += species_description->get_initial_units_number();
+    }
+    if (power_description != nullptr)
+    {
+        free_units_number += power_description->get_initial_units_number();
+    }
 }
 
 effects::Species_Description* Tribe::get_species_description()
@@ -158,7 +165,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
         {
             power_description->conquest_effect(attacked_area);
             species_description->conquest_effect(attacked_area);
-            attacked_area->set_owner_tribe(this);
+            attacked_area->change_owner(this);
             attacked_area->set_units_number(n_units);
             free_units_number -= n_units;
             owned_areas.push_back(attacked_area);
@@ -176,7 +183,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
     }
     power_description->conquest_effect(attacked_area);
     species_description->conquest_effect(attacked_area);
-    attacked_area->set_owner_tribe(this);
+    attacked_area->change_owner(this);
     attacked_area->set_units_number(n_units);
     free_units_number -= n_units;
     owned_areas.push_back(attacked_area);
@@ -227,7 +234,7 @@ void Tribe::remove_from_map()
     std::vector<Area*> copy(owned_areas);
     for (auto& area : copy)
     {
-        area->set_owner_tribe(nullptr);
+        area->change_owner(nullptr);
         area->clear_units();
     }
 }
@@ -277,6 +284,15 @@ void Tribe::set_free_units_number(int units_number)
 void Tribe::add_to_owned_areas(Area* area)
 {
     owned_areas.push_back(area);
+}
+
+Tribe Tribe::deep_copy()
+{
+    Tribe copy(id, nullptr, nullptr);
+    copy.free_units_number = free_units_number;
+    copy.is_in_decline     = is_in_decline;
+    copy.owner             = nullptr;
+    return copy;
 }
 
 void Tribe::to_json(Json::Value& root)

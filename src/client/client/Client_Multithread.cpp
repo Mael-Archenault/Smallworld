@@ -87,6 +87,7 @@ int Client_Multithread::run()
         }
 
         window.display();
+        usleep(1000000 / 60);  // limit to 60 fps
     }
 
     return 0;
@@ -139,7 +140,9 @@ void Client_Multithread::update_state()
     {
         return;
     }
-    state = engine.get_state().deep_copy();
+    Json::Value root;
+    root = engine.get_state_json();
+    state.from_json(root);
 }
 
 int Client_Multithread::get_player_id()

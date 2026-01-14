@@ -142,6 +142,10 @@ void Client::update_state()
     {
         return;
     }
-    state = engine.get_state().deep_copy();
-}
+    Json::Value root;
+    root = engine.get_state_json();
+    state.from_json(root);
+    // state = engine.get_state().deep_copy();
 }  // namespace client
+
+}
