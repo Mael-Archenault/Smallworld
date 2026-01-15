@@ -1,0 +1,18 @@
+
+
+
+
+### Test
+POST http://localhost:8888/connect
+
+### Re-test
+
+POST http://localhost:8888/rooms/create
+Session-Token: fa37JncCHryDsbza
+
+
+### RE-Re-test
+POST http://localhost:8888/rooms/join/0
+Session-Token: yy4cBWDxS22JjzhM
+
+

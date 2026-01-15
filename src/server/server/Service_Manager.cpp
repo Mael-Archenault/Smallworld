@@ -5,6 +5,8 @@
 namespace server
 {
 
+Service_Manager::Service_Manager(Server_Manager& server_manager) : server_manager(server_manager) {}
+
 Service_Interface* Service_Manager::find_responsible_service(std::string url)
 {
     for (auto& service : services)
@@ -23,8 +25,28 @@ void Service_Manager::register_service(std::unique_ptr<Service_Interface> servic
 }
 
 void Service_Manager::handle_request(std::string& in, std::string& out, std::string url,
-                                     std::string method)
+                                     std::string method, std::string session_token)
 {
+    // first request
+
+    if (url == "/connect" && method == "POST")
+    {
+        std::string new_session_token = server_manager.create_player();
+        out                           = new_session_token;
+        return;
+    }
+
+    // else
+
+    bool is_authenticated = server_manager.verify_session_token(session_token);
+
+    if (!is_authenticated)
+    {
+        return;
+    }
+
+    Player requesting_player = server_manager.get_player(session_token);
+
     Service_Interface* service = find_responsible_service(url);
     if (service)
     {
@@ -35,7 +57,7 @@ void Service_Manager::handle_request(std::string& in, std::string& out, std::str
         }
         else if (method == "POST")
         {
-            service->post(url);
+            service->post(url, session_token);
             out = "in response to POST " + url;
         }
     }

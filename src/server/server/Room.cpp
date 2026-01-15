@@ -2,7 +2,7 @@
 
 namespace server
 {
-Room::Room(Player creator, int room_id) : owner(creator), id(room_id)
+Room::Room(int room_id, Player creator) : owner(creator), id(room_id)
 {
     room_players.push_back(owner);
 }

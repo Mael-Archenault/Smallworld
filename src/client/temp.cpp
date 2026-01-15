@@ -7,32 +7,38 @@ int main(int argc, char* argv[])
     // Connect to localhost server on port 8888
     sf::Http http("http://localhost", 8888);
 
-    // Create GET request for the root path
-    sf::Http::Request request("/rooms/create");
-    request.setMethod(sf::Http::Request::Get);
+    sf::Http::Request request("/connect");
+    request.setMethod(sf::Http::Request::Post);
 
     // Send request
     sf::Http::Response response = http.sendRequest(request);
 
     // Print status and body
-    std::cout << "Status: " << response.getStatus() << "\n";
-    std::cout << "Body:\n" << response.getBody() << "\n";
+    std::cout << "Session token : " << response.getBody() << "\n";
 
     std::string session_token = response.getBody();
 
     ///////////////////////////////////////////////////////////////
 
-    // // Create GET request for the root path
-    // request = sf::Http::Request("/rooms/create");
-    // request.setMethod(sf::Http::Request::Get);
-    // request.setField("Session-Token", session_token);
+    request = sf::Http::Request("/rooms/create");
+    request.setMethod(sf::Http::Request::Post);
+    request.setField("Session-Token", session_token);
 
-    // // Send request
-    // response = http.sendRequest(request);
+    // Send request
+    response = http.sendRequest(request);
 
-    // // Print status and body
-    // std::cout << "Status: " << response.getStatus() << "\n";
-    // std::cout << "Body:\n" << response.getBody() << "\n";
+    // Print status and body
+    std::cout << "Created room id: " << response.getBody() << "\n";
 
     ///////////////////////////////////////////////////////////////
+
+    request = sf::Http::Request("/rooms/join/0");
+    request.setMethod(sf::Http::Request::Post);
+    request.setField("Session-Token", session_token);
+
+    // Send request
+    response = http.sendRequest(request);
+
+    // Print status and body
+    // std::cout << "Created room id: " << response.getBody() << "\n";
 }

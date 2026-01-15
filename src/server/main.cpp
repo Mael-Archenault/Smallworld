@@ -46,7 +46,15 @@ MHD_Result answer_to_connection(void* cls, struct MHD_Connection* connection, co
     std::string          in;
     std::string          out;
 
-    service_manager->handle_request(in, out, url, method);
+    std::string session_token;
+    const char* session_token_cstr =
+        MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Session-Token");
+    if (session_token_cstr)
+    {
+        session_token = std::string(session_token_cstr);
+    }
+
+    service_manager->handle_request(in, out, url, method, session_token);
 
     response =
         MHD_create_response_from_buffer(out.size(), (void*) out.c_str(), MHD_RESPMEM_MUST_COPY);
@@ -61,7 +69,7 @@ int main(int argc, char* argv[])
     std::cout << "Hello World" << std::endl;
 
     server::Server_Manager  server_manager;
-    server::Service_Manager service_manager;
+    server::Service_Manager service_manager(server_manager);
 
     std::unique_ptr<server::Room_Service> room_service =
         std::make_unique<server::Room_Service>(server_manager);

@@ -7,5 +7,5 @@ Service_Interface::Service_Interface(std::string root_prefix) : root_prefix(root
 Service_Interface::~Service_Interface() {}
 
 void Service_Interface::get(std::string url) {}
-void Service_Interface::post(std::string url) {}
+void Service_Interface::post(std::string url, std::string session_token) {}
 }  // namespace server
