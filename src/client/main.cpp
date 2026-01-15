@@ -200,14 +200,11 @@ int main(int argc, char* argv[])
             std::lock_guard<std::mutex> lock(mtx);
             client_running.at(1) = true;
         }
-        std::thread client2_thread = std::thread(
-            [](engine::Engine& engine) { client_process(engine, 1); }, std::ref(engine));
         // client_running.at(1)       = true;
         // std::thread client2_thread = std::thread(
         //     [](engine::Engine& engine) { client_process(engine, 1); }, std::ref(engine));
 
 
-        client_running.at(1)       = true;
         std::thread client_AI_1_thread = std::thread(
             [](engine::Engine& engine) { ai_process(engine, 1); }, std::ref(engine));
 

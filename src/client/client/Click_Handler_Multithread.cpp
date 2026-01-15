@@ -196,10 +196,9 @@ void Click_Handler_Multithread::handle_button_area_click(
         int                 available_units = state.get_free_units_number(actioning_player.id);
         if (price > available_units)
         {
-            int dice_units = state.roll_dice_for_bonus_units();
-            std::cout << "No more area attackable, rolled the dice : " << dice_units << std::endl;
+            std::cout << "No more area attackable, rolled the dice." << std::endl;
             auto command = std::make_unique<engine::Conquer_Command>(
-                actioning_player.id, client.get_selected_area_id(), available_units, dice_units);
+                actioning_player.id, client.get_selected_area_id(), available_units, true);
             Json::Value command_json;
             command->to_json(command_json);
             engine.add_command(command_json);
@@ -207,7 +206,7 @@ void Click_Handler_Multithread::handle_button_area_click(
         else
         {
             auto command = std::make_unique<engine::Conquer_Command>(
-                actioning_player.id, client.get_selected_area_id(), price, -1);
+                actioning_player.id, client.get_selected_area_id(), price, false);
             Json::Value command_json;
             command->to_json(command_json);
             engine.add_command(command_json);

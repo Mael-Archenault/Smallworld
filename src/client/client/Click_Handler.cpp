@@ -187,17 +187,16 @@ void Click_Handler::handle_button_area_click(
         int available_units = state.get_free_units_number(state.get_current_player().id);
         if (price > available_units)
         {
-            int dice_units = state.roll_dice_for_bonus_units();
-            std::cout << "No more area attackable, rolled the dice : " << dice_units << std::endl;
+            std::cout << "No more area attackable, rolled the dice." << std::endl;
             auto command = std::make_unique<engine::Conquer_Command>(state.get_current_player().id,
                                                                      client.get_selected_area_id(),
-                                                                     available_units, dice_units);
+                                                                     available_units, true);
             engine.add_command(std::move(command));
         }
         else
         {
             auto command = std::make_unique<engine::Conquer_Command>(
-                state.get_current_player().id, client.get_selected_area_id(), price, -1);
+                state.get_current_player().id, client.get_selected_area_id(), price, false);
             engine.add_command(std::move(command));
         }
         return;

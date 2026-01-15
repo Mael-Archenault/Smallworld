@@ -32,6 +32,7 @@ std::pair<int,std::stack<std::shared_ptr<engine::Command>>> Ai_Advanced::calcul_
         engine.add_command(command);
         try {
             engine.update(); // problem with state when going to Engine
+            new_state = engine.get_state().deep_copy();
         }
         catch (std::invalid_argument &e) {
             std::cout<<e.what()<<std::endl;
@@ -60,10 +61,10 @@ std::pair<int,std::stack<std::shared_ptr<engine::Command>>> Ai_Advanced::calcul_
         std::pair<float,std::stack<std::shared_ptr<engine::Command>>> new_node_value_command = calcul_stack(command, engine.get_state().deep_copy());
         engine.set_state(new_state);    //TO move ?
 
-        if (required_units - available_units > 0) {     //check if dice was needed, in which case the gain is multiplied by the probability
-            float current_gain = state.get_current_player().get_money();
-            new_node_value_command.first = current_gain + (new_node_value_command.first - current_gain) * unit_to_proba(required_units - available_units) ;
-        }
+        // if (required_units - available_units > 0) {     //check if dice was needed, in which case the gain is multiplied by the probability
+        //     float current_gain = state.get_current_player().get_money();    //TODO check if the ponderation works properly
+        //     new_node_value_command.first = current_gain + (new_node_value_command.first - current_gain) * unit_to_proba(required_units - available_units) ;
+        // }
 
 
         if (current_best_node_value_command.first < new_node_value_command.first) {
