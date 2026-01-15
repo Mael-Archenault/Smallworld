@@ -20,8 +20,8 @@ BOOST_AUTO_TEST_CASE(Test_Tritons_Species)
     state::Tribe tribe(0, new effects::Tritons_Species(),
                        new effects::Power_Description("Test Power", 3));
 
-    area0.set_owner_tribe(&tribe);
-    area2.set_owner_tribe(&tribe);
+    area0.change_owner(&tribe);
+    area2.change_owner(&tribe);
 
     owned_areas.push_back(&area1);
     owned_areas.push_back(&area3);

@@ -50,6 +50,7 @@ void Engine::update()
 
     // removing command from queue
     command_queue.pop();
+    state.new_version_id();
 }
 
 void Engine::remove_last_command()
@@ -61,5 +62,21 @@ state::Game_State& Engine::get_state()
 {
     return state;
 }
+int Engine::get_state_version_id()
+{
+    return state.get_version_id();
+}
 
+void Engine::add_command(Json::Value command_json)
+{
+    std::unique_ptr<Command> command = Command::create_from_json(command_json);
+    command_queue.push(std::move(command));
+}
+
+Json::Value Engine::get_state_json()
+{
+    Json::Value root;
+    state.to_json(root);
+    return root;
+}
 }  // namespace engine

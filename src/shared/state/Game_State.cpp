@@ -13,7 +13,9 @@ Game_State::Game_State(int n_players, std::vector<std::string> names)
       map("4_players"),
       names(names),
       tribe_stack(n_players),
-      current_turn_phase(Turn_Phase::START)
+      current_turn_phase(Turn_Phase::START),
+      version_id(0)
+
 {
     for (int i = 0; i < n_players; i++)
     {
@@ -244,10 +246,11 @@ Game_State Game_State::deep_copy()
     Game_State copy(n_players, names);
     copy.round              = round;
     copy.current_turn_phase = current_turn_phase;
+    copy.version_id         = version_id;
     copy.tribe_stack        = tribe_stack.deep_copy();
     copy.map                = map.deep_copy();
 
-    // restoring owner tribe in areas
+    // restoring owning link area <-> tribe
     for (Area& area : map.get_areas())
     {
         Area& area_copy = copy.map.get_area(area.id);
@@ -268,6 +271,8 @@ Game_State Game_State::deep_copy()
     // restoring current player
 
     copy.current_player = &copy.players.at(current_player->id);
+
+    // restoring players attributes
 
     for (size_t i = 0; i < players.size(); i++)
     {
@@ -305,5 +310,117 @@ Game_State Game_State::deep_copy()
     }
 
     return copy;
+}
+
+void Game_State::to_json(Json::Value& root)
+{
+    root["n_players"]          = n_players;
+    root["round"]              = round;
+    root["current_turn_phase"] = static_cast<int>(current_turn_phase);
+    root["current_player_id"]  = current_player->id;
+    root["version_id"]         = version_id;
+    for (const auto& name : names)
+    {
+        root["names"].append(name);
+    }
+
+    Json::Value map_json;
+    map.to_json(map_json);
+    root["map"] = map_json;
+
+    Json::Value players_json(Json::objectValue);
+    for (Player& player : players)
+    {
+        Json::Value player_json;
+        player.to_json(player_json);
+        players_json[std::to_string(player.id)] = player_json;
+    }
+    root["players"] = players_json;
+
+    Json::Value tribe_stack_json;
+    tribe_stack.to_json(tribe_stack_json);
+    root["tribe_stack"] = tribe_stack_json;
+}
+void Game_State::from_json(Json::Value& root)
+{
+    n_players          = root["n_players"].asInt();
+    round              = root["round"].asInt();
+    current_turn_phase = static_cast<Turn_Phase>(root["current_turn_phase"].asInt());
+    version_id         = root["version_id"].asInt();
+
+    names.clear();
+    for (const auto& name_json : root["names"])
+    {
+        names.push_back(name_json.asString());
+    }
+
+    Json::Value tribe_stack_json = root["tribe_stack"];
+    tribe_stack.from_json(tribe_stack_json);
+
+    Json::Value map_json = root["map"];
+    map.from_json(map_json);
+
+    // restore owning link area <-> tribe
+
+    Json::Value areas_json = root["map"]["areas"];
+    for (const auto& s : areas_json.getMemberNames())
+    {
+        int         area_id   = std::stoi(s);
+        Json::Value area_json = areas_json[s];
+        if (area_json["owner_tribe_id"].asInt() != -1)
+        {
+            int   owner_tribe_id = area_json["owner_tribe_id"].asInt();
+            Area& area_copy      = map.get_area(area_id);
+            for (Tribe* tribe : tribe_stack.get_in_game_tribes())
+            {
+                if (tribe->id == owner_tribe_id)
+                {
+                    area_copy.set_owner_tribe(tribe);
+                    tribe->add_to_owned_areas(&area_copy);
+                }
+            }
+        }
+    }
+
+    players.clear();
+    players.reserve(n_players);
+    for (int i = 0; i < n_players; i++)
+    {
+        players.push_back(Player(i, names.at(i)));
+    }
+    Json::Value players_json = root["players"];
+    for (auto& key : players_json.getMemberNames())
+    {
+        Json::Value player_json = players_json[key];
+        players.at(player_json["id"].asInt()).from_json(player_json);
+        // reconstructing active tribe and tribe in decline
+        Player& player = players.at(player_json["id"].asInt());
+        for (Tribe* tribe : tribe_stack.get_in_game_tribes())
+        {
+            if (player_json["active_tribe_id"].asInt() == tribe->id)
+            {
+                player.set_active_tribe(tribe);
+                tribe->set_owner(&player);
+            }
+            if (player_json["tribe_in_decline_id"].asInt() == tribe->id)
+            {
+                player.set_in_decline_tribe(tribe);
+                tribe->set_owner(&player);
+            }
+        }
+    }
+
+    // restoring current_player
+    current_player = &players.at(root["current_player_id"].asInt());
+}
+
+int Game_State::get_version_id()
+{
+    return version_id;
+}
+
+void Game_State::new_version_id()
+{
+    version_id++;
 }
 }  // namespace state

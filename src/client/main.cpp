@@ -25,10 +25,14 @@ void testSFML()
 
 void engine_process(engine::Engine& engine)
 {
-    while (engine_running)
+    while (true)
     {
         {
             std::lock_guard<std::mutex> lock(mtx);
+            if (!engine_running)
+            {
+                break;
+            }
             try
             {
                 engine.update();
@@ -183,12 +187,21 @@ int main(int argc, char* argv[])
         std::thread engine_thread =
             std::thread([](engine::Engine& engine) { engine_process(engine); }, std::ref(engine));
 
-        client_running.at(0)       = true;
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            client_running.at(0) = true;
+        }
         std::thread client1_thread = std::thread(
             [](engine::Engine& engine) { client_process(engine, 0); }, std::ref(engine));
 
 
         sleep(1);
+        {
+            std::lock_guard<std::mutex> lock(mtx);
+            client_running.at(1) = true;
+        }
+        std::thread client2_thread = std::thread(
+            [](engine::Engine& engine) { client_process(engine, 1); }, std::ref(engine));
         // client_running.at(1)       = true;
         // std::thread client2_thread = std::thread(
         //     [](engine::Engine& engine) { client_process(engine, 1); }, std::ref(engine));

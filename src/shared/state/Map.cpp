@@ -146,4 +146,57 @@ Map Map::deep_copy()
     return copy;
 }
 
+void Map::to_json(Json::Value& root)
+{
+    root["name"]      = name;
+    root["max_round"] = max_round;
+
+    Json::Value areas_json(Json::objectValue);
+    for (Area& area : areas)
+    {
+        Json::Value area_json;
+        area.to_json(area_json);
+        areas_json[std::to_string(area.id)] = area_json;
+    }
+    root["areas"] = areas_json;
+
+    for (int id = 0; id < area_connections.size(); ++id)
+    {
+        Json::Value connections_json(Json::arrayValue);
+        for (int neighbor_id : area_connections.at(id))
+        {
+            connections_json.append(neighbor_id);
+        }
+        root["area_connections"][std::to_string(id)] = connections_json;
+    }
+}
+
+void Map::from_json(Json::Value& root)
+{
+    name      = root["name"].asString();
+    max_round = root["max_round"].asInt();
+
+    Json::Value areas_json = root["areas"];
+    for (const auto& s : areas_json.getMemberNames())
+    {
+        int         area_id   = std::stoi(s);
+        Json::Value area_json = areas_json[s];
+        areas.at(area_id).from_json(area_json);
+    }
+
+    // restoring neighbors
+
+    Json::Value area_connections_json = root["area_connections"];
+    area_connections.clear();
+    for (const auto& s : area_connections_json.getMemberNames())
+    {
+        int         area_id          = std::stoi(s);
+        Json::Value connections_json = area_connections_json[s];
+        for (const auto& neighbor_id_val : connections_json)
+        {
+            int neighbor_id = neighbor_id_val.asInt();
+            areas.at(area_id).add_neighbor(&areas.at(neighbor_id));
+        }
+    }
+}
 }  // namespace state

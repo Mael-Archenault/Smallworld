@@ -84,8 +84,8 @@ void client_process(engine::Engine& engine, int player_id)  // contains 2 thread
 
 int main(int argc, char* argv[])
 {
-    int                      nb_players    = 2;
-    std::vector<std::string> names         = {"Mael", "Alice"};
+    int                      nb_players    = 3;
+    std::vector<std::string> names         = {"Mael", "Victor", "Tarek"};
     std::vector<int>         victory_count = std::vector<int>(nb_players);
     int                      nb_of_games   = 1;
 

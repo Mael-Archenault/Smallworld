@@ -18,8 +18,8 @@ BOOST_AUTO_TEST_CASE(Test_Humans_Species)
 
     state::Tribe tribe(0, new effects::Giants_Species(),
                        new effects::Power_Description("Test Power", 3));
-    area1.set_owner_tribe(&tribe);
-    area3.set_owner_tribe(&tribe);
+    area1.change_owner(&tribe);
+    area3.change_owner(&tribe);
 
     area1.add_neighbor(&area2);
     area3.add_neighbor(&area4);

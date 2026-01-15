@@ -21,6 +21,8 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 
         engine.update();  // empty queue
 
+        BOOST_CHECK_EQUAL(engine.get_state_version_id(), 0);
+
         engine.add_command(std::make_unique<engine::Start_Conquest_Command>(0));  // no active tribe
         BOOST_CHECK_THROW(engine.update(), std::runtime_error);
         engine.remove_last_command();
@@ -168,11 +170,16 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
         engine.update();
         state = state::Game_State(engine.get_state());
 
-        // start conquests for player 1
+        // start conquests for player 1 (using serial version)
 
-        engine.add_command(
-            std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id));
+        std::unique_ptr<engine::Command> command =
+            std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id);
+        Json::Value command_json;
+        command->to_json(command_json);
+        engine.add_command(command_json);
         engine.update();
-        state = state::Game_State(engine.get_state());
+        state = engine.get_state().deep_copy();
+
+        engine.get_state_json();
     }
 }

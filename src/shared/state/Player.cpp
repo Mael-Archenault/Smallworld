@@ -140,4 +140,36 @@ void Player::set_money(int new_money)
     money = new_money;
 }
 
+void Player::to_json(Json::Value& root)
+{
+    root["id"]    = id;
+    root["name"]  = name;
+    root["money"] = money;
+
+    if (active_tribe != nullptr)
+    {
+        root["active_tribe_id"] = active_tribe->id;
+    }
+    else
+    {
+        root["active_tribe_id"] = -1;
+    }
+
+    if (tribe_in_decline != nullptr)
+    {
+        root["tribe_in_decline_id"] = tribe_in_decline->id;
+    }
+    else
+    {
+        root["tribe_in_decline_id"] = -1;
+    }
+}
+
+void Player::from_json(Json::Value& root)
+{
+    id    = root["id"].asInt();
+    name  = root["name"].asString();
+    money = root["money"].asInt();
+}
+
 }  // namespace state

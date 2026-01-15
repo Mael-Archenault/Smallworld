@@ -49,7 +49,10 @@ int Client_Multithread::run()
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed) window.close();
+            if (event.type == sf::Event::Closed)
+            {
+                window.close();
+            }
 
             // When window is resized:
             if (event.type == sf::Event::Resized)
@@ -84,6 +87,7 @@ int Client_Multithread::run()
         }
 
         window.display();
+        usleep(1000000 / 60);  // limit to 60 fps
     }
 
     return 0;
@@ -132,7 +136,13 @@ engine::Engine& Client_Multithread::get_engine()
 
 void Client_Multithread::update_state()
 {
-    state = engine.get_state().deep_copy();
+    if (engine.get_state_version_id() == state.get_version_id())
+    {
+        return;
+    }
+    Json::Value root;
+    root = engine.get_state_json();
+    state.from_json(root);
 }
 
 int Client_Multithread::get_player_id()

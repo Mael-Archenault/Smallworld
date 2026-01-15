@@ -71,13 +71,13 @@ BOOST_AUTO_TEST_CASE(testarea)
     BOOST_CHECK_EQUAL(ret_neighbors.size(), 1);
     BOOST_CHECK(ret_neighbors.at(0) == &neighbor);
 
-    // test set_owner_tribe
+    // test change_owner
     effects::Species_Description species1("Trolls", 5, 10);
     effects::Power_Description   power1("Berserk", 4);
 
     state::Tribe tribe(0, &species1, &power1);
 
-    area.set_owner_tribe(&tribe);
+    area.change_owner(&tribe);
     int price = area.get_conquest_price(tribe);
 
     BOOST_CHECK(price > 0);

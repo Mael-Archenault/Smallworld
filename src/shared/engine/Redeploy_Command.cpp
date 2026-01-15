@@ -1,4 +1,5 @@
 #include <iostream>
+#include <json/json.h>
 #include <stdexcept>
 
 #include "engine.h"
@@ -36,6 +37,25 @@ void Redeploy_Command::execute(state::Game_State& state)
 int Redeploy_Command::get_id()
 {
     return id;
+}
+
+void Redeploy_Command::to_json(Json::Value& root)
+{
+    root["command_name"] = "Redeploy_Command";
+    root["area_id"]      = area_id;
+    root["added_units"]  = added_units;
+    root["player_id"]    = player_id;
+}
+
+void Redeploy_Command::from_json(Json::Value& root)
+{
+    if (root["command_name"] != "Redeploy_Command")
+    {
+        throw std::invalid_argument("Redeploy_Command::from_json: command_name mismatch");
+    }
+    area_id     = root["area_id"].asInt();
+    added_units = root["added_units"].asInt();
+    set_player_id(root["player_id"].asInt());
 }
 
 }  // namespace engine

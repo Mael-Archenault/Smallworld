@@ -2,8 +2,10 @@
 
 #include <ai/Ai_Heuristic.h>
 #include <ai/Ai_Random.h>
+#include <unistd.h>
 
 #include <cmath>
+#include <fstream>
 #include <iostream>
 #include <mutex>
 
@@ -22,9 +24,6 @@ Client::Client(engine::Engine& engine)
     selected_area_id         = 0;
     tribe_info_window_opened = false;
     renderer.set_selected_area(selected_area_id);
-    // ais = std::vector<ai::Ai_Interface*>({new ai::Ai_Random(&state,1), new
-    // ai::Ai_Heuristic(&state,0)});
-    ais = std::vector<ai::Ai_Interface*>();
 }
 
 int Client::run()
@@ -48,73 +47,40 @@ int Client::run()
     while (window.isOpen())
     {
         bool is_ai_turn = false;
-        for (auto ai : ais)
+
+        sf::Event event;
+        while (window.pollEvent(event))
         {
-            if (ai->id == state.get_current_player().id)
+            if (event.type == sf::Event::Closed) window.close();
+
+            // When window is resized:
+            if (event.type == sf::Event::Resized)
             {
-                is_ai_turn = true;
-                ai->update_state(state);
-                engine.add_command(ai->give_command(state.get_current_turn_phase()));
+                // Reset the view to match the new window size
                 event_happened = true;
-                // sf::sleep(sf::seconds(1));
+                view.setSize(event.size.width, event.size.height);
+                view.setCenter(event.size.width / 2.f, event.size.height / 2.f);
+                window.setView(view);
             }
-        }
 
-        if (!is_ai_turn)
-        {
-            sf::Event event;
-            while (window.pollEvent(event))
+            // handle click
+
+            if (event.type == sf::Event::MouseButtonPressed && mouse_clicked == false)
             {
-                if (event.type == sf::Event::Closed) window.close();
-
-                // When window is resized:
-                if (event.type == sf::Event::Resized)
+                event_happened         = true;
+                mouse_clicked          = true;
+                sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+                // handle_mouse_click(mouse_pos);
                 {
-                    // Reset the view to match the new window size
-                    event_happened = true;
-                    view.setSize(event.size.width, event.size.height);
-                    view.setCenter(event.size.width / 2.f, event.size.height / 2.f);
-                    window.setView(view);
-                }
-
-                // handle click
-
-                if (event.type == sf::Event::MouseButtonPressed && mouse_clicked == false)
-                {
-                    event_happened         = true;
-                    mouse_clicked          = true;
-                    sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-                    // handle_mouse_click(mouse_pos);
-                    {
-                        std::lock_guard<std::mutex> lock(mtx);
-                        click_handler.handle_click(mouse_pos);
-                    }
-                }
-                if (event.type == sf::Event::MouseButtonReleased)
-                {
-                    mouse_clicked = false;
+                    std::lock_guard<std::mutex> lock(mtx);
+                    click_handler.handle_click(mouse_pos);
                 }
             }
+            if (event.type == sf::Event::MouseButtonReleased)
+            {
+                mouse_clicked = false;
+            }
         }
-
-        // if (state.is_game_finished())
-        // {
-        //     std::cout << "Maximum rounds reached." << std::endl;
-        //     std::pair<int, int> victorious_player_money = {0, -1};
-        //     for (std::pair<int, int> player_id_money : state.get_all_player_id_money())
-        //     {
-        //         std::cout << "Player " << player_id_money.first << " has "
-        //                   << player_id_money.second << " money." << std::endl;
-        //         if (player_id_money.second >= victorious_player_money.second)
-        //         {
-        //             victorious_player_money = player_id_money;
-        //         }
-        //     }
-        //     std::cout << "\nVictory goes to " << victorious_player_money.first << ", with "
-        //               << victorious_player_money.second << " money !" << std::endl;
-        //     window.close();
-        //     return victorious_player_money.first;
-        // }
 
         window.clear(sf::Color::Black);
         {
@@ -124,6 +90,7 @@ int Client::run()
 
         window.display();
         event_happened = false;
+        usleep(1000000 / 60);  // limit to 60 fps
     }
     return 0;
 }
@@ -171,6 +138,14 @@ engine::Engine& Client::get_engine()
 
 void Client::update_state()
 {
-    state = engine.get_state().deep_copy();
-}
+    if (engine.get_state_version_id() == state.get_version_id())
+    {
+        return;
+    }
+    Json::Value root;
+    root = engine.get_state_json();
+    state.from_json(root);
+    // state = engine.get_state().deep_copy();
 }  // namespace client
+
+}
