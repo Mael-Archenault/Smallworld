@@ -96,7 +96,7 @@ void ai_process(engine::Engine& engine, int player_id)  // contains 2 threads
     // Wait for state_update_thread to exit before client object is destroyed
     state_update_thread.join();
 
-    std::cout << "Stopped client " << client.get_player_id() << std::endl;
+    std::cout << "Stopped ia " << client.get_player_id() << std::endl;
 
     // if all clients stopped running, stop engine
     {
@@ -165,8 +165,8 @@ void client_process(engine::Engine& engine, int player_id)  // contains 2 thread
 
 int main(int argc, char* argv[])
 {
-    int                      nb_players    = 3;
-    std::vector<std::string> names         = {"Mael", "Alice","Ia_Random"};
+    int                      nb_players    = 2;
+    std::vector<std::string> names         = {"Mael", "AI_Advanced"};
     std::vector<int>         victory_count = std::vector<int>(nb_players);
     int                      nb_of_games   = 1;
 
@@ -187,18 +187,19 @@ int main(int argc, char* argv[])
         std::thread client1_thread = std::thread(
             [](engine::Engine& engine) { client_process(engine, 0); }, std::ref(engine));
 
+
         sleep(1);
+        // client_running.at(1)       = true;
+        // std::thread client2_thread = std::thread(
+        //     [](engine::Engine& engine) { client_process(engine, 1); }, std::ref(engine));
+
+
         client_running.at(1)       = true;
-        std::thread client2_thread = std::thread(
-            [](engine::Engine& engine) { client_process(engine, 1); }, std::ref(engine));
-
-
-        client_running.at(2)       = true;
         std::thread client_AI_1_thread = std::thread(
-            [](engine::Engine& engine) { ai_process(engine, 2); }, std::ref(engine));
+            [](engine::Engine& engine) { ai_process(engine, 1); }, std::ref(engine));
 
         client1_thread.detach();
-        client2_thread.detach();
+        //client2_thread.detach();
         client_AI_1_thread.detach();
         engine_thread.join();
 

@@ -361,7 +361,7 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -409,7 +409,7 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="2"/>
@@ -439,7 +439,7 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="2"/>
@@ -469,7 +469,7 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="2"/>
@@ -1368,7 +1368,7 @@
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -1398,7 +1398,7 @@
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -1428,7 +1428,7 @@
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -1717,7 +1717,7 @@
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -1747,7 +1747,7 @@
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -1777,7 +1777,7 @@
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -1969,7 +1969,7 @@
             <dia:string>#command_stack#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::stack&lt;std::unique_ptr&lt;engine::Command&gt;&gt;#</dia:string>
+            <dia:string>#std::stack&lt;std::shared_ptr&lt;engine::Command&gt;&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>##</dia:string>
@@ -2085,7 +2085,7 @@
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -2115,7 +2115,7 @@
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -2145,7 +2145,7 @@
             <dia:string>#override#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+            <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -2235,7 +2235,7 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::pair&lt;int,std::stack&lt;std::unique_ptr&lt;engine::Command&gt;&gt;&gt; #</dia:string>
+            <dia:string>#std::pair&lt;int,std::stack&lt;std::shared_ptr&lt;engine::Command&gt;&gt;&gt; #</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>
@@ -2261,7 +2261,7 @@
                 <dia:string>#command#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#std::unique_ptr&lt;engine::Command&gt;#</dia:string>
+                <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>

@@ -17,7 +17,7 @@ Ai_Heuristic::Ai_Heuristic(state::Game_State state, int player_id) : Ai_Interfac
 {
 }
 
-std::unique_ptr<engine::Command> Ai_Heuristic::give_command_Start()
+std::shared_ptr<engine::Command> Ai_Heuristic::give_command_Start()
 {
     if (state.get_current_player().get_tribes().first == nullptr)
     {
@@ -32,7 +32,7 @@ std::unique_ptr<engine::Command> Ai_Heuristic::give_command_Start()
     return std::make_unique<engine::Start_Conquest_Command>(id);
 }
 
-std::unique_ptr<engine::Command> Ai_Heuristic::give_command_Conquer()
+std::shared_ptr<engine::Command> Ai_Heuristic::give_command_Conquer()
 {
     if (state.get_free_units_number(id) == 0)
     {
@@ -56,7 +56,7 @@ std::unique_ptr<engine::Command> Ai_Heuristic::give_command_Conquer()
         required_units > available_units);
 }
 
-std::unique_ptr<engine::Command> Ai_Heuristic::give_command_Redeploy()
+std::shared_ptr<engine::Command> Ai_Heuristic::give_command_Redeploy()
 {
     int                 free_units_number = state.get_free_units_number(id);
     std::vector<int>    areas             = state.get_redeployable_areas(id);

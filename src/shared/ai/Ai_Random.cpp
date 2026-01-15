@@ -15,7 +15,7 @@ namespace ai
 
 Ai_Random::Ai_Random(state::Game_State state, int player_id) : Ai_Interface(state, player_id) {}
 
-std::unique_ptr<engine::Command> Ai_Random::give_command_Start()
+std::shared_ptr<engine::Command> Ai_Random::give_command_Start()
 {
     std::random_device rd;
     if (state.get_current_player().get_tribes().first == nullptr)
@@ -36,7 +36,7 @@ std::unique_ptr<engine::Command> Ai_Random::give_command_Start()
     }
 }
 
-std::unique_ptr<engine::Command> Ai_Random::give_command_Conquer()
+std::shared_ptr<engine::Command> Ai_Random::give_command_Conquer()
 {
     std::random_device rd;
     std::mt19937       rng(rd());
@@ -65,7 +65,7 @@ std::unique_ptr<engine::Command> Ai_Random::give_command_Conquer()
     }
 }
 
-std::unique_ptr<engine::Command> Ai_Random::give_command_Redeploy()
+std::shared_ptr<engine::Command> Ai_Random::give_command_Redeploy()
 {
     std::random_device rd;
     std::mt19937       rng(rd());
