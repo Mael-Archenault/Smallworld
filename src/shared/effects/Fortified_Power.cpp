@@ -46,4 +46,18 @@ int Fortified_Power::get_nb_of_special_tokens()
     return number_of_fortress;
 }
 
+void Fortified_Power::disappearing_effect(std::vector<state::Area*> owned_areas)
+{
+    for (state::Area* area : owned_areas)
+    {
+        auto& tokens = area->get_special_tokens();
+        auto  it = std::find(tokens.begin(), tokens.end(), state::Area_Special_Token::FORTRESS);
+        if (it != tokens.end())
+        {
+            tokens.erase(it);
+        }
+    }
+    number_of_fortress = 0;
+}
+
 }
