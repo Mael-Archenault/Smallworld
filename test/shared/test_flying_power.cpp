@@ -3,11 +3,20 @@
 #include "effects.h"
 #include "state.h"
 
-   std::vector<state::Area*> owned_areas;
-    state::Area               area1(0, 5, state::Area_Biome::FOREST, {}, false);
-    state::Area               area2(1, 3, state::Area_Biome::HILL, {}, false);
-    state::Area               area3(2, 4, state::Area_Biome::FARM, {}, false);
+BOOST_AUTO_TEST_CASE(Test_Flying_Power)
+{
+   effects::Flying_Power flying;
 
-    owned_areas.pushback(area1);
+   state::Map map("4_players");
 
-    
+   auto prices = flying.conquest_prices_effect({}, {}, &map);
+
+   BOOST_CHECK_EQUAL(flying.conquest_prices_effect({}, {}, &map).size(),
+                      36);
+
+   for (const auto& price_info : prices)
+   {
+     state::Area& area = map.get_area(price_info.first);
+     BOOST_CHECK(area.get_biome() != state::Area_Biome::WATER);
+   }
+}
