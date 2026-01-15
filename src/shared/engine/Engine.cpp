@@ -69,7 +69,7 @@ int Engine::get_state_version_id()
 
 void Engine::add_command(Json::Value command_json)
 {
-    std::unique_ptr<Command> command = Command::create_from_json(command_json);
+    std::shared_ptr<Command> command = Command::create_from_json(command_json);
     command_queue.push(std::move(command));
 }
 
