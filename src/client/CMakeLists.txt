@@ -40,6 +40,14 @@ if(BUILD_CODE_COVERAGE)
   add_dependencies(code-coverage ${client_target})
 endif()
 
+# Compile "temp" executable
+set(client_target temp)
+add_executable(${client_target} temp.cpp)
+target_link_libraries(${client_target} ${lib_client_target})
+if(BUILD_CODE_COVERAGE)
+  add_dependencies(code-coverage ${client_target})
+endif()
+
 
 # vim: set sw=2 sts=2 et:
 

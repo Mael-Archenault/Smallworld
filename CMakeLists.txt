@@ -121,7 +121,7 @@ find_library(
 # Add source subdirectories
 add_subdirectory(src/shared)
 add_subdirectory(src/client)
-#add_subdirectory(src/server)
+add_subdirectory(src/server)
 
 # Configure a header containing the resource directory so C++ code can
 # reference graphic assets portably (no hard-coded /home/... paths).

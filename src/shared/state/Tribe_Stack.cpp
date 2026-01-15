@@ -194,6 +194,7 @@ void Tribe_Stack::from_json(Json::Value& root)
             if (species->get_name() == tribe_json["species_description_name"].asString())
             {
                 in_game_tribes.back().set_species_description(species.get());
+
                 break;
             }
         }

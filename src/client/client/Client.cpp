@@ -4,6 +4,7 @@
 #include <ai/Ai_Random.h>
 #include <unistd.h>
 
+#include <SFML/Network.hpp>
 #include <cmath>
 #include <fstream>
 #include <iostream>
@@ -28,7 +29,7 @@ Client::Client(engine::Engine& engine)
 
 int Client::run()
 {
-    // first rendering
+        // first rendering
     sf::Event e;
     while (window.pollEvent(e))
     {
@@ -148,4 +149,4 @@ void Client::update_state()
     // state = engine.get_state().deep_copy();
 }  // namespace client
 
-}
+}  // namespace client
