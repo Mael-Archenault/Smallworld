@@ -5,7 +5,7 @@
 
 BOOST_AUTO_TEST_CASE(Tribe_Stack_Test)
 {
-    state::Tribe_Stack ts;
+    state::Tribe_Stack ts(1);
     auto               top = ts.get_tribes_on_top();
     BOOST_CHECK_EQUAL(top.size(), 6);
 
@@ -16,12 +16,12 @@ BOOST_AUTO_TEST_CASE(Tribe_Stack_Test)
 
     BOOST_CHECK_THROW(ts.take_tribe_at_position(6), std::out_of_range);
 
-    // taking all tribes out of the stack
-    while (ts.get_tribes_on_top().size() > 0)
+    // trying the infinite tribe generation
+    int iterations = 100;
+    for (int i = 0; i < iterations; i++)
     {
         state::Tribe* p = ts.take_tribe_at_position(0);
         BOOST_CHECK(p != nullptr);
+        ts.remove_from_in_game_tribes(p->id);
     }
-
-    BOOST_CHECK_THROW(ts.take_tribe_at_position(0), std::out_of_range);
 }

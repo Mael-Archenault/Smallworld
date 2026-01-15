@@ -9,7 +9,9 @@
 #include "Game_State.h"
 #include "Map.h"
 #include "effects.h"
-using namespace state;
+
+namespace state
+{
 
 Tribe::Tribe(int id, effects::Species_Description* base_species_description,
              effects::Power_Description* base_power_description)
@@ -18,11 +20,18 @@ Tribe::Tribe(int id, effects::Species_Description* base_species_description,
       power_description(base_power_description),
       owner(nullptr)
 {
-    owned_areas = std::vector<Area*>();
-    in_decline  = false;
+    owned_areas   = std::vector<Area*>();
+    is_in_decline = false;
 
-    free_units_number = species_description->get_initial_units_number() +
-                        power_description->get_initial_units_number();
+    free_units_number = 0;
+    if (species_description != nullptr)
+    {
+        free_units_number += species_description->get_initial_units_number();
+    }
+    if (power_description != nullptr)
+    {
+        free_units_number += power_description->get_initial_units_number();
+    }
 }
 
 effects::Species_Description* Tribe::get_species_description()
@@ -40,7 +49,7 @@ void Tribe::gather_free_units(Turn_Phase turn_phase)
     for (size_t i = 0; i < owned_areas.size(); i++)
     {
         // Remove all units except one from each area and add them to free_units_number
-        free_units_number += owned_areas[i]->gather_free_units();
+        free_units_number += owned_areas.at(i)->gather_free_units();
     }
     // apply effect
     if (turn_phase == Turn_Phase::CONQUER)
@@ -97,7 +106,7 @@ std::vector<std::pair<int, int>> Tribe::get_conquest_prices(Map* map)
     return prices;
 }
 
-std::vector<int> Tribe::get_redeployable_areas()
+std::vector<int> Tribe::get_owned_areas()
 {
     std::vector<int> area_ids;
     area_ids.reserve(owned_areas.size());
@@ -106,6 +115,11 @@ std::vector<int> Tribe::get_redeployable_areas()
         area_ids.push_back(area->id);
     }
     return area_ids;
+}
+
+std::vector<int> Tribe::get_redeployable_areas()
+{
+    return get_owned_areas();
 }
 
 void Tribe::redeploy_units(int area_id, int n_added_units)
@@ -117,9 +131,9 @@ void Tribe::redeploy_units(int area_id, int n_added_units)
     // Find the area by ID
     for (size_t i = 0; i < owned_areas.size(); i++)
     {
-        if (owned_areas[i]->id == area_id)
+        if (owned_areas.at(i)->id == area_id)
         {
-            owned_areas[i]->deploy_units(n_added_units);
+            owned_areas.at(i)->deploy_units(n_added_units);
             free_units_number -= n_added_units;
             return;
         }
@@ -151,7 +165,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
         {
             power_description->conquest_effect(attacked_area);
             species_description->conquest_effect(attacked_area);
-            attacked_area->set_owner_tribe(this);
+            attacked_area->change_owner(this);
             attacked_area->set_units_number(n_units);
             free_units_number -= n_units;
             owned_areas.push_back(attacked_area);
@@ -169,7 +183,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
     }
     power_description->conquest_effect(attacked_area);
     species_description->conquest_effect(attacked_area);
-    attacked_area->set_owner_tribe(this);
+    attacked_area->change_owner(this);
     attacked_area->set_units_number(n_units);
     free_units_number -= n_units;
     owned_areas.push_back(attacked_area);
@@ -177,7 +191,7 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
 
 void Tribe::go_in_decline()
 {
-    in_decline = true;
+    is_in_decline = true;
     species_description->decline_effect(owned_areas);
     power_description->decline_effect(owned_areas);
 
@@ -187,11 +201,15 @@ void Tribe::go_in_decline()
         area->gather_free_units();
     }
 }
+
+void Tribe::set_is_in_decline(bool new_state)
+{
+    is_in_decline = new_state;
+}
 int Tribe::get_rewards()
 {
     int total_rewards = owned_areas.size() + species_description->rewards_effect(owned_areas) +
                         power_description->rewards_effect(owned_areas);
-    std::cout << total_rewards << std::endl;
     return total_rewards;
 }
 
@@ -204,9 +222,9 @@ std::string Tribe::get_power_name()
     return power_description->get_name();
 }
 
-bool Tribe::is_in_decline()
+bool Tribe::get_is_in_decline()
 {
-    return in_decline;
+    return is_in_decline;
 }
 
 void Tribe::remove_from_map()
@@ -216,7 +234,7 @@ void Tribe::remove_from_map()
     std::vector<Area*> copy(owned_areas);
     for (auto& area : copy)
     {
-        area->set_owner_tribe(nullptr);
+        area->change_owner(nullptr);
         area->clear_units();
     }
 }
@@ -247,3 +265,59 @@ void Tribe::set_owner(Player* player)
 {
     owner = player;
 }
+
+void Tribe::set_species_description(effects::Species_Description* species_desc)
+{
+    species_description = species_desc;
+}
+
+void Tribe::set_power_description(effects::Power_Description* power_desc)
+{
+    power_description = power_desc;
+}
+
+void Tribe::set_free_units_number(int units_number)
+{
+    free_units_number = units_number;
+}
+
+void Tribe::add_to_owned_areas(Area* area)
+{
+    owned_areas.push_back(area);
+}
+
+Tribe Tribe::deep_copy()
+{
+    Tribe copy(id, nullptr, nullptr);
+    copy.free_units_number = free_units_number;
+    copy.is_in_decline     = is_in_decline;
+    copy.owner             = nullptr;
+    return copy;
+}
+
+void Tribe::to_json(Json::Value& root)
+{
+    root["id"]                       = id;
+    root["is_in_decline"]            = is_in_decline;
+    root["free_units_number"]        = free_units_number;
+    root["species_description_name"] = species_description->get_name();
+    root["power_description_name"]   = power_description->get_name();
+
+    Json::Value owned_areas_json(Json::arrayValue);
+    for (Area* area : owned_areas)
+    {
+        owned_areas_json.append(area->id);
+    }
+    root["owned_areas"] = owned_areas_json;
+}
+
+void Tribe::from_json(Json::Value& root)
+{
+    id                = root["id"].asInt();
+    is_in_decline     = root["is_in_decline"].asBool();
+    free_units_number = root["free_units_number"].asInt();
+
+    owned_areas.clear();
+}
+
+}  // namespace state

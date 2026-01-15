@@ -6,7 +6,7 @@
 namespace state
 {
 
-Player::Player(int id) : id(id)
+Player::Player(int id, std::string name) : id(id), name(name)
 {
     money            = 5;
     active_tribe     = nullptr;
@@ -101,7 +101,7 @@ void Player::go_in_decline()
     throw std::invalid_argument("go_in_decline:there is no active tribe for this player");
 }
 
-void Player::set_active_tribe(Tribe* tribe, int cost)
+void Player::choose_active_tribe(Tribe* tribe, int cost)
 {
     if (money < cost)
     {
@@ -109,6 +109,15 @@ void Player::set_active_tribe(Tribe* tribe, int cost)
     }
     money -= cost;
     active_tribe = tribe;
+}
+void Player::set_active_tribe(Tribe* tribe)
+{
+    active_tribe = tribe;
+}
+
+void Player::set_in_decline_tribe(Tribe* tribe)
+{
+    tribe_in_decline = tribe;
 }
 
 std::pair<Tribe*, Tribe*> Player::get_tribes()
@@ -119,6 +128,48 @@ std::pair<Tribe*, Tribe*> Player::get_tribes()
 int Player::get_money()
 {
     return money;
+}
+
+std::string Player::get_name()
+{
+    return name;
+}
+
+void Player::set_money(int new_money)
+{
+    money = new_money;
+}
+
+void Player::to_json(Json::Value& root)
+{
+    root["id"]    = id;
+    root["name"]  = name;
+    root["money"] = money;
+
+    if (active_tribe != nullptr)
+    {
+        root["active_tribe_id"] = active_tribe->id;
+    }
+    else
+    {
+        root["active_tribe_id"] = -1;
+    }
+
+    if (tribe_in_decline != nullptr)
+    {
+        root["tribe_in_decline_id"] = tribe_in_decline->id;
+    }
+    else
+    {
+        root["tribe_in_decline_id"] = -1;
+    }
+}
+
+void Player::from_json(Json::Value& root)
+{
+    id    = root["id"].asInt();
+    name  = root["name"].asString();
+    money = root["money"].asInt();
 }
 
 }  // namespace state

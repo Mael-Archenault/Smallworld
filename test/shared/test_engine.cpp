@@ -14,12 +14,14 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
 BOOST_AUTO_TEST_CASE(Test_Engine)
 {
     {
-        state::Game_State state(2);
-        engine::Engine    engine(2);
+        state::Game_State state(2, {"Alice", "Bob"});
+        engine::Engine    engine(2, {"Alice", "Bob"});
 
         // ---------------- error testing ------------------------------
 
         engine.update();  // empty queue
+
+        BOOST_CHECK_EQUAL(engine.get_state_version_id(), 0);
 
         engine.add_command(std::make_unique<engine::Start_Conquest_Command>(0));  // no active tribe
         BOOST_CHECK_THROW(engine.update(), std::runtime_error);
@@ -41,7 +43,7 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
 
         // ---------------------- simulate game turns -------------------------
 
-        engine = engine::Engine(2);  // reset engine
+        engine = engine::Engine(2, {"Alice", "Bob"});  // reset engine
 
         // choose species for player 0
 
@@ -63,6 +65,16 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
                 {
                     attackable_areas.push_back(price_info);
                 }
+            }
+
+            if (attackable_areas.empty())
+            {
+                // no more areas can be conquered, end conquest phase
+                engine.add_command(
+                    std::make_unique<engine::End_Conquer_Command>(state.get_current_player().id));
+                engine.update();
+                state = state::Game_State(engine.get_state());
+                break;
             }
 
             std::pair<int, int> area_to_attack =
@@ -158,11 +170,16 @@ BOOST_AUTO_TEST_CASE(Test_Engine)
         engine.update();
         state = state::Game_State(engine.get_state());
 
-        // start conquests for player 1
+        // start conquests for player 1 (using serial version)
 
-        engine.add_command(
-            std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id));
+        std::unique_ptr<engine::Command> command =
+            std::make_unique<engine::Start_Conquest_Command>(state.get_current_player().id);
+        Json::Value command_json;
+        command->to_json(command_json);
+        engine.add_command(command_json);
         engine.update();
-        state = state::Game_State(engine.get_state());
+        state = engine.get_state().deep_copy();
+
+        engine.get_state_json();
     }
 }
