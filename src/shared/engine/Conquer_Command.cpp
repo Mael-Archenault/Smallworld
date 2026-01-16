@@ -62,4 +62,8 @@ void Conquer_Command::from_json(Json::Value& root)
     need_dice_units       = root["need_dice_units"].asInt();
     set_player_id(root["attacking_player"].asInt());
 }
+
+int Conquer_Command::get_area_id() {
+    return attacked_area_id;
+}
 }  // namespace engine
