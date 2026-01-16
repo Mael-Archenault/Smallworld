@@ -139,6 +139,9 @@ Map Map::deep_copy()
         Area& area_copy = copy.areas.at(area.id);
         for (Area_Special_Token token : area.get_special_tokens())
         {
+            if (token == MOUNTAIN) {
+                continue;
+            }
             area_copy.add_special_token(token);
         }
         area_copy.set_units_number(area.get_units_number());
