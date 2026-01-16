@@ -3559,7 +3559,7 @@
             <dia:string>#in_game_tribes#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::vector&lt;Tribe&gt;#</dia:string>
+            <dia:string>#std::vector&lt;Tribe*&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="value">
             <dia:string>##</dia:string>
