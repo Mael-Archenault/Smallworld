@@ -24,8 +24,8 @@ void Service_Manager::register_service(std::unique_ptr<Service_Interface> servic
     services.push_back(std::move(service));
 }
 
-void Service_Manager::handle_request(std::string& in, std::string& out, std::string url,
-                                     std::string method, std::string session_token)
+Http_Status Service_Manager::handle_request(std::string& in, std::string& out, std::string url,
+                                            std::string method, std::string session_token)
 {
     // first request
 
@@ -33,7 +33,7 @@ void Service_Manager::handle_request(std::string& in, std::string& out, std::str
     {
         std::string new_session_token = server_manager.create_player();
         out                           = new_session_token;
-        return;
+        return Http_Status::OK;
     }
 
     // else
@@ -42,24 +42,33 @@ void Service_Manager::handle_request(std::string& in, std::string& out, std::str
 
     if (!is_authenticated)
     {
-        return;
+        return Http_Status::UNAUTHORIZED;
     }
 
     Player requesting_player = server_manager.get_player(session_token);
 
     Service_Interface* service = find_responsible_service(url);
+    if (!service)
+    {
+        return Http_Status::NOT_FOUND;
+    }
+    // remove prefix from url
+    std::string action = url.substr(service->get_root_prefix().size());
     if (service)
     {
         if (method == "GET")
         {
-            service->get(url);
-            out = "in response to GET " + url;
+            Http_Status status = service->get(action, session_token);
+            out                = "in response to GET " + url;
+            return status;
         }
-        else if (method == "POST")
+        if (method == "POST")
         {
-            service->post(url, session_token);
-            out = "in response to POST " + url;
+            Http_Status status = service->post(action, session_token);
+            out                = "in response to POST " + url;
+            return status;
         }
+        return Http_Status::METHOD_NOT_ALLOWED;
     }
 }
 }  // namespace server

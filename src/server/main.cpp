@@ -54,12 +54,13 @@ MHD_Result answer_to_connection(void* cls, struct MHD_Connection* connection, co
         session_token = std::string(session_token_cstr);
     }
 
-    service_manager->handle_request(in, out, url, method, session_token);
+    server::Http_Status status =
+        service_manager->handle_request(in, out, url, method, session_token);
 
     response =
         MHD_create_response_from_buffer(out.size(), (void*) out.c_str(), MHD_RESPMEM_MUST_COPY);
     // Queue the response
-    ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+    ret = MHD_queue_response(connection, static_cast<unsigned int>(status), response);
     MHD_destroy_response(response);
     return ret;
 }

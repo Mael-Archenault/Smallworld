@@ -2,17 +2,41 @@
 
 
 
-### Test
+### Connecting a player
 POST http://localhost:8888/connect
 
-### Re-test
-
+### Create a room
 POST http://localhost:8888/rooms/create
 Session-Token: fa37JncCHryDsbza
 
-
-### RE-Re-test
-POST http://localhost:8888/rooms/join/0
+###
+POST http://localhost:8888/rooms/create
 Session-Token: yy4cBWDxS22JjzhM
 
+### Get infos on a room
+GET http://localhost:8888/rooms/state/1
+Session-Token: fa37JncCHryDsbza
+
+
+### Join a room
+POST http://localhost:8888/rooms/join/1
+Session-Token: yy4cBWDxS22JjzhM
+
+###
+POST http://localhost:8888/rooms/join/1
+Session-Token: fa37JncCHryDsbza
+
+
+### Exit a room
+POST http://localhost:8888/rooms/exit/1
+Session-Token: yy4cBWDxS22JjzhM
+
+### owner exiting the room
+POST http://localhost:8888/rooms/exit/1
+Session-Token: fa37JncCHryDsbza
+
+
+### Not existing service
+GET http://localhost:8888/unknown/do_sth
+Session-Token: fa37JncCHryDsbza
 
