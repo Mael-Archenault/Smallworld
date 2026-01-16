@@ -38,7 +38,7 @@ std::unordered_map<std::string, std::function<std::shared_ptr<effects::Power_Des
         {"Berserk", []() { return std::make_shared<effects::Power_Description>("Berserk", 4); }},
         {"Bivouacking",
          []() { return std::make_shared<effects::Power_Description>("Bivouacking", 5); }},
-        {"Commando", []() { return std::make_shared<effects::Power_Description>("Commando", 4); }},
+        {"Commando", []() { return std::make_shared<effects::Commando_Power>(); }},
         {"Heroic", []() { return std::make_shared<effects::Power_Description>("Heroic", 5); }},
         {"Hill", []() { return std::make_shared<effects::Hill_Power>(); }},
         {"Merchant", []() { return std::make_shared<effects::Merchant_Power>(); }},
@@ -52,7 +52,8 @@ std::unordered_map<std::string, std::function<std::shared_ptr<effects::Power_Des
         {"Swamp", []() { return std::make_shared<effects::Swamp_Power>(); }},
         {"Underworld",
          []() { return std::make_shared<effects::Underworld_Power>(); }},
-        {"Wealthy", []() { return std::make_shared<effects::Power_Description>("Wealthy", 4); }},
+        {"Wealthy", []() { return std::make_shared<effects::Wealthy_Power>(); }},
+
         {"Diplomat", []() { return std::make_shared<effects::Power_Description>("Diplomat", 5); }},
         {"Dragon Master",
          []() { return std::make_shared<effects::Power_Description>("Dragon Master", 5); }},
