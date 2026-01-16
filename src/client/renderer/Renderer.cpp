@@ -13,9 +13,9 @@ Renderer::Renderer(state::Game_State& state, sf::RenderWindow& window)
       map_renderer(window),
       tribe_stack_renderer(window),
       player_area_renderer(window),
-      UI_renderer(window) {};
+      UI_renderer(window, state) {};
 
-void Renderer::render(state::Game_State& state)
+void Renderer::render(state::Game_State& state, int rendering_player_id)
 {
     sf::Vector2u window_size = window.getSize();
     map_renderer.render(state.get_map());
@@ -25,9 +25,10 @@ void Renderer::render(state::Game_State& state)
     tribe_stack_renderer.render(state.get_tribe_stack());
 
     player_area_renderer.set_position(sf::Vector2f(window_size.x / 6, window_size.y * 5 / 6));
-    player_area_renderer.render(state.get_current_player());
+    state::Player& rendering_player = state.get_players().at(rendering_player_id);
+    player_area_renderer.render(rendering_player);
 
-    UI_renderer.render(state);
+    UI_renderer.render(state, rendering_player_id);
 }
 
 void Renderer::set_selected_area(int area_id)
@@ -44,12 +45,7 @@ std::unordered_map<std::string, sf::FloatRect> Renderer::get_layout_infos()
     result["map"]         = map_renderer.get_layout();
     result["tribe_stack"] = tribe_stack_renderer.get_layout();
 
-    for (const auto& [key, value] : UI_renderer.get_widgets_layout())
-    {
-        result[key] = value;
-    }
-
-    for (const auto& [key, value] : UI_renderer.get_tribe_info_window_layout())
+    for (const auto& [key, value] : UI_renderer.get_layout())
     {
         result[key] = value;
     }
@@ -58,6 +54,7 @@ std::unordered_map<std::string, sf::FloatRect> Renderer::get_layout_infos()
     {
         result[key] = value;
     }
+
     return result;
 }
 
@@ -71,9 +68,9 @@ std::vector<sf::Vector2f> Renderer::get_on_screen_tribe_positions()
     return tribe_stack_renderer.get_on_screen_tribe_positions();
 }
 
-void Renderer::open_tribe_info_window(state::Tribe& tribe)
+void Renderer::open_tribe_info_window(state::Tribe& tribe, bool is_buying_possible)
 {
-    UI_renderer.open_tribe_info_window(tribe);
+    UI_renderer.open_tribe_info_window(tribe, is_buying_possible);
 }
 
 void Renderer::close_tribe_info_window()

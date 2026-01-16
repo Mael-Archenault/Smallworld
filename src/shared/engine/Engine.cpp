@@ -5,12 +5,6 @@
 
 #include "state.h"
 
-bool player_has_an_active_tribe(state::Game_State& state, int player_id)
-{
-    state::Player& player = state.get_current_player();
-    return player.get_tribes().first != nullptr;
-}
-
 namespace engine
 {
 
@@ -23,7 +17,7 @@ std::unordered_map<int, state::Turn_Phase> phase_command_map = {
     {Redeploy_Command::id, state::Turn_Phase::REDEPLOY},
     {Redeploy_Token_Command::id, state::Turn_Phase::REDEPLOY_TOKEN}};
 
-Engine::Engine(int nb_player) : state(nb_player) {};
+Engine::Engine(int nb_player, std::vector<std::string> names) : state(nb_player, names) {};
 
 void Engine::add_command(std::unique_ptr<Command> command)
 {
@@ -57,6 +51,7 @@ void Engine::update()
 
     // removing command from queue
     command_queue.pop();
+    state.new_version_id();
 }
 
 void Engine::remove_last_command()
@@ -68,5 +63,21 @@ state::Game_State& Engine::get_state()
 {
     return state;
 }
+int Engine::get_state_version_id()
+{
+    return state.get_version_id();
+}
 
+void Engine::add_command(Json::Value command_json)
+{
+    std::unique_ptr<Command> command = Command::create_from_json(command_json);
+    command_queue.push(std::move(command));
+}
+
+Json::Value Engine::get_state_json()
+{
+    Json::Value root;
+    state.to_json(root);
+    return root;
+}
 }  // namespace engine

@@ -11,11 +11,11 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
 
 BOOST_AUTO_TEST_CASE(Test_Renderer)
 {
-    state::Game_State state(1);
+    state::Game_State state(1, {"Alice"});
 
     sf::RenderWindow   window(sf::VideoMode(1720, 820), "Renderer Test",
                               sf::Style::Titlebar | sf::Style::Close);
     renderer::Renderer renderer(state, window);
 
-    renderer.render(state);
+    renderer.render(state, state.get_current_player().id);
 }

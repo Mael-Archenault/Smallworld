@@ -43,9 +43,10 @@ Tribe_Info_Window::Tribe_Info_Window(sf::RenderWindow& window) : window(window)
     buy_tribe_button.set_colors(sf::Color::White, sf::Color(100, 100, 100), sf::Color::White);
 }
 
-void Tribe_Info_Window::set_visibility(bool new_visibility)
+void Tribe_Info_Window::set_visibility(bool new_visibility, bool is_buying_possible)
 {
-    is_visible = new_visibility;
+    is_visible      = new_visibility;
+    buying_possible = is_buying_possible;
 }
 
 void Tribe_Info_Window::open_descriptions()
@@ -152,8 +153,7 @@ void Tribe_Info_Window::render(state::Game_State& state)
                      background.getPosition().y + background.getSize().y * 0.85));
 
     close_window_button.render(window);
-    if (state.get_current_turn_phase() == state::Turn_Phase::START &&
-        state.get_current_player().get_tribes().first == nullptr)
+    if (buying_possible)
     {
         buy_tribe_button.set_size(
             sf::Vector2f(background.getSize().x * 0.3, background.getSize().y * 0.1));
@@ -162,6 +162,12 @@ void Tribe_Info_Window::render(state::Game_State& state)
             sf::Vector2f(background.getPosition().x + background.getSize().x * 0.6,
                          background.getPosition().y + background.getSize().y * 0.85));
         buy_tribe_button.render(window);
+    }
+
+    else
+    {
+        buy_tribe_button.set_size(
+            sf::Vector2f(0.f, 0.f));  // making the hitbox of the button not reachable
     }
 }
 
