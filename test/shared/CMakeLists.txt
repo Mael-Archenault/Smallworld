@@ -31,5 +31,6 @@ add_custom_test(mounted_power)
 add_custom_test(underworld_power)
 add_custom_test(seafaring_power)
 add_custom_test(flying_power)
-
+add_custom_test(commando_power)
+add_custom_test(wealthy_power)
 
