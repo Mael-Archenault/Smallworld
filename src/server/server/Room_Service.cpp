@@ -28,6 +28,7 @@ Http_Status Room_Service::get(std::string& in, std::string& out, std::string url
         try
         {
             std::string room_state = server_manager.get_room_state(room_id, session_token);
+            out                    = room_state;
             std::cout << "Room state: " << room_state << std::endl;
         }
         catch (std::exception& e)

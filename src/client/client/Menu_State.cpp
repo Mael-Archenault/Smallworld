@@ -29,4 +29,12 @@ void Menu_State::handle_input(sf::Event event)
         }
     }
 }
+
+void Menu_State::render(sf::RenderWindow& window)
+{
+    window.clear(sf::Color::Black);
+    // two buttons to choose between online and local
+    // for now just text
+    sf::Font font;
+}
 }  // namespace client

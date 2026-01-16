@@ -64,8 +64,7 @@ bool Room::is_empty()
 
 std::string Room::get_state()
 {
-    std::string state =
-        "Room " + std::to_string(id) + " owned by " + owner.get_name() + " with players: ";
+    std::string state = "";
     for (auto& player : room_players)
     {
         state += player.get_name() + " ";

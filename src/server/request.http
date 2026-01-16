@@ -14,13 +14,13 @@ POST http://localhost:8888/rooms/create
 Session-Token: yy4cBWDxS22JjzhM
 
 ### Get infos on a room
-GET http://localhost:8888/rooms/state/1
+GET http://localhost:8888/rooms/state/0
 Session-Token: fa37JncCHryDsbza
 
 
 ### Join a room
-POST http://localhost:8888/rooms/join/1
-Session-Token: yy4cBWDxS22JjzhM
+POST http://localhost:8888/rooms/join/0
+Session-Token: aiRrV41mtzxlYvKW
 
 ###
 POST http://localhost:8888/rooms/join/1

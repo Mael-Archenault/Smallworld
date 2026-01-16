@@ -116,7 +116,7 @@ std::mutex& Local_Game_State::get_mutex()
     return mtx;
 }
 
-void Local_Game_State::render()
+void Local_Game_State::render(sf::RenderWindow& window)
 {
     std::lock_guard<std::mutex> lock(mtx);
     renderer.render(state, state.get_current_player().id);

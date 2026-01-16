@@ -43,7 +43,7 @@ void Client::run()
 
         window.clear(sf::Color::Black);
 
-        current_state->render();  // modifies the window
+        current_state->render(window);  // modifies the window
 
         window.display();
         usleep(1000000 / 60);  // limit to 60 fps
