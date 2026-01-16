@@ -49,7 +49,7 @@ int Server_Manager::create_room(std::string creator_session_token)
     rooms.emplace_back(next_room_id, creator);
     next_room_id++;
     creator.set_room(rooms.back().id);
-    return 0;
+    return rooms.back().id;
 }
 
 void Server_Manager::join_room(int room_id, std::string player_session_token)

@@ -58,14 +58,12 @@ Http_Status Service_Manager::handle_request(std::string& in, std::string& out, s
     {
         if (method == "GET")
         {
-            Http_Status status = service->get(action, session_token);
-            out                = "in response to GET " + url;
+            Http_Status status = service->get(in, out, action, session_token);
             return status;
         }
         if (method == "POST")
         {
-            Http_Status status = service->post(action, session_token);
-            out                = "in response to POST " + url;
+            Http_Status status = service->post(in, out, action, session_token);
             return status;
         }
         return Http_Status::METHOD_NOT_ALLOWED;

@@ -9,7 +9,8 @@ Room_Service::Room_Service(Server_Manager& server_manager)
 {
 }
 
-Http_Status Room_Service::get(std::string url, std::string session_token)
+Http_Status Room_Service::get(std::string& in, std::string& out, std::string url,
+                              std::string session_token)
 {
     if (url.find("/state/") != 0)
     {
@@ -38,18 +39,20 @@ Http_Status Room_Service::get(std::string url, std::string session_token)
     }
 }
 
-Http_Status Room_Service::post(std::string url, std::string session_token)
+Http_Status Room_Service::post(std::string& in, std::string& out, std::string url,
+                               std::string session_token)
 {
     // creating a room
     if (url == "/create")
     {
         try
         {
-            server_manager.create_room(session_token);
+            int room_id = server_manager.create_room(session_token);
+            out         = std::to_string(room_id);
         }
         catch (std::exception& e)
         {
-            std::cout << "Error while creating room: " << e.what() << std::endl;
+            out = "Error while creating room: " + std::string(e.what());
             return Http_Status::BAD_REQUEST;
         }
         return Http_Status::CREATED;
@@ -80,6 +83,7 @@ Http_Status Room_Service::post(std::string url, std::string session_token)
         }
         catch (std::exception& e)
         {
+            out = "Error while joining room: " + std::string(e.what());
             std::cout << "Error while joining room: " << e.what() << std::endl;
             return Http_Status::BAD_REQUEST;
         }
@@ -93,10 +97,12 @@ Http_Status Room_Service::post(std::string url, std::string session_token)
         }
         catch (std::exception& e)
         {
+            out = "Error while exiting room: " + std::string(e.what());
             std::cout << "Error while exiting room: " << e.what() << std::endl;
             return Http_Status::BAD_REQUEST;
         }
         return Http_Status::OK;
     }
+    return Http_Status::METHOD_NOT_ALLOWED;
 }
 }  // namespace server
