@@ -27,7 +27,7 @@ Ai_Advanced::Ai_Advanced(state::Game_State state,int player_id) : Ai_Interface(s
     engine.set_state(state);
 }
 
-std::pair<int,std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcul_stack(std::shared_ptr<engine::Command> command, state::Game_State new_state, int depth = 0) {
+std::pair<int,std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcul_stack(state::Game_State new_state, std::shared_ptr<engine::Command> command = nullptr, int depth = 0, int default_money = 0) {
     if (command != nullptr) {
         engine.add_command(command);
         try {
@@ -60,7 +60,7 @@ std::pair<int,std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcul
                                                     std::min(required_units,available_units),
                                                     (required_units - available_units > 0));
 
-        std::pair<float,std::vector<std::shared_ptr<engine::Command>>> new_node_value_command = calcul_stack(new_command, engine.get_state().deep_copy(), depth + 1);
+        std::pair<float,std::vector<std::shared_ptr<engine::Command>>> new_node_value_command = calcul_stack(engine.get_state().deep_copy(), new_command, depth + 1,default_money);
         engine.set_state(new_state);    //TO move ?
 
         // if (required_units - available_units > 0) {     //check if dice was needed, in which case the gain is multiplied by the probability
@@ -80,11 +80,10 @@ std::pair<int,std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcul
         }
         if (current_best_node_value_command.first < new_node_value_command.first) {
             current_best_node_value_command = {new_node_value_command.first,new_node_value_command.second};
-
         }
     }
     if (depth != 0) {
-    current_best_node_value_command.second.emplace_back(command);
+        current_best_node_value_command.second.emplace_back(command);
     }
     return current_best_node_value_command;
 
@@ -104,7 +103,7 @@ std::shared_ptr<engine::Command> Ai_Advanced::give_command_Start (){
         return std::make_unique<engine::Choose_Species_Command>(id, 0);
     }
     state.gather_free_units(id);
-    if (state.get_free_units_number(id) <= MIN_UNIT_FOR_DECLINE)
+    if (state.get_free_units_number(id) <= state.get_redeployable_areas(id).size())     //less than half the starting troops remains
     {
         return std::make_unique<engine::Decline_Command>(id);
     }
@@ -114,7 +113,7 @@ std::shared_ptr<engine::Command> Ai_Advanced::give_command_Start (){
 std::shared_ptr<engine::Command> Ai_Advanced::give_command_Conquer () {
     engine.set_state(state);
     if (command_stack.empty()) {
-        command_stack = calcul_stack(nullptr,state).second;
+        command_stack = calcul_stack(state).second;
     }
     auto ret = command_stack.back();
     command_stack.pop_back();
