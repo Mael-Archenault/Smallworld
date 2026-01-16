@@ -21,6 +21,34 @@ std::vector<std::pair<int,int>> Seafaring_Power::conquest_prices_effect(
 
     std::vector<std::pair<int,int>> result = initial_conquest_price;
 
+    if (owned_areas.empty())
+    {
+        state::Tribe dummy_tribe(
+            0,
+            new Species_Description("DummySpecies", 0, 0),
+            (Power_Description*) this
+        );
+
+        auto starting_points =
+            map->get_starting_points_prices(dummy_tribe, true);
+
+        for (auto& price_info : starting_points)
+        {
+            state::Area& area = map->get_area(price_info.first);
+            if (area.get_biome() == state::Area_Biome::WATER)
+            {
+                if (!already_present.count(price_info.first))
+                {
+                    result.push_back(price_info);
+                    already_present.insert(price_info.first);
+                }
+            }
+        }
+
+        return result;
+    }
+
+
     for (state::Area* area : owned_areas)
     {
         if (!area) continue;

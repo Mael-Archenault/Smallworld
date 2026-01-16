@@ -9,7 +9,7 @@ Pillaging_Power::Pillaging_Power() : Power_Description("Pillaging", 5)
     effect_disabled = false;
 }
 
-int Pillaging_Power::reward_effect(std::vector<state::Area*> owned_areas)
+int Pillaging_Power::rewards_effect(std::vector<state::Area*> owned_areas)
 {
     
     if (effect_disabled)

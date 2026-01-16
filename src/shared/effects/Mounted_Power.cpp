@@ -13,18 +13,8 @@ Mounted_Power::Mounted_Power() : Power_Description("Mounted", 5)
 std::vector<std::pair<int,int>> modify_price(
     std::vector<std::pair<int,int>> prices,
     int area_id,
-    int price)
-{
-    std::vector<std::pair<int,int>> modified_prices;
-    for (auto& price_info : prices)
-    {
-        if (price_info.first == area_id)
-            modified_prices.push_back({area_id, price});
-        else
-            modified_prices.push_back(price_info);
-    }
-    return modified_prices;
-}
+    int price); // defined in giants_species.cpp
+
 
 std::vector<std::pair<int,int>> Mounted_Power::conquest_prices_effect(
     std::vector<std::pair<int,int>> initial_conquest_price,
