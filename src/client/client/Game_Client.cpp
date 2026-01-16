@@ -1,34 +1,33 @@
-
+#include <ai/Ai_Heuristic.h>
+#include <ai/Ai_Random.h>
 #include <unistd.h>
 
+#include <SFML/Network.hpp>
+#include <cmath>
+#include <fstream>
 #include <iostream>
 #include <mutex>
-#include <thread>
 
 #include "client.h"
 #include "engine.h"
-
 extern std::mutex mtx;
-
 namespace client
 {
 
-Client_Multithread::Client_Multithread(engine::Engine& engine, int player_id)
+Game_Client::Game_Client(engine::Engine& engine)
     : window(sf::VideoMode(1720, 820), "Smallworld"),
-      state(engine.get_state().deep_copy()),
+      state(engine.get_state()),
       renderer(state, window),
       engine(engine),
-      player_id(player_id),
-      click_handler(*this)
+      click_handler(new Local_Game_State(window, engine))
 {
     selected_area_id         = 0;
     tribe_info_window_opened = false;
     renderer.set_selected_area(selected_area_id);
 }
 
-int Client_Multithread::run()
+int Game_Client::run()
 {
-    std::cout << "\nRunning Client_Multithread..." << std::endl;
     // first rendering
     sf::Event e;
     while (window.pollEvent(e))
@@ -38,26 +37,27 @@ int Client_Multithread::run()
     window.clear(sf::Color::Black);
     {
         std::lock_guard<std::mutex> lock(mtx);
-        renderer.render(state, player_id);
+        renderer.render(state, state.get_current_player().id);
     }
     window.display();
 
-    sf::View view          = window.getDefaultView();  // store your base view
-    bool     mouse_clicked = false;
+    sf::View view           = window.getDefaultView();  // store your base view
+    bool     mouse_clicked  = false;
+    bool     event_happened = false;
     while (window.isOpen())
     {
+        bool is_ai_turn = false;
+
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
-            {
-                window.close();
-            }
+            if (event.type == sf::Event::Closed) window.close();
 
             // When window is resized:
             if (event.type == sf::Event::Resized)
             {
                 // Reset the view to match the new window size
+                event_happened = true;
                 view.setSize(event.size.width, event.size.height);
                 view.setCenter(event.size.width / 2.f, event.size.height / 2.f);
                 window.setView(view);
@@ -67,8 +67,10 @@ int Client_Multithread::run()
 
             if (event.type == sf::Event::MouseButtonPressed && mouse_clicked == false)
             {
+                event_happened         = true;
                 mouse_clicked          = true;
                 sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
+                // handle_mouse_click(mouse_pos);
                 {
                     std::lock_guard<std::mutex> lock(mtx);
                     click_handler.handle_click(mouse_pos);
@@ -83,58 +85,58 @@ int Client_Multithread::run()
         window.clear(sf::Color::Black);
         {
             std::lock_guard<std::mutex> lock(mtx);
-            renderer.render(state, player_id);
+            renderer.render(state, state.get_current_player().id);
         }
 
         window.display();
+        event_happened = false;
         usleep(1000000 / 60);  // limit to 60 fps
     }
-
     return 0;
 }
 
-int Client_Multithread::get_selected_area_id()
+int Game_Client::get_selected_area_id()
 {
     return selected_area_id;
 }
 
-void Client_Multithread::set_selected_area_id(int selected_area_id)
+void Game_Client::set_selected_area_id(int selected_area_id)
 {
     this->selected_area_id = selected_area_id;
 }
-int Client_Multithread::get_selected_position_in_stack()
+int Game_Client::get_selected_position_in_stack()
 {
     return selected_position_in_stack;
 }
-void Client_Multithread::set_selected_position_in_stack(int position)
+void Game_Client::set_selected_position_in_stack(int position)
 {
     selected_position_in_stack = position;
 }
 
-void Client_Multithread::set_tribe_info_window_state(bool is_window_opened)
+void Game_Client::set_tribe_info_window_state(bool is_window_opened)
 {
     tribe_info_window_opened = is_window_opened;
 }
 
-bool Client_Multithread::get_tribe_info_window_state()
+bool Game_Client::get_tribe_info_window_state()
 {
     return tribe_info_window_opened;
 }
 
-state::Game_State& Client_Multithread::get_state()
+state::Game_State& Game_Client::get_state()
 {
     return state;
 }
-renderer::Renderer& Client_Multithread::get_renderer()
+renderer::Game_Renderer& Game_Client::get_renderer()
 {
     return renderer;
 }
-engine::Engine& Client_Multithread::get_engine()
+engine::Engine& Game_Client::get_engine()
 {
     return engine;
 }
 
-void Client_Multithread::update_state()
+void Game_Client::update_state()
 {
     if (engine.get_state_version_id() == state.get_version_id())
     {
@@ -143,10 +145,7 @@ void Client_Multithread::update_state()
     Json::Value root;
     root = engine.get_state_json();
     state.from_json(root);
-}
+    // state = engine.get_state().deep_copy();
+}  // namespace client
 
-int Client_Multithread::get_player_id()
-{
-    return player_id;
-}
 }  // namespace client

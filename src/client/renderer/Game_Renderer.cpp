@@ -1,4 +1,4 @@
-#include "Renderer.h"
+#include "renderer.h"
 
 #include <state.h>
 
@@ -8,14 +8,14 @@
 namespace renderer
 {
 
-Renderer::Renderer(state::Game_State& state, sf::RenderWindow& window)
+Game_Renderer::Game_Renderer(state::Game_State& state, sf::RenderWindow& window)
     : window(window),
       map_renderer(window),
       tribe_stack_renderer(window),
       player_area_renderer(window),
       UI_renderer(window, state) {};
 
-void Renderer::render(state::Game_State& state, int rendering_player_id)
+void Game_Renderer::render(state::Game_State& state, int rendering_player_id)
 {
     sf::Vector2u window_size = window.getSize();
     map_renderer.render(state.get_map());
@@ -31,12 +31,12 @@ void Renderer::render(state::Game_State& state, int rendering_player_id)
     UI_renderer.render(state, rendering_player_id);
 }
 
-void Renderer::set_selected_area(int area_id)
+void Game_Renderer::set_selected_area(int area_id)
 {
     UI_renderer.set_selected_area(area_id);
 }
 
-std::unordered_map<std::string, sf::FloatRect> Renderer::get_layout_infos()
+std::unordered_map<std::string, sf::FloatRect> Game_Renderer::get_layout_infos()
 {
     // returns layout infos: map area, tribe stack area, player area
 
@@ -58,22 +58,22 @@ std::unordered_map<std::string, sf::FloatRect> Renderer::get_layout_infos()
     return result;
 }
 
-std::vector<sf::Vector2f> Renderer::get_on_screen_area_positions()
+std::vector<sf::Vector2f> Game_Renderer::get_on_screen_area_positions()
 {
     return map_renderer.get_on_screen_area_positions();
 }
 
-std::vector<sf::Vector2f> Renderer::get_on_screen_tribe_positions()
+std::vector<sf::Vector2f> Game_Renderer::get_on_screen_tribe_positions()
 {
     return tribe_stack_renderer.get_on_screen_tribe_positions();
 }
 
-void Renderer::open_tribe_info_window(state::Tribe& tribe, bool is_buying_possible)
+void Game_Renderer::open_tribe_info_window(state::Tribe& tribe, bool is_buying_possible)
 {
     UI_renderer.open_tribe_info_window(tribe, is_buying_possible);
 }
 
-void Renderer::close_tribe_info_window()
+void Game_Renderer::close_tribe_info_window()
 {
     UI_renderer.close_tribe_info_window();
 }

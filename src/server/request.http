@@ -32,7 +32,7 @@ POST http://localhost:8888/rooms/exit/1
 Session-Token: yy4cBWDxS22JjzhM
 
 ### owner exiting the room
-POST http://localhost:8888/rooms/exit/1
+POST http://localhost:8888/rooms/exit/0
 Session-Token: fa37JncCHryDsbza
 
 

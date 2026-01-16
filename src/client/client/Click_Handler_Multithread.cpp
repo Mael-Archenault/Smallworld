@@ -10,7 +10,7 @@
 
 namespace client
 {
-Click_Handler_Multithread::Click_Handler_Multithread(Client_Multithread& client)
+Click_Handler_Multithread::Click_Handler_Multithread(Game_Client_Multithread& client)
     : client(client),
       state(client.get_state()),
       renderer(client.get_renderer()),
@@ -217,7 +217,7 @@ void Click_Handler_Multithread::handle_button_area_click(
     if (layout_infos["decline_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        auto command = std::make_unique<engine::Decline_Command>(actioning_player.id);
+        auto        command = std::make_unique<engine::Decline_Command>(actioning_player.id);
         Json::Value command_json;
         command->to_json(command_json);
         engine.add_command(command_json);
@@ -226,7 +226,7 @@ void Click_Handler_Multithread::handle_button_area_click(
     if (layout_infos["start_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        auto command = std::make_unique<engine::Start_Conquest_Command>(actioning_player.id);
+        auto        command = std::make_unique<engine::Start_Conquest_Command>(actioning_player.id);
         Json::Value command_json;
         command->to_json(command_json);
         engine.add_command(command_json);
@@ -235,7 +235,7 @@ void Click_Handler_Multithread::handle_button_area_click(
     if (layout_infos["end_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::CONQUER)
     {
-        auto command = std::make_unique<engine::End_Conquer_Command>(actioning_player.id);
+        auto        command = std::make_unique<engine::End_Conquer_Command>(actioning_player.id);
         Json::Value command_json;
         command->to_json(command_json);
         engine.add_command(command_json);
@@ -244,8 +244,8 @@ void Click_Handler_Multithread::handle_button_area_click(
     if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::REDEPLOY)
     {
-        auto command = std::make_unique<engine::Redeploy_Command>(
-            actioning_player.id, client.get_selected_area_id(), 1);
+        auto        command = std::make_unique<engine::Redeploy_Command>(actioning_player.id,
+                                                                         client.get_selected_area_id(), 1);
         Json::Value command_json;
         command->to_json(command_json);
         engine.add_command(command_json);
