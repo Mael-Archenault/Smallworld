@@ -2,6 +2,8 @@
 
 #include <unistd.h>
 
+#include <iostream>
+
 namespace client
 {
 
@@ -9,11 +11,22 @@ Client::Client() : window(sf::VideoMode(1280, 720), "Smallworld")
 {
     current_state = new Menu_State(window);
     current_state->set_context(this);
+    name = "No Name";
 }
 
 sf::RenderWindow& Client::get_window()
 {
     return window;
+}
+
+std::string Client::get_name()
+{
+    return name;
+}
+
+void Client::set_name(std::string new_name)
+{
+    name = new_name;
 }
 
 void Client::run()

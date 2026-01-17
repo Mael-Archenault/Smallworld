@@ -46,6 +46,22 @@ MHD_Result answer_to_connection(void* cls, struct MHD_Connection* connection, co
     std::string          in;
     std::string          out;
 
+    // Accumulate POST body across calls (required by libmicrohttpd)
+    std::string* body_ptr = static_cast<std::string*>(*req_cls);
+    if (!body_ptr)
+    {
+        body_ptr = new std::string();
+        *req_cls = body_ptr;
+        return MHD_YES;  // libmicrohttpd will call again with upload data
+    }
+
+    if (std::string(method) == "POST" && *upload_data_size != 0)
+    {
+        body_ptr->append(upload_data, *upload_data_size);
+        *upload_data_size = 0;  // tell libmicrohttpd we've consumed the data
+        return MHD_YES;         // it will call us again with upload_data_size == 0
+    }
+
     std::string session_token;
     const char* session_token_cstr =
         MHD_lookup_connection_value(connection, MHD_HEADER_KIND, "Session-Token");
@@ -53,6 +69,11 @@ MHD_Result answer_to_connection(void* cls, struct MHD_Connection* connection, co
     {
         session_token = std::string(session_token_cstr);
     }
+
+    // All data received; use accumulated body
+    in = *body_ptr;
+    delete body_ptr;
+    *req_cls = nullptr;
 
     server::Http_Status status =
         service_manager->handle_request(in, out, url, method, session_token);

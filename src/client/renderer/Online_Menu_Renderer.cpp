@@ -21,9 +21,16 @@ Online_Menu_Renderer::Online_Menu_Renderer(sf::RenderWindow& window) : window(wi
 
     room_id_box.set_content("");
     room_id_box.set_colors(sf::Color(50, 50, 50), sf::Color(250, 250, 250), sf::Color(50, 50, 50));
+
+    name_label.set_content("Name :");
+    name_label.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
+
+    name_box.set_content("");
+    name_box.set_colors(sf::Color(50, 50, 50), sf::Color(250, 250, 250), sf::Color(50, 50, 50));
 }
 
-void Online_Menu_Renderer::render(bool modifying_room_id, std::string room_id)
+void Online_Menu_Renderer::render(bool modifying_room_id, std::string room_id, bool modifying_name,
+                                  std::string name)
 {
     window.clear(sf::Color::Black);
 
@@ -66,9 +73,29 @@ void Online_Menu_Renderer::render(bool modifying_room_id, std::string room_id)
                                sf::Color(50, 50, 50));
     }
     room_id_box.set_size(sf::Vector2f(button_width / 2, button_height));
-    room_id_box.set_position(sf::Vector2f(window_size.x / 2 + button_width, window_size.y * 3 / 5));
+    room_id_box.set_position(
+        sf::Vector2f(window_size.x / 2 + button_width / 2, window_size.y * 3 / 5));
     room_id_box.set_character_size(button_width / 10);
     room_id_box.render(window);
+
+    name_label.set_size(sf::Vector2f(button_width, button_height));
+    name_label.set_position(sf::Vector2f(5, 5));
+    name_label.set_character_size(button_width / 10);
+    name_label.render(window);
+
+    name_box.set_content(name);
+    if (modifying_name)
+    {
+        name_box.set_colors(sf::Color(50, 50, 50), sf::Color(150, 150, 150), sf::Color(50, 50, 50));
+    }
+    else
+    {
+        name_box.set_colors(sf::Color(50, 50, 50), sf::Color(250, 250, 250), sf::Color(50, 50, 50));
+    }
+    name_box.set_size(sf::Vector2f(button_width * 1.5, button_height));
+    name_box.set_position(sf::Vector2f(button_width + 5, 5));
+    name_box.set_character_size(button_width / 10);
+    name_box.render(window);
 }
 
 std::unordered_map<std::string, sf::FloatRect> Online_Menu_Renderer::get_layout_infos()
@@ -77,6 +104,7 @@ std::unordered_map<std::string, sf::FloatRect> Online_Menu_Renderer::get_layout_
     button_positions["create_button"] = create_button.get_rect();
     button_positions["join_button"]   = join_button.get_rect();
     button_positions["room_id_box"]   = room_id_box.get_rect();
+    button_positions["name_box"]      = name_box.get_rect();
 
     return button_positions;
 }

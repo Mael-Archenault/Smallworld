@@ -31,7 +31,7 @@ Http_Status Service_Manager::handle_request(std::string& in, std::string& out, s
 
     if (url == "/connect" && method == "POST")
     {
-        std::string new_session_token = server_manager.create_player();
+        std::string new_session_token = server_manager.create_player(in);
         out                           = new_session_token;
         return Http_Status::OK;
     }

@@ -3,7 +3,9 @@
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <mutex>
+#include <sstream>
 #include <thread>
+#include <vector>
 
 #include "client.h"
 namespace client
@@ -24,8 +26,9 @@ void lobby_update_process(Online_Lobby_State& client)
     }
 }
 
-Online_Lobby_State::Online_Lobby_State(int room_id, std::string session_token)
-    : room_id(room_id), session_token(session_token)
+Online_Lobby_State::Online_Lobby_State(int room_id, std::string session_token,
+                                       sf::RenderWindow& window)
+    : room_id(room_id), session_token(session_token), renderer(window, std::to_string(room_id))
 {
     std::cout << "Online Lobby State" << std::endl;
 
@@ -44,14 +47,6 @@ void Online_Lobby_State::handle_input(sf::Event event)
 {
     if (event.type == sf::Event::KeyPressed)
     {
-        if (event.key.code == sf::Keyboard::E)
-        {
-            send_exit_request();
-            std::cout << "Switching to Online Menu State" << std::endl;
-            stop_thread("lobby_update");
-            Online_Menu_State* new_state = new Online_Menu_State(this->context->get_window());
-            this->context->change_state(new_state);
-        }
         if (event.key.code == sf::Keyboard::M)
         {
             std::cout << "Switching to Menu State" << std::endl;
@@ -67,7 +62,29 @@ void Online_Lobby_State::handle_input(sf::Event event)
             this->context->change_state(new_state);
         }
     }
+
+    if (event.type == sf::Event::MouseButtonPressed)
+    {
+        sf::Vector2i mouse_pos = sf::Mouse::getPosition(context->get_window());
+        std::unordered_map<std::string, sf::FloatRect> layout_infos = renderer.get_layout_infos();
+
+        if (layout_infos["exit_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+        {
+            send_exit_request();
+            std::cout << "Switching to Online Menu State" << std::endl;
+            stop_thread("lobby_update");
+            Online_Menu_State* new_state =
+                new Online_Menu_State(context->get_window(), context->get_name());
+            this->context->change_state(new_state);
+        }
+    }
     // Handle input events specific to the online lobby state
+}
+
+void Online_Lobby_State::render(sf::RenderWindow& window)
+{
+    std::lock_guard<std::mutex> lock(get_mutex());
+    renderer.render(player_names);
 }
 
 void Online_Lobby_State::request_lobby_state()
@@ -81,8 +98,17 @@ void Online_Lobby_State::request_lobby_state()
     // Send request
     sf::Http::Response response = http_client.sendRequest(request);
 
-    std::cout << "Status : " << response.getStatus() << "\n";
-    std::cout << response.getBody() << "\n";
+    {
+        std::lock_guard<std::mutex> lock(get_mutex());
+        player_names.clear();
+        std::stringstream ss(response.getBody());
+        std::string       t;
+        char              del = ',';
+        while (getline(ss, t, del))
+        {
+            player_names.push_back(t);
+        }
+    }
 }
 
 void Online_Lobby_State::send_exit_request()

@@ -21,7 +21,8 @@ void Menu_State::handle_input(sf::Event event)
         if (layout_infos["online_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
         {
             std::cout << "Switching to Online Menu State" << std::endl;
-            Online_Menu_State* new_state = new Online_Menu_State(this->context->get_window());
+            Online_Menu_State* new_state =
+                new Online_Menu_State(context->get_window(), context->get_name());
             this->context->change_state(new_state);
             return;
         }

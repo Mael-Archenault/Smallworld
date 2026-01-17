@@ -64,10 +64,15 @@ bool Room::is_empty()
 
 std::string Room::get_state()
 {
-    std::string state = "";
+    std::string state = owner.get_name() + ",";
+
     for (auto& player : room_players)
     {
-        state += player.get_name() + " ";
+        if (player.get_session_token() == owner.get_session_token())
+        {
+            continue;
+        }
+        state += player.get_name() + ",";
     }
     return state;
 }

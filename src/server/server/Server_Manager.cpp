@@ -6,10 +6,9 @@ namespace server
 {
 Server_Manager::Server_Manager() : next_room_id(0) {}
 
-std::string Server_Manager::create_player()
+std::string Server_Manager::create_player(std::string name)
 {
     std::string session_token = generate_session_token();
-    std::string name          = "Player" + std::to_string(connected_players.size());
     connected_players.push_back(Player(name, session_token));
     std::cout << "Created player: " << connected_players.back().get_name() << std::endl;
     return session_token;
