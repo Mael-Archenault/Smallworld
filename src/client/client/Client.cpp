@@ -5,9 +5,9 @@
 namespace client
 {
 
-Client::Client(Client_State_Interface* initial_state)
-    : window(sf::VideoMode(1720, 820), "Smallworld"), current_state(initial_state)
+Client::Client() : window(sf::VideoMode(1280, 720), "Smallworld")
 {
+    current_state = new Menu_State(window);
     current_state->set_context(this);
 }
 

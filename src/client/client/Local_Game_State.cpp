@@ -93,7 +93,7 @@ void Local_Game_State::handle_input(sf::Event event)
             std::cout << "Switching to Menu State" << std::endl;
             stop_thread("engine_update");
             stop_thread("state_update");
-            Menu_State* new_state = new Menu_State();
+            Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
         }
     }

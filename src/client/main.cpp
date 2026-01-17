@@ -14,6 +14,6 @@
 
 int main(int argc, char* argv[])
 {
-    client::Client client(new client::Menu_State());
+    client::Client client;
     client.run();
 }

@@ -49,14 +49,14 @@ void Online_Lobby_State::handle_input(sf::Event event)
             send_exit_request();
             std::cout << "Switching to Online Menu State" << std::endl;
             stop_thread("lobby_update");
-            Online_Menu_State* new_state = new Online_Menu_State();
+            Online_Menu_State* new_state = new Online_Menu_State(this->context->get_window());
             this->context->change_state(new_state);
         }
         if (event.key.code == sf::Keyboard::M)
         {
             std::cout << "Switching to Menu State" << std::endl;
             stop_thread("lobby_update");
-            Menu_State* new_state = new Menu_State();
+            Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
         }
         if (event.key.code == sf::Keyboard::G)
