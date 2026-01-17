@@ -13,7 +13,8 @@ namespace client
 
 void engine_process(engine::Engine& engine, client::Local_Game_State& client)
 {
-    while (client.get_thread_states().second)
+    bool running = true;
+    while (running)
     {
         {
             std::lock_guard<std::mutex> lock(client.get_mutex());
@@ -27,23 +28,24 @@ void engine_process(engine::Engine& engine, client::Local_Game_State& client)
                 std::cerr << e.what() << std::endl;
             }
         }
+
         usleep(50000 / 3);  // 60 updates per secound
+        running = client.get_running_flag("engine_update");
     }
 }
 
 void state_update_process(client::Local_Game_State& client)
 {
-    while (true)
+    bool running = true;
+    while (running)
     {
         {
             std::lock_guard<std::mutex> lock(client.get_mutex());
-            if (!client.get_thread_states().first)
-            {
-                break;
-            };
             client.update_state();
         }
+
         usleep(100000);  // 10 updates per secound
+        running = client.get_running_flag("state_update");
     }
 }
 
@@ -64,17 +66,22 @@ Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& eng
     std::cout << "Local Game State" << std::endl;
 
     // initiating the threads
-    engine_update_thread =
+    register_thread(
+        "engine_update",
         std::thread([](engine::Engine& engine, client::Local_Game_State& client)
-                    { engine_process(engine, client); }, std::ref(engine), std::ref(*this));
-    engine_update_running = true;
+                    { engine_process(engine, client); }, std::ref(engine), std::ref(*this)));
 
-    engine_update_thread.detach();
+    register_thread("state_update",
+                    std::thread([](client::Local_Game_State& client)
+                                { state_update_process(client); }, std::ref(*this)));
 
-    state_update_thread = std::thread(
-        [](client::Local_Game_State& client) { state_update_process(client); }, std::ref(*this));
-    state_update_running = true;
-    state_update_thread.detach();
+    start_thread("engine_update");
+    start_thread("state_update");
+}
+Local_Game_State::~Local_Game_State()
+{
+    stop_thread("engine_update");
+    stop_thread("state_update");
 }
 
 void Local_Game_State::handle_input(sf::Event event)
@@ -84,6 +91,8 @@ void Local_Game_State::handle_input(sf::Event event)
         if (event.key.code == sf::Keyboard::M)
         {
             std::cout << "Switching to Menu State" << std::endl;
+            stop_thread("engine_update");
+            stop_thread("state_update");
             Menu_State* new_state = new Menu_State();
             this->context->change_state(new_state);
         }
@@ -96,7 +105,7 @@ void Local_Game_State::handle_input(sf::Event event)
         mouse_clicked          = true;
         sf::Vector2i mouse_pos = sf::Mouse::getPosition(context->get_window());
         {
-            std::lock_guard<std::mutex> lock(mtx);
+            std::lock_guard<std::mutex> lock(get_mutex());
             click_handler.handle_click(mouse_pos);
         }
     }
@@ -106,19 +115,9 @@ void Local_Game_State::handle_input(sf::Event event)
     }
 }
 
-std::pair<bool, bool> Local_Game_State::get_thread_states()
-{
-    return std::make_pair(state_update_running, engine_update_running);
-}
-
-std::mutex& Local_Game_State::get_mutex()
-{
-    return mtx;
-}
-
 void Local_Game_State::render(sf::RenderWindow& window)
 {
-    std::lock_guard<std::mutex> lock(mtx);
+    std::lock_guard<std::mutex> lock(get_mutex());
     renderer.render(state, state.get_current_player().id);
 }
 

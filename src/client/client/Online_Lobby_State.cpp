@@ -19,10 +19,8 @@ void lobby_update_process(Online_Lobby_State& client)
             client.request_lobby_state();
         }
         usleep(1000000);
-        {
-            std::lock_guard<std::mutex>(client.get_mutex());
-            running = client.get_thread_state();
-        }
+
+        running = client.get_running_flag("lobby_update");
     }
 }
 
@@ -30,26 +28,16 @@ Online_Lobby_State::Online_Lobby_State(int room_id, std::string session_token)
     : room_id(room_id), session_token(session_token)
 {
     std::cout << "Online Lobby State" << std::endl;
-    lobby_update_thread = std::thread(
-        [](client::Online_Lobby_State& client) { lobby_update_process(client); }, std::ref(*this));
-    lobby_update_running = true;
+
+    register_thread("lobby_update",
+                    std::thread([](client::Online_Lobby_State& client)
+                                { lobby_update_process(client); }, std::ref(*this)));
+    start_thread("lobby_update");
 }
 
 Online_Lobby_State::~Online_Lobby_State()
 {
-    stop_lobby_update_thread();
-}
-
-void Online_Lobby_State::stop_lobby_update_thread()
-{
-    {
-        std::lock_guard<std::mutex> lock(mtx);
-        lobby_update_running = false;
-    }
-    if (lobby_update_thread.joinable())
-    {
-        lobby_update_thread.join();
-    }
+    stop_thread("lobby_update");
 }
 
 void Online_Lobby_State::handle_input(sf::Event event)
@@ -60,21 +48,21 @@ void Online_Lobby_State::handle_input(sf::Event event)
         {
             send_exit_request();
             std::cout << "Switching to Online Menu State" << std::endl;
-            stop_lobby_update_thread();
+            stop_thread("lobby_update");
             Online_Menu_State* new_state = new Online_Menu_State();
             this->context->change_state(new_state);
         }
         if (event.key.code == sf::Keyboard::M)
         {
             std::cout << "Switching to Menu State" << std::endl;
-            stop_lobby_update_thread();
+            stop_thread("lobby_update");
             Menu_State* new_state = new Menu_State();
             this->context->change_state(new_state);
         }
         if (event.key.code == sf::Keyboard::G)
         {
             std::cout << "Switching to Online Game State" << std::endl;
-            stop_lobby_update_thread();
+            stop_thread("lobby_update");
             Online_Game_State* new_state = new Online_Game_State();
             this->context->change_state(new_state);
         }
@@ -106,13 +94,5 @@ void Online_Lobby_State::send_exit_request()
     request.setField("Session-Token", session_token);
 
     sf::Http::Response response = http_client.sendRequest(request);
-}
-bool Online_Lobby_State::get_thread_state()
-{
-    return lobby_update_running;
-}
-std::mutex& Online_Lobby_State::get_mutex()
-{
-    return mtx;
 }
 }  // namespace client
