@@ -4,7 +4,7 @@
 
 namespace server
 {
-Room::Room(int room_id, Player creator) : id(room_id), owner(creator)
+Room::Room(int room_id, Player creator) : id(room_id), owner(creator), state(Room_State::WAITING)
 {
     room_players.push_back(owner);
 }
@@ -62,7 +62,7 @@ bool Room::is_empty()
     return room_players.empty();
 }
 
-std::string Room::get_state()
+std::string Room::get_infos()
 {
     std::string state = owner.get_name() + ",";
 
@@ -85,5 +85,15 @@ std::pair<int, std::vector<std::string>> Room::get_start_infos()
         player_names.push_back(player.get_name());
     }
     return {room_players.size(), player_names};
+}
+
+Room_State Room::get_state()
+{
+    return state;
+}
+
+void Room::set_state(Room_State new_state)
+{
+    state = new_state;
 }
 }  // namespace server

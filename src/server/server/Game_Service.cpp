@@ -83,6 +83,7 @@ Http_Status Game_Service::post(std::string& in, std::string& out, std::string ur
         std::pair<int, std::vector<std::string>> start_infos =
             room_service.get_room_start_infos(std::stoi(room_id_str));
         launch_game(std::stoi(room_id_str), start_infos.first, start_infos.second);
+        room_service.set_room_state(std::stoi(room_id_str), Room_State::IN_GAME);
         return Http_Status::OK;
     }
 

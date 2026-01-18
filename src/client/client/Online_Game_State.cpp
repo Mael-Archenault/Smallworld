@@ -24,7 +24,7 @@ void online_state_update_process(client::Online_Game_State& client)
 
 Online_Game_State::Online_Game_State(sf::RenderWindow& window, int room_id,
                                      std::string session_token)
-    : state(1, {"Player1"}),
+    : state(1, {"Player1"}, 0),
       renderer(state, window),
       selected_area_id(0),
       tribe_info_window_opened(false),
@@ -80,7 +80,7 @@ void Online_Game_State::handle_input(sf::Event event)
 void Online_Game_State::render(sf::RenderWindow& window)
 {
     std::lock_guard<std::mutex> lock(get_mutex());
-    renderer.render(state, state.get_current_player().id);
+    renderer.render(state, player_id);
 }
 
 int Online_Game_State::get_selected_area_id()

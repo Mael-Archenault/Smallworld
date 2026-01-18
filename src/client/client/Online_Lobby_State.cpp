@@ -28,7 +28,10 @@ void lobby_update_process(Online_Lobby_State& client)
 
 Online_Lobby_State::Online_Lobby_State(int room_id, std::string session_token,
                                        sf::RenderWindow& window)
-    : room_id(room_id), session_token(session_token), renderer(window, std::to_string(room_id))
+    : room_id(room_id),
+      session_token(session_token),
+      renderer(window, std::to_string(room_id)),
+      game_remotely_launched(false)
 {
     std::cout << "Online Lobby State" << std::endl;
 
@@ -58,6 +61,7 @@ void Online_Lobby_State::handle_input(sf::Event event)
             Online_Menu_State* new_state =
                 new Online_Menu_State(context->get_window(), context->get_name());
             this->context->change_state(new_state);
+            return;
         }
         if (layout_infos["start_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
         {
@@ -67,7 +71,22 @@ void Online_Lobby_State::handle_input(sf::Event event)
             Online_Game_State* new_state =
                 new Online_Game_State(this->context->get_window(), room_id, session_token);
             this->context->change_state(new_state);
+            return;
         }
+    }
+
+    bool flag;
+    {
+        std::lock_guard<std::mutex> lock(get_mutex());
+        flag = game_remotely_launched;
+    }
+    if (flag)
+    {
+        std::cout << "Game remotely launched, switching to Online Game State" << std::endl;
+        stop_thread("lobby_update");
+        Online_Game_State* new_state =
+            new Online_Game_State(this->context->get_window(), room_id, session_token);
+        this->context->change_state(new_state);
     }
     // Handle input events specific to the online lobby state
 }
@@ -88,6 +107,13 @@ void Online_Lobby_State::request_lobby_state()
 
     // Send request
     sf::Http::Response response = http_client.sendRequest(request);
+
+    if (response.getBody() == "Game Launched")
+    {
+        std::lock_guard<std::mutex> lock(get_mutex());
+        game_remotely_launched = true;
+        return;
+    }
 
     {
         std::lock_guard<std::mutex> lock(get_mutex());

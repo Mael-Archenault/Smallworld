@@ -25,9 +25,14 @@ Http_Status Room_Service::get(std::string& in, std::string& out, std::string url
     std::cout << "Room_id : " << room_id << "Action :" << action << std::endl;
     if (action == "/state")
     {
+        if (get_room_state(room_id) == Room_State::IN_GAME)
+        {
+            out = "Game Launched";
+            return Http_Status::OK;
+        }
         try
         {
-            std::string room_state = get_room_state(room_id, session_token);
+            std::string room_state = get_room_infos(room_id, session_token);
             out                    = room_state;
             std::cout << "Room state: " << room_state << std::endl;
         }
@@ -176,7 +181,7 @@ void Room_Service::exit_room(int room_id, std::string player_session_token)
     throw std::runtime_error("Room with id not found");
 }
 
-std::string Room_Service::get_room_state(int room_id, std::string session_token)
+std::string Room_Service::get_room_infos(int room_id, std::string session_token)
 {
     if (player_manager.get_player(session_token).get_room() != room_id)
     {
@@ -186,7 +191,7 @@ std::string Room_Service::get_room_state(int room_id, std::string session_token)
     {
         if (room.id == room_id)
         {
-            return room.get_state();
+            return room.get_infos();
         }
     }
     throw std::runtime_error("Room with id not found");
@@ -223,6 +228,31 @@ std::pair<int, std::vector<std::string>> Room_Service::get_room_start_infos(int 
         if (room.id == room_id)
         {
             return room.get_start_infos();
+        }
+    }
+    throw std::runtime_error("Room with id not found");
+}
+
+void Room_Service::set_room_state(int room_id, Room_State new_state)
+{
+    for (auto& room : rooms)
+    {
+        if (room.id == room_id)
+        {
+            room.set_state(new_state);
+            return;
+        }
+    }
+    throw std::runtime_error("Room with id not found");
+}
+
+Room_State Room_Service::get_room_state(int room_id)
+{
+    for (auto& room : rooms)
+    {
+        if (room.id == room_id)
+        {
+            return room.get_state();
         }
     }
     throw std::runtime_error("Room with id not found");
