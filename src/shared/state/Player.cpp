@@ -172,4 +172,19 @@ void Player::from_json(Json::Value& root)
     money = root["money"].asInt();
 }
 
-}  // namespace state
+int Player::inform_rewards() {
+    int ret = 0;
+    if (active_tribe != nullptr)
+    {
+        ret += active_tribe->get_rewards();
+    }
+
+    if (tribe_in_decline != nullptr)
+    {
+        ret += tribe_in_decline->get_rewards();
+    }
+    return ret;
+}
+}
+
+// namespace state

@@ -2275,7 +2275,7 @@
             </dia:composite>
             <dia:composite type="umlparameter">
               <dia:attribute name="name">
-                <dia:string>#command = nullptr#</dia:string>
+                <dia:string>#command#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
                 <dia:string>#std::shared_ptr&lt;engine::Command&gt;#</dia:string>
@@ -2292,7 +2292,7 @@
             </dia:composite>
             <dia:composite type="umlparameter">
               <dia:attribute name="name">
-                <dia:string>#depth = 0#</dia:string>
+                <dia:string>#depth#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
                 <dia:string>#int#</dia:string>
@@ -2309,7 +2309,7 @@
             </dia:composite>
             <dia:composite type="umlparameter">
               <dia:attribute name="name">
-                <dia:string>#default_money = 0#</dia:string>
+                <dia:string>#default_money#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
                 <dia:string>#int#</dia:string>
@@ -2326,7 +2326,7 @@
             </dia:composite>
             <dia:composite type="umlparameter">
               <dia:attribute name="name">
-                <dia:string>#default_free_units = 0#</dia:string>
+                <dia:string>#default_free_units#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
                 <dia:string>#int#</dia:string>

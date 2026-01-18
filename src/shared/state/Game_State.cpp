@@ -423,4 +423,10 @@ void Game_State::new_version_id()
 {
     version_id++;
 }
+
+
+int Game_State::inform_rewards(int id) {
+    return players.at(id).inform_rewards();
+
+}
 }  // namespace state

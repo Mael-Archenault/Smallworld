@@ -16,6 +16,7 @@
 #include <algorithm>
 #include <iostream>
 #include <stack>
+#include <sys/stat.h>
 
 #include "engine/Choose_Species_Command.h"
 #include "json/json.h"
@@ -48,22 +49,20 @@ std::pair<int,std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcul
     std::pair<float,std::vector<std::shared_ptr<engine::Command>>>  current_best_node_value_command = {0,std::vector<std::shared_ptr<engine::Command>>()};
 
     bool is_worth = true;
-    if (depth == 3) {
-        state::Game_State state_temp = engine.get_state().deep_copy();
-        state_temp.get_rewards(id);
-        float money_gain = state_temp.get_current_player().get_money() - default_money;
-        float units_used = default_free_units - state_temp.get_free_units_number(id);
+    if (1) {
+        state.inform_rewards(id);
+        float money_gain = state.get_current_player().get_money() - default_money;
+        float units_used = default_free_units - state.get_free_units_number(id);
 
         float cost_per_gain = units_used / money_gain;
-        if (cost_per_gain > 1.5) {
+        if (cost_per_gain > 1.2) {
             is_worth = false;
         }
 
     }
 
     if (is_worth == false || engine.get_state().get_free_units_number(id) == 0 || engine.get_state().get_current_turn_phase() == state::REDEPLOY) {
-        engine.get_state().get_rewards(id);
-        current_best_node_value_command.first = engine.get_state().get_current_player().get_money();
+        current_best_node_value_command.first = engine.get_state().inform_rewards(id);
         current_best_node_value_command.second.emplace_back(command);
         return current_best_node_value_command;
     }
@@ -80,10 +79,11 @@ std::pair<int,std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcul
         std::pair<float,std::vector<std::shared_ptr<engine::Command>>> new_node_value_command = calcul_stack(engine.get_state().deep_copy(), new_command, depth + 1,default_money,default_free_units);
         engine.set_state(new_state);    //To move ?
 
-        // if (required_units - available_units > 0) {     //check if dice was needed, in which case the gain is multiplied by the probability
-        //     float current_gain = state.get_current_player().get_money();    //TODO check if the ponderation works properly
-        //     new_node_value_command.first = current_gain + (new_node_value_command.first - current_gain) * unit_to_proba(required_units - available_units) ;
-        // }
+        if (required_units - available_units > 0) {     //check if dice was needed, in which case the gain is multiplied by the probability
+            float current_gain = new_state.inform_rewards(id);    //TODO check if the ponderation works properly
+            new_node_value_command.first = current_gain + (new_node_value_command.first - current_gain) * unit_to_proba(required_units - available_units) ;
+        }
+
 
         if (depth == -1) {
             std::string areas_str;
