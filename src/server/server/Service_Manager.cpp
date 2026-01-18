@@ -5,7 +5,7 @@
 namespace server
 {
 
-Service_Manager::Service_Manager(Server_Manager& server_manager) : server_manager(server_manager) {}
+Service_Manager::Service_Manager(Player_Manager& player_manager) : player_manager(player_manager) {}
 
 Service_Interface* Service_Manager::find_responsible_service(std::string url)
 {
@@ -31,21 +31,21 @@ Http_Status Service_Manager::handle_request(std::string& in, std::string& out, s
 
     if (url == "/connect" && method == "POST")
     {
-        std::string new_session_token = server_manager.create_player(in);
+        std::string new_session_token = player_manager.create_player(in);
         out                           = new_session_token;
         return Http_Status::OK;
     }
 
     // else
 
-    bool is_authenticated = server_manager.verify_session_token(session_token);
+    bool is_authenticated = player_manager.verify_session_token(session_token);
 
     if (!is_authenticated)
     {
         return Http_Status::UNAUTHORIZED;
     }
 
-    Player requesting_player = server_manager.get_player(session_token);
+    Player requesting_player = player_manager.get_player(session_token);
 
     Service_Interface* service = find_responsible_service(url);
     if (!service)
@@ -68,5 +68,6 @@ Http_Status Service_Manager::handle_request(std::string& in, std::string& out, s
         }
         return Http_Status::METHOD_NOT_ALLOWED;
     }
+    return Http_Status::NOT_FOUND;
 }
 }  // namespace server

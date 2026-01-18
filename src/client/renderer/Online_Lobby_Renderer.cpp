@@ -20,6 +20,9 @@ Online_Lobby_Renderer::Online_Lobby_Renderer(sf::RenderWindow& window, std::stri
 
     exit_button.set_content("Exit room");
     exit_button.set_colors(sf::Color::Black, sf::Color(50, 50, 50), sf::Color::White);
+
+    start_button.set_content("Start Game");
+    start_button.set_colors(sf::Color::Black, sf::Color(50, 50, 50), sf::Color::White);
 }
 
 void Online_Lobby_Renderer::render(std::vector<std::string> player_names)
@@ -52,6 +55,12 @@ void Online_Lobby_Renderer::render(std::vector<std::string> player_names)
     exit_button.set_character_size(button_height / 3);
     exit_button.render(window);
 
+    start_button.set_size(sf::Vector2f(button_width / 2, button_height));
+    start_button.set_position(
+        sf::Vector2f(window_size.x / 2 - button_width / 4, window_size.y - button_height));
+    start_button.set_character_size(button_height / 3);
+    start_button.render(window);
+
     for (size_t i = 0; i < player_names.size(); ++i)
     {
         Text_Box player_box;
@@ -75,7 +84,8 @@ void Online_Lobby_Renderer::render(std::vector<std::string> player_names)
 std::unordered_map<std::string, sf::FloatRect> Online_Lobby_Renderer::get_layout_infos()
 {
     std::unordered_map<std::string, sf::FloatRect> button_positions;
-    button_positions["exit_button"] = exit_button.get_rect();
+    button_positions["exit_button"]  = exit_button.get_rect();
+    button_positions["start_button"] = start_button.get_rect();
 
     return button_positions;
 }

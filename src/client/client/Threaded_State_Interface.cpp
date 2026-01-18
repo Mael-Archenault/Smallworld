@@ -22,7 +22,6 @@ void Threaded_State_Interface::start_thread(std::string name)
 
 void Threaded_State_Interface::stop_thread(std::string name)
 {
-    // Set flag to false while holding lock
     {
         std::lock_guard<std::mutex> lock(mtx);
         if (threads.find(name) != threads.end())
@@ -31,8 +30,6 @@ void Threaded_State_Interface::stop_thread(std::string name)
         }
     }
 
-    // Join OUTSIDE the lock to avoid deadlock
-    // Thread must be able to acquire mtx to finish its loop
     if (threads.find(name) != threads.end() && threads[name].second.joinable())
     {
         threads[name].second.join();

@@ -4,7 +4,7 @@
 
 namespace server
 {
-Room::Room(int room_id, Player creator) : owner(creator), id(room_id)
+Room::Room(int room_id, Player creator) : id(room_id), owner(creator)
 {
     room_players.push_back(owner);
 }
@@ -77,4 +77,13 @@ std::string Room::get_state()
     return state;
 }
 
+std::pair<int, std::vector<std::string>> Room::get_start_infos()
+{
+    std::vector<std::string> player_names;
+    for (auto& player : room_players)
+    {
+        player_names.push_back(player.get_name());
+    }
+    return {room_players.size(), player_names};
+}
 }  // namespace server

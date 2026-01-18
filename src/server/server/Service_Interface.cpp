@@ -9,10 +9,12 @@ Service_Interface::~Service_Interface() {}
 Http_Status Service_Interface::get(std::string& in, std::string& out, std::string url,
                                    std::string session_token)
 {
+    return Http_Status::METHOD_NOT_ALLOWED;
 }
 Http_Status Service_Interface::post(std::string& in, std::string& out, std::string url,
                                     std::string session_token)
 {
+    return Http_Status::METHOD_NOT_ALLOWED;
 }
 std::string Service_Interface::get_root_prefix()
 {

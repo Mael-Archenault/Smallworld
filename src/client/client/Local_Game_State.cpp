@@ -29,7 +29,7 @@ void engine_process(engine::Engine& engine, client::Local_Game_State& client)
             }
         }
 
-        usleep(50000 / 3);  // 60 updates per secound
+        usleep(50000 / 3);  // 60 updates per second
         running = client.get_running_flag("engine_update");
     }
 }

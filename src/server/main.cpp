@@ -90,12 +90,15 @@ int main(int argc, char* argv[])
 {
     std::cout << "Hello World" << std::endl;
 
-    server::Server_Manager  server_manager;
-    server::Service_Manager service_manager(server_manager);
+    server::Player_Manager  player_manager;
+    server::Service_Manager service_manager(player_manager);
 
     std::unique_ptr<server::Room_Service> room_service =
-        std::make_unique<server::Room_Service>(server_manager);
+        std::make_unique<server::Room_Service>(player_manager);
+    std::unique_ptr<server::Game_Service> game_service =
+        std::make_unique<server::Game_Service>(*room_service);
     service_manager.register_service(std::move(room_service));
+    service_manager.register_service(std::move(game_service));
 
     struct MHD_Daemon* daemon;
     daemon = MHD_start_daemon(MHD_USE_INTERNAL_POLLING_THREAD, PORT, NULL, NULL,

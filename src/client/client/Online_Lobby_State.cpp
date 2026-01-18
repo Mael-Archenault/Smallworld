@@ -45,24 +45,6 @@ Online_Lobby_State::~Online_Lobby_State()
 
 void Online_Lobby_State::handle_input(sf::Event event)
 {
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (event.key.code == sf::Keyboard::M)
-        {
-            std::cout << "Switching to Menu State" << std::endl;
-            stop_thread("lobby_update");
-            Menu_State* new_state = new Menu_State(this->context->get_window());
-            this->context->change_state(new_state);
-        }
-        if (event.key.code == sf::Keyboard::G)
-        {
-            std::cout << "Switching to Online Game State" << std::endl;
-            stop_thread("lobby_update");
-            Online_Game_State* new_state = new Online_Game_State();
-            this->context->change_state(new_state);
-        }
-    }
-
     if (event.type == sf::Event::MouseButtonPressed)
     {
         sf::Vector2i mouse_pos = sf::Mouse::getPosition(context->get_window());
@@ -75,6 +57,15 @@ void Online_Lobby_State::handle_input(sf::Event event)
             stop_thread("lobby_update");
             Online_Menu_State* new_state =
                 new Online_Menu_State(context->get_window(), context->get_name());
+            this->context->change_state(new_state);
+        }
+        if (layout_infos["start_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+        {
+            std::cout << "Switching to Online Game State" << std::endl;
+            stop_thread("lobby_update");
+            send_start_request();
+            Online_Game_State* new_state =
+                new Online_Game_State(this->context->get_window(), room_id, session_token);
             this->context->change_state(new_state);
         }
     }
@@ -109,6 +100,16 @@ void Online_Lobby_State::request_lobby_state()
             player_names.push_back(t);
         }
     }
+}
+void Online_Lobby_State::send_start_request()
+{
+    sf::Http http_client("http://localhost", 8888);
+
+    sf::Http::Request request("/game/start/" + std::to_string(room_id));
+    request.setMethod(sf::Http::Request::Post);
+    request.setField("Session-Token", session_token);
+
+    sf::Http::Response response = http_client.sendRequest(request);
 }
 
 void Online_Lobby_State::send_exit_request()
