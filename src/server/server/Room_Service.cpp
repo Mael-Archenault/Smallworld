@@ -79,6 +79,7 @@ Http_Status Room_Service::post(std::string& in, std::string& out, std::string ur
 
     if (verify_room_id(room_id) == false)
     {
+        out = "Room id not existing";
         return Http_Status::NOT_FOUND;
     }
     std::cout << "room id : " << room_id_str << " action : " << action << std::endl;
@@ -140,6 +141,10 @@ void Room_Service::join_room(int room_id, std::string player_session_token)
     {
         if (room.id == room_id)
         {
+            if (room.is_full())
+            {
+                throw std::runtime_error("Room is full");
+            }
             room.add_player(player);
             player.set_room(room_id);
             return;
