@@ -8,12 +8,12 @@ Opponents_Info_Renderer::Opponents_Info_Renderer(sf::RenderWindow& window, state
     : window(window), players(state.get_players())
 {
     // Reserve space to avoid vector reallocation which invalidates font pointers
-    names.reserve(players.size() - 1);
-    coins.reserve(players.size() - 1);
+    names.reserve(3);
+    coins.reserve(3);
     active_tribes_renderers.reserve(players.size() - 1);
     decline_tribes_renderers.reserve(players.size() - 1);
 
-    for (int i = 0; i < players.size() - 1; i++)
+    for (int i = 0; i < 3; i++)
     {
         names.emplace_back();
         names.at(i).set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);

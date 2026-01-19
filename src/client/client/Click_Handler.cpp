@@ -7,11 +7,11 @@
 
 namespace client
 {
-Click_Handler::Click_Handler(Client& client)
+Click_Handler::Click_Handler(Local_Game_State* client)
     : client(client),
-      state(client.get_state()),
-      renderer(client.get_renderer()),
-      engine(client.get_engine())
+      state(client->get_state()),
+      renderer(client->get_renderer()),
+      engine(client->get_engine())
 {
 }
 
@@ -20,7 +20,7 @@ void Click_Handler::handle_click(sf::Vector2i position)
     std::unordered_map<std::string, sf::FloatRect> layout_infos = renderer.get_layout_infos();
 
     // tribe window management
-    if (client.get_tribe_info_window_state())
+    if (client->get_tribe_info_window_state())
     {
         if (layout_infos["tribe_info_window"].contains(static_cast<sf::Vector2f>(position)))
         {
@@ -30,7 +30,7 @@ void Click_Handler::handle_click(sf::Vector2i position)
         else
         {
             renderer.close_tribe_info_window();
-            client.set_tribe_info_window_state(false);
+            client->set_tribe_info_window_state(false);
             return;
         }
     }
@@ -88,7 +88,7 @@ void Click_Handler::handle_map_click(sf::Vector2i position, sf::FloatRect map_la
     }
 
     renderer.set_selected_area(static_cast<int>(min_index));
-    client.set_selected_area_id(static_cast<int>(min_index));
+    client->set_selected_area_id(static_cast<int>(min_index));
 }
 
 void Click_Handler::handle_tribe_stack_click(sf::Vector2i  position,
@@ -119,8 +119,8 @@ void Click_Handler::handle_tribe_stack_click(sf::Vector2i  position,
         is_buying_possible = true;
     }
     renderer.open_tribe_info_window(*state.get_tribes_on_top().at(min_index), is_buying_possible);
-    client.set_selected_position_in_stack(static_cast<int>(min_index));
-    client.set_tribe_info_window_state(true);
+    client->set_selected_position_in_stack(static_cast<int>(min_index));
+    client->set_tribe_info_window_state(true);
 }
 
 void Click_Handler::handle_player_area_click(
@@ -129,12 +129,12 @@ void Click_Handler::handle_player_area_click(
     if (layout_infos["active_tribe"].contains(static_cast<sf::Vector2f>(position)))
     {
         renderer.open_tribe_info_window(*state.get_current_player().get_tribes().first, false);
-        client.set_tribe_info_window_state(true);
+        client->set_tribe_info_window_state(true);
     }
     else if (layout_infos["in_decline_tribe"].contains(static_cast<sf::Vector2f>(position)))
     {
         renderer.open_tribe_info_window(*state.get_current_player().get_tribes().second, false);
-        client.set_tribe_info_window_state(true);
+        client->set_tribe_info_window_state(true);
     }
 }
 
@@ -145,7 +145,7 @@ void Click_Handler::handle_info_window_click(
             static_cast<sf::Vector2f>(position)))
     {
         renderer.close_tribe_info_window();
-        client.set_tribe_info_window_state(false);
+        client->set_tribe_info_window_state(false);
     }
 
     else if (layout_infos["tribe_info_window_buy_button"].contains(
@@ -155,10 +155,10 @@ void Click_Handler::handle_info_window_click(
             state.get_current_player().get_tribes().first == nullptr)
         {
             auto command = std::make_unique<engine::Choose_Species_Command>(
-                state.get_current_player().id, client.get_selected_position_in_stack());
+                state.get_current_player().id, client->get_selected_position_in_stack());
             engine.add_command(std::move(command));
             renderer.close_tribe_info_window();
-            client.set_tribe_info_window_state(false);
+            client->set_tribe_info_window_state(false);
         }
     }
 }
@@ -177,7 +177,7 @@ void Click_Handler::handle_button_area_click(
         int price;
         for (const auto& price_info : prices)
         {
-            if (price_info.first == client.get_selected_area_id())
+            if (price_info.first == client->get_selected_area_id())
             {
                 price = price_info.second;
             }
@@ -226,8 +226,8 @@ void Click_Handler::handle_button_area_click(
     if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::REDEPLOY)
     {
-        auto command = std::make_unique<engine::Redeploy_Command>(state.get_current_player().id,
-                                                                  client.get_selected_area_id(), 1);
+        auto command = std::make_unique<engine::Redeploy_Command>(
+            state.get_current_player().id, client->get_selected_area_id(), 1);
         engine.add_command(std::move(command));
         return;
     }
@@ -257,13 +257,13 @@ void Click_Handler::handle_opponent_area_click(
         if (clicked_on_active_tribe && player.get_tribes().first != nullptr)
         {
             renderer.open_tribe_info_window(*player.get_tribes().first, false);
-            client.set_tribe_info_window_state(true);
+            client->set_tribe_info_window_state(true);
             return;
         }
         if (clicked_on_decline_tribe && player.get_tribes().second != nullptr)
         {
             renderer.open_tribe_info_window(*player.get_tribes().second, false);
-            client.set_tribe_info_window_state(true);
+            client->set_tribe_info_window_state(true);
             return;
         }
         i++;
