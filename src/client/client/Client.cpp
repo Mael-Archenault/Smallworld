@@ -7,7 +7,8 @@
 namespace client
 {
 
-Client::Client() : window(sf::VideoMode(1280, 720), "Smallworld")
+Client::Client(std::string server_ip)
+    : window(sf::VideoMode(1280, 720), "Smallworld"), server_ip(server_ip)
 {
     current_state = new Menu_State(window);
     current_state->set_context(this);
@@ -67,6 +68,11 @@ void Client::change_state(Client_State_Interface* new_state)
 {
     current_state = new_state;
     current_state->set_context(this);
+}
+
+std::string Client::get_server_ip()
+{
+    return server_ip;
 }
 
 }  // namespace client

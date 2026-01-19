@@ -14,6 +14,7 @@
 
 int main(int argc, char* argv[])
 {
-    client::Client client;
+    std::string    server_ip = argv[1];
+    client::Client client(server_ip);
     client.run();
 }

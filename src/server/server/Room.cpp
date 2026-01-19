@@ -4,7 +4,8 @@
 
 namespace server
 {
-Room::Room(int room_id, Player creator) : id(room_id), owner(creator), state(Room_State::WAITING)
+Room::Room(int room_id, Player creator)
+    : id(room_id), owner(creator), state(Room_State::WAITING), max_players(4)
 {
     room_players.push_back(owner);
 }
@@ -60,6 +61,11 @@ Player Room::get_owner()
 bool Room::is_empty()
 {
     return room_players.empty();
+}
+
+bool Room::is_full()
+{
+    return room_players.size() == max_players;
 }
 
 std::string Room::get_infos(std::string session_token)

@@ -18,7 +18,21 @@ void lobby_update_process(Online_Lobby_State& client)
     {
         {
             std::lock_guard<std::mutex>(client.get_mutex());
-            client.request_lobby_state();
+            try
+            {
+                client.request_lobby_state();
+            }
+            catch (const std::runtime_error& e)
+            {
+                std::cout << "Error while requesting lobby state: " << e.what() << std::endl;
+                // switching back to menu
+
+                client.stop_thread("lobby_update");
+                Online_Menu_State* new_state =
+                    new Online_Menu_State(client.context->get_window(), client.context->get_name());
+                client.context->change_state(new_state);
+                return;
+            }
         }
         usleep(1000000);
 
@@ -55,8 +69,15 @@ void Online_Lobby_State::handle_input(sf::Event event)
 
         if (layout_infos["exit_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
         {
-            send_exit_request();
-            std::cout << "Switching to Online Menu State" << std::endl;
+            try
+            {
+                send_exit_request();
+            }
+            catch (const std::runtime_error& e)
+            {
+                std::cout << "Failed to exit lobby: " << e.what() << std::endl;
+                return;
+            }
             stop_thread("lobby_update");
             Online_Menu_State* new_state =
                 new Online_Menu_State(context->get_window(), context->get_name());
@@ -65,9 +86,16 @@ void Online_Lobby_State::handle_input(sf::Event event)
         }
         if (layout_infos["start_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
         {
-            std::cout << "Switching to Online Game State" << std::endl;
+            try
+            {
+                send_start_request();
+            }
+            catch (const std::runtime_error& e)
+            {
+                std::cout << "Failed to start game: " << e.what() << std::endl;
+                return;
+            }
             stop_thread("lobby_update");
-            send_start_request();
             Online_Game_State* new_state = new Online_Game_State(
                 this->context->get_window(), player_names, room_id, session_token, player_id);
             this->context->change_state(new_state);
@@ -100,12 +128,18 @@ void Online_Lobby_State::render(sf::RenderWindow& window)
 void Online_Lobby_State::request_lobby_state()
 {
     // getting names of the players in the lobby
-    sf::Http          http_client("http://localhost", 8888);
+    sf::Http          http_client("http://" + context->get_server_ip(), 8888);
     sf::Http::Request request("/rooms/state/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Get);
     request.setField("Session-Token", session_token);
 
     sf::Http::Response response = http_client.sendRequest(request);
+
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to get lobby state from server");
+        return;
+    }
 
     if (response.getBody() == "Game Launched")
     {
@@ -132,24 +166,32 @@ void Online_Lobby_State::request_lobby_state()
 }
 void Online_Lobby_State::send_start_request()
 {
-    sf::Http http_client("http://localhost", 8888);
+    sf::Http http_client("http://" + context->get_server_ip(), 8888);
 
     sf::Http::Request request("/game/start/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Post);
     request.setField("Session-Token", session_token);
 
     sf::Http::Response response = http_client.sendRequest(request);
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to send start request to server");
+    }
 }
 
 void Online_Lobby_State::send_exit_request()
 {
-    sf::Http http_client("http://localhost", 8888);
+    sf::Http http_client("http://" + context->get_server_ip(), 8888);
 
     sf::Http::Request request("/rooms/exit/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Post);
     request.setField("Session-Token", session_token);
 
     sf::Http::Response response = http_client.sendRequest(request);
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to send exit request to server");
+    }
 }
 
 }  // namespace client

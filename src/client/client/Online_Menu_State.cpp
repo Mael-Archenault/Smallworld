@@ -85,25 +85,46 @@ void Online_Menu_State::handle_input(sf::Event event)
         {
             if (layout_infos["create_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
             {
-                int room_id = send_create_request();
-                std::cout << "Created room with id: " << room_id << std::endl;
+                try
+                {
+                    int room_id = send_create_request();
+                    std::cout << "Created room with id: " << room_id << std::endl;
 
-                Online_Lobby_State* new_state =
-                    new Online_Lobby_State(room_id, session_token, context->get_window());
-                this->context->change_state(new_state);
-                return;
+                    Online_Lobby_State* new_state =
+                        new Online_Lobby_State(room_id, session_token, context->get_window());
+                    this->context->change_state(new_state);
+                    return;
+                }
+                catch (std::exception& e)
+                {
+                    std::cout << e.what() << std::endl;
+                    return;
+                }
             }
 
             if (layout_infos["join_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
             {
+                if (room_id_str.empty())
+                {
+                    std::cout << "Room ID is empty, cannot join room." << std::endl;
+                    return;
+                }
                 int room_id = stoi(room_id_str);
-                send_join_request(room_id);
-                std::cout << "Sent join request for room id: " << room_id_str << std::endl;
+                try
+                {
+                    send_join_request(room_id);
+                    std::cout << "Sent join request for room id: " << room_id_str << std::endl;
 
-                Online_Lobby_State* new_state =
-                    new Online_Lobby_State(room_id, session_token, context->get_window());
-                this->context->change_state(new_state);
-                return;
+                    Online_Lobby_State* new_state =
+                        new Online_Lobby_State(room_id, session_token, context->get_window());
+                    this->context->change_state(new_state);
+                    return;
+                }
+                catch (std::exception& e)
+                {
+                    std::cout << e.what() << std::endl;
+                    return;
+                }
             }
             if (layout_infos["room_id_box"].contains(static_cast<sf::Vector2f>(mouse_pos)))
             {
@@ -144,8 +165,7 @@ void Online_Menu_State::render(sf::RenderWindow& window)
 
 void Online_Menu_State::request_session_token()
 {
-    sf::Http http_client("http://localhost", 8888);
-    // Connect to localhost server on port 8888
+    sf::Http          http_client("http://" + context->get_server_ip(), 8888);
     sf::Http::Request request("/connect");
     request.setMethod(sf::Http::Request::Post);
     request.setBody(this->context->get_name());
@@ -153,14 +173,27 @@ void Online_Menu_State::request_session_token()
     // Send request
     sf::Http::Response response = http_client.sendRequest(request);
 
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to get session token: " + response.getBody());
+    }
+
     session_token = response.getBody();
 }
 int Online_Menu_State::send_create_request()
 {
-    sf::Http http_client("http://localhost", 8888);
+    sf::Http http_client("http://" + context->get_server_ip(), 8888);
     if (session_token.empty())
     {
-        request_session_token();
+        try
+        {
+            request_session_token();
+        }
+        catch (std::exception& e)
+        {
+            throw std::runtime_error("Cannot create room without session token: " +
+                                     std::string(e.what()));
+        }
     }
     sf::Http::Request request("/rooms/create");
     request.setMethod(sf::Http::Request::Post);
@@ -169,13 +202,18 @@ int Online_Menu_State::send_create_request()
     // Send request
     sf::Http::Response response = http_client.sendRequest(request);
 
+    if (response.getStatus() != sf::Http::Response::Created)
+    {
+        throw std::runtime_error("Failed to create room: " + response.getBody());
+    }
+
     int room_id = std::stoi(response.getBody());
     return room_id;
 }
 
 void Online_Menu_State::send_join_request(int room_id)
 {
-    sf::Http http_client("http://localhost", 8888);
+    sf::Http http_client("http://" + context->get_server_ip(), 8888);
     if (session_token.empty())
     {
         request_session_token();
@@ -187,5 +225,10 @@ void Online_Menu_State::send_join_request(int room_id)
 
     // Send request
     sf::Http::Response response = http_client.sendRequest(request);
+
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to join room: " + response.getBody());
+    }
 }
 }  // namespace client
