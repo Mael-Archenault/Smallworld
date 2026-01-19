@@ -1064,7 +1064,25 @@
           <dia:attribute name="class_scope">
             <dia:boolean val="false"/>
           </dia:attribute>
-          <dia:attribute name="parameters"/>
+          <dia:attribute name="parameters">
+            <dia:composite type="umlparameter">
+              <dia:attribute name="name">
+                <dia:string>#session_token#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="type">
+                <dia:string>#std::string#</dia:string>
+              </dia:attribute>
+              <dia:attribute name="value">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="comment">
+                <dia:string>##</dia:string>
+              </dia:attribute>
+              <dia:attribute name="kind">
+                <dia:enum val="0"/>
+              </dia:attribute>
+            </dia:composite>
+          </dia:attribute>
         </dia:composite>
       </dia:attribute>
       <dia:attribute name="template">
@@ -4705,7 +4723,7 @@
         <dia:point val="-53.1852,31.5006"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-53.2352,30.4506;-43.1286,35.4188"/>
+        <dia:rectangle val="-53.2352,30.4506;-43.1286,35.4187"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -4863,7 +4881,7 @@
         <dia:point val="-22.1621,40.6121"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="-45.6551,33.1597;-21.4121,42.2121"/>
+        <dia:rectangle val="-45.6551,32.4497;-21.4121,41.4521"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -4943,7 +4961,7 @@
         <dia:point val="23.6098,48.7784"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="22.8598,48.0284;49.6981,53.198"/>
+        <dia:rectangle val="22.8598,48.0284;49.6981,52.398"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>

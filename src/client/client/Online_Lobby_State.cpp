@@ -68,8 +68,8 @@ void Online_Lobby_State::handle_input(sf::Event event)
             std::cout << "Switching to Online Game State" << std::endl;
             stop_thread("lobby_update");
             send_start_request();
-            Online_Game_State* new_state =
-                new Online_Game_State(this->context->get_window(), room_id, session_token);
+            Online_Game_State* new_state = new Online_Game_State(
+                this->context->get_window(), player_names, room_id, session_token, player_id);
             this->context->change_state(new_state);
             return;
         }
@@ -84,8 +84,8 @@ void Online_Lobby_State::handle_input(sf::Event event)
     {
         std::cout << "Game remotely launched, switching to Online Game State" << std::endl;
         stop_thread("lobby_update");
-        Online_Game_State* new_state =
-            new Online_Game_State(this->context->get_window(), room_id, session_token);
+        Online_Game_State* new_state = new Online_Game_State(
+            this->context->get_window(), player_names, room_id, session_token, player_id);
         this->context->change_state(new_state);
     }
     // Handle input events specific to the online lobby state
@@ -99,13 +99,12 @@ void Online_Lobby_State::render(sf::RenderWindow& window)
 
 void Online_Lobby_State::request_lobby_state()
 {
-    sf::Http http_client("http://localhost", 8888);
-    // Connect to localhost server on port 8888
+    // getting names of the players in the lobby
+    sf::Http          http_client("http://localhost", 8888);
     sf::Http::Request request("/rooms/state/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Get);
     request.setField("Session-Token", session_token);
 
-    // Send request
     sf::Http::Response response = http_client.sendRequest(request);
 
     if (response.getBody() == "Game Launched")
@@ -125,6 +124,10 @@ void Online_Lobby_State::request_lobby_state()
         {
             player_names.push_back(t);
         }
+        // last info is the player id
+        std::string player_id_str = player_names.back();
+        player_names.pop_back();
+        player_id = std::stoi(player_id_str);
     }
 }
 void Online_Lobby_State::send_start_request()
@@ -148,4 +151,5 @@ void Online_Lobby_State::send_exit_request()
 
     sf::Http::Response response = http_client.sendRequest(request);
 }
+
 }  // namespace client

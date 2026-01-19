@@ -62,7 +62,7 @@ bool Room::is_empty()
     return room_players.empty();
 }
 
-std::string Room::get_infos()
+std::string Room::get_infos(std::string session_token)
 {
     std::string state = owner.get_name() + ",";
 
@@ -74,6 +74,17 @@ std::string Room::get_infos()
         }
         state += player.get_name() + ",";
     }
+
+    // adding player_id
+    for (int i = 0; i < room_players.size(); ++i)
+    {
+        if (room_players[i].get_session_token() == session_token)
+        {
+            state += std::to_string(i);
+            break;
+        }
+    }
+
     return state;
 }
 

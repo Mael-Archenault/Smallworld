@@ -191,7 +191,7 @@ std::string Room_Service::get_room_infos(int room_id, std::string session_token)
     {
         if (room.id == room_id)
         {
-            return room.get_infos();
+            return room.get_infos(session_token);
         }
     }
     throw std::runtime_error("Room with id not found");
