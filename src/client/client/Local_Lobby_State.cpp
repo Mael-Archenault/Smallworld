@@ -27,7 +27,7 @@ void Local_Lobby_State::handle_input(sf::Event event)
             int                      nb_players   = 3;  //TODO delete
             std::vector<std::string> player_names = {"Alice", "Bob"};
 
-            std::vector<int> ais = {0};
+            std::vector<ai::Ai_type> ais = {0};
 
 
 
