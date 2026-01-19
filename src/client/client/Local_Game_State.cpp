@@ -7,6 +7,9 @@
 #include "client.h"
 #include "engine.h"
 #include "renderer.h"
+#include "ai/Ai_Advanced.h"
+#include "ai/Ai_Heuristic.h"
+#include "ai/Ai_Random.h"
 
 namespace client
 {
@@ -44,10 +47,59 @@ void state_update_process(client::Local_Game_State& client)
             client.update_state();
         }
 
-        usleep(100000);  // 10 updates per secound
+        usleep(100000);  // 10 updates per second
         running = client.get_running_flag("state_update");
     }
 }
+
+void ai_process_local(client::Local_Game_State& client, std::string thread_name, int ai_type, int player_id ) {
+    //TODO add enum name of ais for switch
+
+    std::string name = thread_name;
+    bool running = true;
+    ai::Ai_Interface * ai;
+    switch (ai_type) {
+        case 0:
+            new ai::Ai_Random(client.get_state(),player_id);
+            break;
+        case 1 :
+            ai = new ai::Ai_Heuristic(client.get_state(),player_id);
+            break;
+        case 2 :
+            ai = new ai::Ai_Advanced(client.get_state(),player_id);
+            break;
+        default:
+            break;
+    }
+
+    while (running) {
+        //     std::lock_guard<std::mutex> lock(mtx);
+        //     if (ai..is_game_finished() == true ) {
+        //         return player_id;
+        //     }
+
+        bool is_my_turn = false;
+        {
+            std::lock_guard<std::mutex> lock(client.get_mutex());
+            // update state
+            engine::Engine& engine = client.get_engine();
+
+            if (engine.get_state_version_id() != ai->get_state().get_version_id())
+            {
+                ai->update_state(client.get_engine().get_state());
+                is_my_turn= (ai->get_state().get_current_player().id == player_id);
+            }
+
+            // give command if needed
+            if (is_my_turn) {
+                engine.add_command(ai->give_command(ai->get_state().get_current_turn_phase()));
+            }
+        }
+        usleep(100000);
+        running = client.get_running_flag(name);
+    }
+}
+
 
 int                      nb_players   = 2;
 std::vector<std::string> player_names = {"Alice", "Bob"};

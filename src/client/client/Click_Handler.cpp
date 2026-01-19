@@ -189,14 +189,14 @@ void Click_Handler::handle_button_area_click(
         {
             std::cout << "No more area attackable, rolled the dice." << std::endl;
             auto command = std::make_unique<engine::Conquer_Command>(state.get_current_player().id,
-                                                                     client.get_selected_area_id(),
+                                                                     client->get_selected_area_id(),
                                                                      available_units, true);
             engine.add_command(std::move(command));
         }
         else
         {
             auto command = std::make_unique<engine::Conquer_Command>(
-                state.get_current_player().id, client.get_selected_area_id(), price, false);
+                state.get_current_player().id, client->get_selected_area_id(), price, false);
             engine.add_command(std::move(command));
         }
         return;

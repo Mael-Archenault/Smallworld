@@ -24,9 +24,19 @@ void Local_Lobby_State::handle_input(sf::Event event)
         if (event.key.code == sf::Keyboard::G)
         {
             std::cout << "Switching to Local Game State" << std::endl;
-            int                      nb_players   = 2;
+            int                      nb_players   = 3;  //TODO delete
             std::vector<std::string> player_names = {"Alice", "Bob"};
-            engine::Engine*          engine       = new engine::Engine(nb_players, player_names);
+
+            std::vector<int> ais = {0};
+
+
+
+            for (auto i : ais) {
+
+            }
+
+
+            engine::Engine*          engine       = new engine::Engine(nb_players, player_names); // TODO make a smart pointer
             Local_Game_State*        new_state =
                 new Local_Game_State(this->context->get_window(), *engine);
             this->context->change_state(new_state);

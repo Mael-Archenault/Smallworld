@@ -49,4 +49,7 @@ void Ai_Interface::update_state(state::Game_State new_state)
     this->state = new_state.deep_copy();
 }
 
+state::Game_State Ai_Interface::get_state() {
+    return this->state;
+}
 }
