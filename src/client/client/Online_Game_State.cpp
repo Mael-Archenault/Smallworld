@@ -14,7 +14,14 @@ void online_state_update_process(client::Online_Game_State& client)
     {
         {
             std::lock_guard<std::mutex> lock(client.get_mutex());
-            client.update_state();
+            try
+            {
+                client.update_state();
+            }
+            catch (std::exception& e)
+            {
+                std::cout << "Error updating state: " << e.what() << std::endl;
+            }
         }
 
         usleep(100000);  // 10 updates per second
@@ -68,7 +75,14 @@ void Online_Game_State::handle_input(sf::Event event)
         sf::Vector2i mouse_pos = sf::Mouse::getPosition(context->get_window());
         {
             std::lock_guard<std::mutex> lock(get_mutex());
-            click_handler.handle_click(mouse_pos);
+            try
+            {
+                click_handler.handle_click(mouse_pos);
+            }
+            catch (std::exception& e)
+            {
+                std::cout << "Error handling click: " << e.what() << std::endl;
+            }
         }
     }
     if (event.type == sf::Event::MouseButtonReleased)
@@ -128,6 +142,7 @@ void Online_Game_State::update_state()
         return;
     }
     Json::Value root;
+
     request_state(root);
     state.from_json(root);
 }
@@ -146,6 +161,10 @@ int Online_Game_State::request_version_id()
 
     // Send request
     sf::Http::Response response = http_client.sendRequest(request);
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to get version id from server: " + response.getBody());
+    }
     return std::stoi(response.getBody());
 }
 
@@ -158,6 +177,11 @@ void Online_Game_State::request_state(Json::Value& root)
 
     // Send request
     sf::Http::Response response = http_client.sendRequest(request);
+
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to get state from server: " + response.getBody());
+    }
 
     std::istringstream      iss(response.getBody());
     Json::CharReaderBuilder builder;
@@ -184,5 +208,9 @@ void Online_Game_State::send_command(Json::Value& command_json)
 
     // Send request
     sf::Http::Response response = http_client.sendRequest(request);
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to send command to server: " + response.getBody());
+    }
 }
 }  // namespace client
