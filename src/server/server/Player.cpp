@@ -2,8 +2,8 @@
 
 namespace server
 {
-Player::Player(std::string name, std::string session_token)
-    : name(name), session_token(session_token), in_room(-1)
+Player::Player(std::string name, state::Player_Type player_type, std::string session_token)
+    : name(name), player_type(player_type), session_token(session_token), in_room(-1)
 {
 }
 
@@ -25,5 +25,8 @@ void Player::set_room(int room_id)
 int Player::get_room()
 {
     return in_room;
+}
+state::Player_Type Player::get_player_type() {
+    return player_type;
 }
 }  // namespace server
