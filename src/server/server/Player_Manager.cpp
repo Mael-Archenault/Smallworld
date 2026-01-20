@@ -9,7 +9,7 @@ Player_Manager::Player_Manager() {}
 std::string Player_Manager::create_player(std::string name)
 {
     std::string session_token = generate_session_token();
-    connected_players.push_back(Player(name, session_token));
+    connected_players.push_back(Player(name, state::Human, session_token));
     std::cout << "Created player: " << connected_players.back().get_name() << std::endl;
     return session_token;
 }

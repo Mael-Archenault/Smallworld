@@ -20,14 +20,15 @@ Room::~Room()
 
 void Room::add_player(Player player)
 {
-    for (auto& player_in_room : room_players)
-    {
-        if (player_in_room.get_session_token() == player.get_session_token())
+    if (player.get_player_type() == state::Human) {
+        for (auto& player_in_room : room_players)
         {
-            throw std::runtime_error("Player already in the room");
+            if (player_in_room.get_session_token() == player.get_session_token())
+            {
+                throw std::runtime_error("Player already in the room");
+            }
         }
     }
-
     room_players.push_back(player);
 }
 void Room::remove_player(Player player)
@@ -70,7 +71,7 @@ bool Room::is_full()
 
 std::string Room::get_infos(std::string session_token)
 {
-    std::string state = owner.get_name() + ",";
+    std::string state = owner.get_name() + "," + std::to_string(static_cast<int>(owner.get_player_type())) + "/";
 
     for (auto& player : room_players)
     {
@@ -78,7 +79,7 @@ std::string Room::get_infos(std::string session_token)
         {
             continue;
         }
-        state += player.get_name() + ",";
+        state += player.get_name() + "," + std::to_string(static_cast<int>(player.get_player_type())) + "/";
     }
 
     // adding player_id
@@ -94,14 +95,17 @@ std::string Room::get_infos(std::string session_token)
     return state;
 }
 
-std::pair<int, std::vector<std::string>> Room::get_start_infos()
+std::pair<std::vector<std::string>, std::vector<state::Player_Type>> Room::get_start_infos()
 {
     std::vector<std::string> player_names;
+    std::vector<state::Player_Type> player_types;
     for (auto& player : room_players)
     {
         player_names.push_back(player.get_name());
+        player_types.emplace_back(player.get_player_type());
     }
-    return {room_players.size(), player_names};
+
+    return {player_names, player_types};
 }
 
 Room_State Room::get_state()
