@@ -92,12 +92,21 @@ std::string Room::get_infos(std::string session_token)
                  std::to_string(static_cast<int>(player.get_player_type())) + "/";
     }
 
-    // adding player_id
+    // adding player_id and owning info
     for (int i = 0; i < room_players.size(); ++i)
     {
-        if (room_players[i].get_session_token() == session_token)
+        if (room_players.at(i).get_session_token() == session_token)
         {
             state += std::to_string(i);
+
+            if (session_token == owner.get_session_token())
+            {
+                state += ",1";
+            }
+            else
+            {
+                state += ",0";
+            }
             break;
         }
     }
@@ -126,5 +135,17 @@ Room_State Room::get_state()
 void Room::set_state(Room_State new_state)
 {
     state = new_state;
+}
+
+void Room::remove_ai()
+{
+    for (int i = room_players.size() - 1; i > -1; i--)
+    {
+        if (room_players.at(i).get_player_type() != state::Player_Type::Human)
+        {
+            room_players.erase(room_players.begin() + i);
+            return;
+        }
+    }
 }
 }  // namespace server

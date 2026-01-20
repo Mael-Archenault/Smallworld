@@ -15,7 +15,7 @@ Online_Lobby_Renderer::Online_Lobby_Renderer(sf::RenderWindow& window, std::stri
     }
     background_sprite.setTexture(background_texture);
 
-    room_id_indicator.set_content("Room_id : " + room_id);
+    room_id_indicator.set_content("Room ID : " + room_id);
     room_id_indicator.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
 
     exit_button.set_content("Exit room");
@@ -29,12 +29,15 @@ Online_Lobby_Renderer::Online_Lobby_Renderer(sf::RenderWindow& window, std::stri
 
     remove_ai_button.set_content("Remove AI");
     remove_ai_button.set_colors(sf::Color::Black, sf::Color(50, 50, 50), sf::Color::White);
+
+    owner_label.set_content("Room Owner");
+    owner_label.set_colors(sf::Color::Black, sf::Color(61, 186, 32), sf::Color::White);
 }
 
 void Online_Lobby_Renderer::render(std::vector<std::string>        player_names,
                                    std::vector<state::Player_Type> player_types, bool show_adder,
                                    bool modifying_name, std::string name,
-                                   state::Player_Type selected_player_type)
+                                   state::Player_Type selected_player_type, bool owner_view)
 {
     window.clear(sf::Color::Black);
 
@@ -64,23 +67,38 @@ void Online_Lobby_Renderer::render(std::vector<std::string>        player_names,
     exit_button.set_character_size(button_height / 3);
     exit_button.render(window);
 
-    start_button.set_size(sf::Vector2f(button_width / 2, button_height));
-    start_button.set_position(sf::Vector2f(window_size.x * 5 / 6 - button_width / 4,
-                                           window_size.y * 9 / 10 - button_height / 2));
-    start_button.set_character_size(button_height / 3);
-    start_button.render(window);
+    if (owner_view)
+    {
+        start_button.set_size(sf::Vector2f(button_width / 2, button_height));
+        start_button.set_position(sf::Vector2f(window_size.x * 5 / 6 - button_width / 4,
+                                               window_size.y * 9 / 10 - button_height / 2));
+        start_button.set_character_size(button_height / 3);
+        start_button.render(window);
 
-    add_ai_button.set_size(sf::Vector2f(button_width / 2, button_height));
-    add_ai_button.set_position(sf::Vector2f(window_size.x * 9 / 10 - button_width / 4,
-                                            window_size.y / 2 - button_height / 2));
-    add_ai_button.set_character_size(button_height / 3);
-    add_ai_button.render(window);
+        add_ai_button.set_size(sf::Vector2f(button_width / 2, button_height));
+        add_ai_button.set_position(sf::Vector2f(window_size.x * 9 / 10 - button_width / 4,
+                                                window_size.y / 2 - button_height / 2));
+        add_ai_button.set_character_size(button_height / 3);
+        add_ai_button.render(window);
 
-    remove_ai_button.set_size(sf::Vector2f(button_width / 2, button_height));
-    remove_ai_button.set_position(sf::Vector2f(window_size.x * 9 / 10 - button_width / 4,
-                                               window_size.y * 5 / 8 - button_height / 2));
-    remove_ai_button.set_character_size(button_height / 3);
-    remove_ai_button.render(window);
+        remove_ai_button.set_size(sf::Vector2f(button_width / 2, button_height));
+        remove_ai_button.set_position(sf::Vector2f(window_size.x * 9 / 10 - button_width / 4,
+                                                   window_size.y * 5 / 8 - button_height / 2));
+        remove_ai_button.set_character_size(button_height / 3);
+        remove_ai_button.render(window);
+    }
+
+    else
+    {
+        start_button.set_size(sf::Vector2f(0.f, 0.f));
+        add_ai_button.set_size(sf::Vector2f(0.f, 0.f));
+        remove_ai_button.set_size(sf::Vector2f(0.f, 0.f));
+    }
+
+    owner_label.set_size(sf::Vector2f(button_width * 4 / 5, button_height));
+    owner_label.set_position(sf::Vector2f(window_size.x / 4 - button_width / 2, window_size.y / 4));
+    owner_label.set_character_size(button_height / 2);
+    owner_label.render(window);
 
     for (size_t i = 0; i < player_names.size(); ++i)
     {

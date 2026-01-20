@@ -16,11 +16,11 @@ void sessions_update_process(Player_Manager& manager)
     while (running)
     {
         manager.remove_inactive_players();
-        usleep(15000000);  // checking every 15 seconds
+        usleep(15000000);  // checking every 5 seconds
         running = manager.get_sessions_update_thread_running();
     }
 }
-Player_Manager::Player_Manager()
+Player_Manager::Player_Manager() : room_service(nullptr)
 {
     sessions_update_thread = std::thread(
         [](Player_Manager& manager) { sessions_update_process(manager); }, std::ref(*this));
@@ -97,17 +97,37 @@ void Player_Manager::refresh_last_seen(std::string session_token)
 
 void Player_Manager::remove_inactive_players()
 {
+    if (room_service == nullptr)
+    {  // reference to room_service not set yet, we cannot clean
+        return;
+    }
     std::cout << "Cleaning" << std::endl;
     std::lock_guard<std::mutex> lock(mtx);
     auto                        now = clock.now();
 
-    for (auto& player : connected_players)
+    // reverse iterating to safely removing players while iterating
+    for (int i = connected_players.size() - 1; i >= 0; i--)
     {
-        auto duration =
+        auto& player = connected_players.at(i);
+        auto  duration =
             std::chrono::duration_cast<std::chrono::seconds>(now - player.get_last_seen());
         if (duration.count() >= 5)
         {
             std::cout << "Removing inactive player: " << player.get_name() << std::endl;
+
+            // remove the player from its room (if any)
+            try
+            {
+                room_service->exit_room(player.get_room(), player.get_session_token());
+            }
+            catch (std::exception& e)
+            {
+                std::cout << "Error while removing inactive player from room: " << e.what()
+                          << std::endl;
+            }
+
+            // Remove the player from the vector
+            connected_players.erase(connected_players.begin() + i);
         }
     }
 }
@@ -115,5 +135,10 @@ bool Player_Manager::get_sessions_update_thread_running()
 {
     std::lock_guard<std::mutex> lock(mtx);
     return sessions_update_thread_running;
+}
+
+void Player_Manager::set_room_service_reference(Room_Service* room_service_ref)
+{
+    room_service = room_service_ref;
 }
 }  // namespace server

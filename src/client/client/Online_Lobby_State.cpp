@@ -46,6 +46,8 @@ Online_Lobby_State::Online_Lobby_State(int room_id, std::string session_token,
       session_token(session_token),
       renderer(window, std::to_string(room_id)),
       game_remotely_launched(false),
+      player_id(0),
+      is_owner(false),
       modifying_name(false),
       ai_adder_window_opened(false),
       selected_player_type(state::Player_Type::Random_AI)
@@ -222,7 +224,7 @@ void Online_Lobby_State::render(sf::RenderWindow& window)
     {
         std::lock_guard<std::mutex> lock(get_mutex());
         renderer.render(player_names, player_types, ai_adder_window_opened, modifying_name,
-                        added_ai_name, selected_player_type);
+                        added_ai_name, selected_player_type, is_owner);
     }
     bool flag;
     {
@@ -277,14 +279,19 @@ void Online_Lobby_State::request_lobby_state()
             temp      = temp.substr(slash_pos + 1);
             slash_pos = temp.find("/", 0);
         }
-        // last info is the player id
-        std::string player_id_str = temp;
-        player_id                 = std::stoi(player_id_str);
+        // last info are the player id and the owning info
+
+        int         coma_pos      = temp.find(",", 0);
+        std::string player_id_str = temp.substr(0, coma_pos);
+        std::string is_owner_str  = temp.substr(coma_pos + 1);
+
+        player_id = std::stoi(player_id_str);
+        is_owner  = std::stoi(is_owner_str) == 1;
 
         for (int i = 0; i < players_str.size(); i++)
         {
             std::string player_infos = players_str.at(i);
-            int         coma_pos     = player_infos.find(",", 0);
+            coma_pos                 = player_infos.find(",", 0);
             player_names.push_back(player_infos.substr(0, coma_pos));
             std::string player_type_str = player_infos.substr(coma_pos + 1);
             player_types.push_back(static_cast<state::Player_Type>(std::stoi(player_type_str)));

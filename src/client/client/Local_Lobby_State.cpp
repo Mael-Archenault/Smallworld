@@ -132,6 +132,16 @@ void Local_Lobby_State::handle_input(sf::Event event)
         {
             std::cout << "Opening Player Adder Window" << std::endl;
             player_adder_window_opened = true;
+            return;
+        }
+        if (clicked_on("remove_player_button"))
+        {
+            if (!player_names.empty())
+            {
+                player_names.pop_back();
+                player_types.pop_back();
+            }
+            return;
         }
     }
     // Handle input events specific to the local lobby state
