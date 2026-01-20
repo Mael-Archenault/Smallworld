@@ -5,8 +5,16 @@
 namespace client
 {
 
+bool clicked_on(sf::FloatRect rect, sf::Vector2i mouse_pos)
+{
+    return rect.contains(static_cast<sf::Vector2f>(mouse_pos));
+}
+
 Local_Lobby_State::Local_Lobby_State(sf::RenderWindow& window)
-    : renderer(window), player_adder_window_opened(false)
+    : renderer(window),
+      player_adder_window_opened(false),
+      modifying_name(false),
+      selected_player_type("Real Player")
 {
     std::cout << "Local Lobby State" << std::endl;
     players = {{"Alice", 0}, {"Bob", 1}};
@@ -14,19 +22,104 @@ Local_Lobby_State::Local_Lobby_State(sf::RenderWindow& window)
 
 void Local_Lobby_State::handle_input(sf::Event event)
 {
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::BackSpace && !added_player_name.empty())
+        {
+            added_player_name.pop_back();
+            return;
+        }
+        if (event.key.code == sf::Keyboard::Enter)
+        {
+            modifying_name = false;
+            return;
+        }
+
+        if (event.key.code == sf::Keyboard::Space && added_player_name.size() < 20)
+        {
+            added_player_name += ' ';
+            return;
+        }
+    }
+    if (event.type == sf::Event::TextEntered)
+
+    {
+        sf::Uint32 unicode = event.text.unicode;
+
+        if (modifying_name)
+        {
+            if (unicode >= 32 && unicode < 128 &&
+                added_player_name.size() < 20)  // basic ASCII and limit to 20 chars
+            {
+                added_player_name += static_cast<char>(unicode);
+            }
+        }
+    }
     if (event.type == sf::Event::MouseButtonPressed)
     {
-        sf::Vector2i mouse_pos = sf::Mouse::getPosition(context->get_window());
-        std::unordered_map<std::string, sf::FloatRect> layout_infos = renderer.get_layout_infos();
+        register_click(sf::Mouse::getPosition(context->get_window()));
+        register_layout(renderer.get_layout_infos());
 
-        if (layout_infos["exit_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+        if (player_adder_window_opened)
+        {
+            if (!clicked_on("adder_window") || clicked_on("adder_window_close_button"))
+            {
+                player_adder_window_opened = false;
+                return;
+            }
+
+            if (modifying_name && !clicked_on("adder_window_name_box"))
+            {
+                modifying_name = false;
+                return;
+            }
+            if (clicked_on("adder_window_name_box"))
+            {
+                modifying_name = true;
+                return;
+            }
+
+            if (clicked_on("adder_window_real_player_button"))
+            {
+                selected_player_type = "Real Player";
+            }
+            if (clicked_on("adder_window_random_ai_button"))
+            {
+                selected_player_type = "Random AI";
+            }
+
+            if (clicked_on("adder_window_heuristic_ai_button"))
+            {
+                selected_player_type = "Heuristic AI";
+            }
+            if (clicked_on("adder_window_advanced_ai_button"))
+            {
+                selected_player_type = "Advanced AI";
+            }
+
+            if (clicked_on("adder_window_add_button"))
+            {
+                if (added_player_name.empty())
+                {
+                    added_player_name = "Player" + std::to_string(players.size() + 1);
+                }
+
+                players.push_back({added_player_name, 0});
+                added_player_name.clear();
+                selected_player_type       = "Real Player";
+                modifying_name             = false;
+                player_adder_window_opened = false;
+                return;
+            }
+        }
+        if (clicked_on("exit_button"))
         {
             std::cout << "Exiting to Menu State" << std::endl;
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
             return;
         }
-        if (layout_infos["start_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+        if (clicked_on("start_button"))
         {
             std::cout << "Starting Local Game" << std::endl;
             int                      nb_players = players.size();
@@ -41,7 +134,7 @@ void Local_Lobby_State::handle_input(sf::Event event)
             this->context->change_state(new_state);
             return;
         }
-        if (layout_infos["add_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+        if (clicked_on("add_button"))
         {
             std::cout << "Opening Player Adder Window" << std::endl;
             player_adder_window_opened = true;
@@ -52,7 +145,8 @@ void Local_Lobby_State::handle_input(sf::Event event)
 
 void Local_Lobby_State::render(sf::RenderWindow& window)
 {
-    renderer.render(players, player_adder_window_opened);
+    renderer.render(players, player_adder_window_opened, modifying_name, added_player_name,
+                    selected_player_type);
 }
 
 }  // namespace client

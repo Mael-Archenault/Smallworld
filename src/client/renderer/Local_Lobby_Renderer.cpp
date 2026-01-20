@@ -31,7 +31,8 @@ Local_Lobby_Renderer::Local_Lobby_Renderer(sf::RenderWindow& window)
 }
 
 void Local_Lobby_Renderer::render(std::vector<std::pair<std::string, int>> players,
-                                  bool                                     show_player_adder)
+                                  bool show_player_adder, bool modifying_name, std::string name,
+                                  std::string selected_player_type)
 {
     window.clear(sf::Color::Black);
 
@@ -111,7 +112,7 @@ void Local_Lobby_Renderer::render(std::vector<std::pair<std::string, int>> playe
 
     if (show_player_adder)
     {
-        player_adder_window.render();
+        player_adder_window.render(modifying_name, name, selected_player_type);
     }
 }
 
@@ -121,6 +122,11 @@ std::unordered_map<std::string, sf::FloatRect> Local_Lobby_Renderer::get_layout_
     button_positions["exit_button"]  = exit_button.get_rect();
     button_positions["start_button"] = start_button.get_rect();
     button_positions["add_button"]   = add_button_sprite.getGlobalBounds();
+
+    for (const auto& pair : player_adder_window.get_layout_infos())
+    {
+        button_positions[pair.first] = pair.second;
+    }
 
     return button_positions;
 }
