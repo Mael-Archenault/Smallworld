@@ -10,16 +10,17 @@
 
 #include "client.h"
 #include "engine.h"
+#include "ai.h"
 extern std::mutex mtx;
 namespace client
 {
 
-Game_Client::Game_Client(engine::Engine& engine)
+Game_Client::Game_Client(engine::Engine& engine, std::vector<ai::Ai_Type> ais)
     : window(sf::VideoMode(1720, 820), "Smallworld"),
       state(engine.get_state()),
       renderer(state, window),
       engine(engine),
-      click_handler(new Local_Game_State(window, engine))
+      click_handler(new Local_Game_State(window, engine,ais))
 {
     selected_area_id         = 0;
     tribe_info_window_opened = false;

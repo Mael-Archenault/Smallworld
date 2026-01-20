@@ -58,7 +58,7 @@ void client_process(engine::Engine& engine, int player_id)  // contains 2 thread
 //      - state update (request to the engine at 10 ips)
 //      - handle click, send commands then rendering (at 60 ips)
 {
-    client::Game_Client client = client::Game_Client(engine);
+    client::Game_Client client = client::Game_Client(engine,{});
 
     std::thread state_update_thread = std::thread(
         [](client::Game_Client& client) { state_update_process(client); }, std::ref(client));

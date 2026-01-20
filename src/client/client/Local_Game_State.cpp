@@ -7,9 +7,7 @@
 #include "client.h"
 #include "engine.h"
 #include "renderer.h"
-#include "ai/Ai_Advanced.h"
-#include "ai/Ai_Heuristic.h"
-#include "ai/Ai_Random.h"
+#include "ai.h"
 
 namespace client
 {
@@ -52,7 +50,7 @@ void state_update_process(client::Local_Game_State& client)
     }
 }
 
-void ai_process_local(client::Local_Game_State& client, std::string thread_name, int ai_type, int player_id ) {
+void ai_process_local(client::Local_Game_State& client, std::string thread_name, ai::Ai_Type ai_type, int player_id ) {
     //TODO add enum name of ais for switch
 
     std::string name = thread_name;
@@ -60,7 +58,7 @@ void ai_process_local(client::Local_Game_State& client, std::string thread_name,
     ai::Ai_Interface * ai;
     switch (ai_type) {
         case 0:
-            new ai::Ai_Random(client.get_state(),player_id);
+            ai = new ai::Ai_Random(client.get_state(),player_id);
             break;
         case 1 :
             ai = new ai::Ai_Heuristic(client.get_state(),player_id);
@@ -77,7 +75,6 @@ void ai_process_local(client::Local_Game_State& client, std::string thread_name,
         //     if (ai..is_game_finished() == true ) {
         //         return player_id;
         //     }
-
         bool is_my_turn = false;
         {
             std::lock_guard<std::mutex> lock(client.get_mutex());
@@ -101,10 +98,10 @@ void ai_process_local(client::Local_Game_State& client, std::string thread_name,
 }
 
 
-int                      nb_players   = 2;
-std::vector<std::string> player_names = {"Alice", "Bob"};
+// int                      nb_players   = 2;
+// std::vector<std::string> player_names = {"Alice", "Bob"};
 
-Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& engine)
+Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& engine, std::vector<ai::Ai_Type> ais)
     : engine(engine),
       state(engine.get_state()),
       renderer(state, window),
@@ -122,18 +119,36 @@ Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& eng
         "engine_update",
         std::thread([](engine::Engine& engine, client::Local_Game_State& client)
                     { engine_process(engine, client); }, std::ref(engine), std::ref(*this)));
+    thread_names.emplace_back("engine_update");
 
     register_thread("state_update",
                     std::thread([](client::Local_Game_State& client)
                                 { state_update_process(client); }, std::ref(*this)));
+    thread_names.emplace_back("state_update");
 
-    start_thread("engine_update");
-    start_thread("state_update");
+    for (int i = 0; i< ais.size(); i++) {
+        register_thread("ai_thread_" + std::to_string(i),
+                        std::thread([](client::Local_Game_State& client, std::string thread_name, ai::Ai_Type ai_type, int player_id )
+                                    { ai_process_local(client,
+                                        thread_name,
+                                            ai_type, player_id); },
+                        std::ref(*this), "ai_thread_" + std::to_string(i),ais.at(i),engine.get_state().names.size() - ais.size()+ i));
+        thread_names.push_back("ai_thread_" + std::to_string(i));
+    }
+
+    for (std::string& name : thread_names) {
+        start_thread(name);
+    }
+    // start_thread("engine_update");
+    // start_thread("state_update");
 }
 Local_Game_State::~Local_Game_State()
 {
-    stop_thread("engine_update");
-    stop_thread("state_update");
+    for (std::string& name : thread_names) {
+        stop_thread(name);
+    }
+    // stop_thread("engine_update");
+    // stop_thread("state_update");
 }
 
 void Local_Game_State::handle_input(sf::Event event)
@@ -143,8 +158,11 @@ void Local_Game_State::handle_input(sf::Event event)
         if (event.key.code == sf::Keyboard::M)
         {
             std::cout << "Switching to Menu State" << std::endl;
-            stop_thread("engine_update");
-            stop_thread("state_update");
+            for (std::string& name : thread_names) {
+                stop_thread(name);
+            }
+            // stop_thread("engine_update");
+            // stop_thread("state_update");
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
         }

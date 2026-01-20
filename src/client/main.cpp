@@ -14,7 +14,10 @@
 
 int main(int argc, char* argv[])
 {
-    std::string    server_ip = argv[1];
+    std::string    server_ip = "localhost";
+    if (argc == 2) {
+        server_ip = argv[1];
+    }
     client::Client client(server_ip);
     client.run();
 }
