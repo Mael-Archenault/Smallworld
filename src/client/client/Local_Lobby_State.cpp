@@ -114,14 +114,12 @@ void Local_Lobby_State::handle_input(sf::Event event)
         }
         if (clicked_on("exit_button"))
         {
-            std::cout << "Exiting to Menu State" << std::endl;
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
             return;
         }
         if (clicked_on("start_button"))
         {
-            std::cout << "Starting Local Game" << std::endl;
             engine::Engine*   engine = new engine::Engine(player_names);
             Local_Game_State* new_state =
                 new Local_Game_State(this->context->get_window(), *engine, player_types);
@@ -130,7 +128,6 @@ void Local_Lobby_State::handle_input(sf::Event event)
         }
         if (clicked_on("add_button"))
         {
-            std::cout << "Opening Player Adder Window" << std::endl;
             player_adder_window_opened = true;
             return;
         }

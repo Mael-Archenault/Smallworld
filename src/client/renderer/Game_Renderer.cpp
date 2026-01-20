@@ -1,9 +1,10 @@
-#include "renderer.h"
-
 #include <state.h>
 
 #include <SFML/Graphics.hpp>
 #include <unordered_map>
+
+#include "renderer.h"
+#include "resources_dir.h"
 
 namespace renderer
 {
@@ -13,18 +14,45 @@ Game_Renderer::Game_Renderer(state::Game_State& state, sf::RenderWindow& window)
       map_renderer(window),
       tribe_stack_renderer(window),
       player_area_renderer(window),
-      UI_renderer(window, state) {};
+      UI_renderer(window, state)
+{
+    // load background image
+    std::string file_path = std::string(RESOURCE_DIR) + "/assets/general_background_blurred.png";
+    if (!background_texture.loadFromFile(file_path))
+    {
+        throw std::runtime_error("Online_Lobby_Renderer constructor: Failed to load texture :" +
+                                 file_path);
+    }
+    background_sprite.setTexture(background_texture);
+};
 
 void Game_Renderer::render(state::Game_State& state, int rendering_player_id)
 {
+    window.clear(sf::Color::Black);
+
     sf::Vector2u window_size = window.getSize();
+
+    // map
+    float scaling_factor = std::max(((float) window_size.x / background_texture.getSize().x),
+                                    ((float) window_size.y / background_texture.getSize().y));
+    background_sprite.setScale(scaling_factor, scaling_factor);
+    sf::Vector2f map_position =
+        sf::Vector2f(((float) window_size.x - background_sprite.getGlobalBounds().width) / 2,
+                     ((float) window_size.y - background_sprite.getGlobalBounds().height) / 2);
+    background_sprite.setPosition(map_position);
+    window.draw(background_sprite);
+
+    sf::RectangleShape background(sf::Vector2f(window_size.x, window_size.y));
+    background.setFillColor(sf::Color(50, 50, 50, 100));
+    background.setPosition(sf::Vector2f(0.f, 0.f));
+    window.draw(background);
+
     map_renderer.render(state.get_map());
 
     // Render the tribe stack at a fixed position
     tribe_stack_renderer.set_position(sf::Vector2f(window_size.x * 5 / 6.f, 0.f));
     tribe_stack_renderer.render(state.get_tribe_stack());
 
-    player_area_renderer.set_position(sf::Vector2f(window_size.x / 6, window_size.y * 5 / 6));
     state::Player& rendering_player = state.get_players().at(rendering_player_id);
     player_area_renderer.render(rendering_player);
 

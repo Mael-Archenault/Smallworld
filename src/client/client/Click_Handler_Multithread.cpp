@@ -253,7 +253,6 @@ void Click_Handler_Multithread::handle_opponent_area_click(
     sf::Vector2i position, std::unordered_map<std::string, sf::FloatRect> layout_infos)
 {
     state::Player& actioning_player = state.get_players().at(client.get_player_id());
-    std::cout << "Clicked on opponent info area" << std::endl;
 
     int i = 0;
 

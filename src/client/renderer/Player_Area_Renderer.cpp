@@ -7,12 +7,12 @@ namespace renderer
 
 /// Constructor
 Player_Area_Renderer::Player_Area_Renderer(sf::RenderWindow& window)
-    : window(window), position(0.f, 0.f), angle(0), free_units_renderer("pawn")
+    : window(window), angle(0), free_units_renderer("pawn")
 {
     // Load font
     if (!font.loadFromFile(std::string(RESOURCE_DIR) + "/fonts/arial.ttf"))
     {
-        // Handle error
+        throw std::runtime_error("Player_Area_Renderer constructor: Failed to load font");
     }
 
     // Setup money title text
@@ -44,9 +44,11 @@ void Player_Area_Renderer::render(state::Player& player)
 {
     sf::Vector2u window_size = window.getSize();
 
-    float section_width  = window_size.x * 4 / 6;
+    float section_width  = window_size.x * 7 / 12;
     float section_height = window_size.y / 6;
 
+    sf::Vector2f position =
+        sf::Vector2f(window_size.x / 2 - section_width / 2, window_size.y - section_height);
     // draw a rectangle
     sf::RectangleShape background(sf::Vector2f(section_width, section_height));
 
@@ -90,7 +92,8 @@ void Player_Area_Renderer::render(state::Player& player)
     {
         int   free_units_number = player.get_free_units_number();
         float scaling_factor    = std::min((section_width / 5) / 150, body_size / 150);
-        free_units_renderer.scale(scaling_factor, scaling_factor);
+        free_units_renderer.scale_token(scaling_factor, scaling_factor);
+        free_units_renderer.scale_text(scaling_factor / 2, scaling_factor / 2);
         free_units_renderer.set_sprite(player_tribes.first->get_species_name());
         free_units_renderer.set_number(free_units_number);
         free_units_renderer.render(
@@ -131,29 +134,12 @@ void Player_Area_Renderer::render(state::Player& player)
                 position.y + header_size + body_size / 3 - (194 * scaling_factor) / 2));
         tribes_rects.at(1) = tribe_renderer.get_rect();
     }
-
-    // to do when the ghouls power will be implemented
-
-    // if (n_tribes >= 3) {
-    //   float scaling_factor = std::min((section_width/4)/500, (body_size*2/3)/194);
-    //   tribe_renderer.set_sprite(player_tribes[n_tribes-3]->get_species_name(),
-    //   player_tribes[n_tribes-3]->get_power_name(), true); tribe_renderer.scale(scaling_factor,
-    //   scaling_factor); tribe_renderer.render(window, sf::Vector2f(position.x + section_width*3/4
-    //   + section_width/8- (500*scaling_factor)/2, position.y + header_size + body_size*2/3 -
-    //   (194*scaling_factor)/2));
-    // }
-}
-
-void Player_Area_Renderer::set_position(sf::Vector2f position)
-{
-    this->position = position;
 }
 
 std::unordered_map<std::string, sf::FloatRect> Player_Area_Renderer::get_layout()
 {
     std::unordered_map<std::string, sf::FloatRect> layout_infos;
-    layout_infos["player_area"] =
-        sf::FloatRect(position.x, position.y, window.getSize().x * 4 / 6, window.getSize().y / 6);
+    layout_infos["player_area"]      = background.getGlobalBounds();
     layout_infos["active_tribe"]     = tribes_rects.at(0);
     layout_infos["in_decline_tribe"] = tribes_rects.at(1);
     return layout_infos;

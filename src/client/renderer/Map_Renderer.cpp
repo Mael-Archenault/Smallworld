@@ -90,7 +90,7 @@ void Map_Renderer::render(state::Map& map)
         {
             for (size_t j = 0; j < specializations.size(); j++)
             {
-                area_specialization_renderer.scale(scaling_factor, scaling_factor);
+                area_specialization_renderer.scale_token(scaling_factor, scaling_factor);
                 area_specialization_renderer.set_sprite(
 
                     area_specializations_names.at(specializations.at(j)));
@@ -114,7 +114,7 @@ void Map_Renderer::render(state::Map& map)
         {
             for (size_t j = 0; j < tokens.size(); j++)
             {
-                special_tokens_renderer.scale(scaling_factor, scaling_factor);
+                special_tokens_renderer.scale_token(scaling_factor, scaling_factor);
                 special_tokens_renderer.set_sprite(special_tokens_names.at(tokens.at(j)));
 
                 sf::Vector2f position =
@@ -140,7 +140,8 @@ void Map_Renderer::render(state::Map& map)
             state::Tribe* owner_tribe = areas.at(i).get_owner_tribe();
 
             units_renderer.set_number(areas.at(i).get_units_number());
-            units_renderer.scale(scaling_factor, scaling_factor);
+            units_renderer.scale_token(scaling_factor, scaling_factor);
+            units_renderer.scale_text(scaling_factor, scaling_factor);
             std::string name =
                 (owner_tribe == nullptr) ? "Lost Tribe" : owner_tribe->get_species_name();
             units_renderer.set_sprite(name);

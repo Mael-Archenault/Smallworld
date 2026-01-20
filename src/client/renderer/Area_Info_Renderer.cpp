@@ -48,7 +48,7 @@ void Area_Info_Renderer::render(state::Game_State& state)
 
     area_info_value.set_position({x, y + section_height});
     area_info_value.set_size({area_info_width, area_info_height - section_height});
-    area_info_value.set_character_size(area_info_width / 20);
+    area_info_value.set_character_size(area_info_width / 15);
     // area info
     area_info_title.render(window);
 

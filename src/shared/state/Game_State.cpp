@@ -180,6 +180,11 @@ void Game_State::next_round()
     round++;
 }
 
+int Game_State::get_round()
+{
+    return round;
+}
+
 Map& Game_State::get_map()
 {
     return map;

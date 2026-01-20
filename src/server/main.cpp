@@ -28,18 +28,11 @@ struct HttpResponse
     std::string body;
 };
 
-MHD_Result print_out_key(void* cls, enum MHD_ValueKind kind, const char* key, const char* value)
-{
-    std::cout << key << ": " << value << "\n";
-    return MHD_YES;
-}
-
 MHD_Result answer_to_connection(void* cls, struct MHD_Connection* connection, const char* url,
                                 const char* method, const char* version, const char* upload_data,
                                 size_t* upload_data_size, void** req_cls)
 {
     server::Service_Manager* service_manager = static_cast<server::Service_Manager*>(cls);
-    std::cout << url << std::endl;
 
     struct MHD_Response* response;
     MHD_Result           ret;
@@ -88,7 +81,7 @@ MHD_Result answer_to_connection(void* cls, struct MHD_Connection* connection, co
 
 int main(int argc, char* argv[])
 {
-    std::cout << "Hello World" << std::endl;
+    std::cout << "Starting Server..." << std::endl;
 
     server::Player_Manager  player_manager;
     server::Service_Manager service_manager(player_manager);

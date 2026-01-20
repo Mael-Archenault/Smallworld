@@ -123,8 +123,6 @@ Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& eng
       mouse_clicked(false)
 
 {
-    std::cout << "Local Game State" << std::endl;
-
     // initiating the threads
     register_thread(
         "engine_update",
@@ -157,8 +155,6 @@ Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& eng
     {
         start_thread(name);
     }
-    // start_thread("engine_update");
-    // start_thread("state_update");
 }
 Local_Game_State::~Local_Game_State()
 {
@@ -166,8 +162,6 @@ Local_Game_State::~Local_Game_State()
     {
         stop_thread(name);
     }
-    // stop_thread("engine_update");
-    // stop_thread("state_update");
 }
 
 void Local_Game_State::handle_input(sf::Event event)
@@ -176,7 +170,6 @@ void Local_Game_State::handle_input(sf::Event event)
     {
         if (event.key.code == sf::Keyboard::M)
         {
-            std::cout << "Switching to Menu State" << std::endl;
             for (std::string& name : thread_names)
             {
                 stop_thread(name);

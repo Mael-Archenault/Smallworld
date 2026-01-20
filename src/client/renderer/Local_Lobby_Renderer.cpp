@@ -45,8 +45,7 @@ void Local_Lobby_Renderer::render(std::vector<std::string>        player_names,
     float        button_width  = window_size.x / 4.f;
     float        button_height = window_size.y / 12.f;
 
-    // map
-    float scaling_factor = std::min(((float) window_size.x / background_texture.getSize().x),
+    float scaling_factor = std::max(((float) window_size.x / background_texture.getSize().x),
                                     ((float) window_size.y / background_texture.getSize().y));
     background_sprite.setScale(scaling_factor, scaling_factor);
     sf::Vector2f map_position =
@@ -122,11 +121,18 @@ void Local_Lobby_Renderer::render(std::vector<std::string>        player_names,
     exit_button.set_character_size(button_height / 3);
     exit_button.render(window);
 
-    start_button.set_size(sf::Vector2f(button_width / 2, button_height));
-    start_button.set_position(
-        sf::Vector2f(window_size.x / 2 - button_width / 4, window_size.y - button_height));
-    start_button.set_character_size(button_height / 3);
-    start_button.render(window);
+    if (player_names.empty())
+    {
+        start_button.set_size(sf::Vector2f(0.f, 0.f));
+    }
+    else
+    {
+        start_button.set_size(sf::Vector2f(button_width / 2, button_height));
+        start_button.set_position(
+            sf::Vector2f(window_size.x / 2 - button_width / 4, window_size.y - button_height));
+        start_button.set_character_size(button_height / 3);
+        start_button.render(window);
+    }
 
     if (show_player_adder)
     {

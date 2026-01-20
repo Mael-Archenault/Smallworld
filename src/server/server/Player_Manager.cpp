@@ -101,7 +101,6 @@ void Player_Manager::remove_inactive_players()
     {  // reference to room_service not set yet, we cannot clean
         return;
     }
-    std::cout << "Cleaning" << std::endl;
     std::lock_guard<std::mutex> lock(mtx);
     auto                        now = clock.now();
 
@@ -113,8 +112,6 @@ void Player_Manager::remove_inactive_players()
             std::chrono::duration_cast<std::chrono::seconds>(now - player.get_last_seen());
         if (duration.count() >= 5)
         {
-            std::cout << "Removing inactive player: " << player.get_name() << std::endl;
-
             // remove the player from its room (if any)
             try
             {
@@ -122,12 +119,11 @@ void Player_Manager::remove_inactive_players()
             }
             catch (std::exception& e)
             {
-                std::cout << "Error while removing inactive player from room: " << e.what()
-                          << std::endl;
             }
 
             // Remove the player from the vector
             connected_players.erase(connected_players.begin() + i);
+            std::cout << "Removed inactive player: " << player.get_name() << std::endl;
         }
     }
 }

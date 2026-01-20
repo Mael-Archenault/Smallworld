@@ -236,8 +236,6 @@ void Click_Handler::handle_button_area_click(
 void Click_Handler::handle_opponent_area_click(
     sf::Vector2i position, std::unordered_map<std::string, sf::FloatRect> layout_infos)
 {
-    std::cout << "Clicked on opponent info area" << std::endl;
-
     int i = 0;
 
     for (auto& player : state.get_players())

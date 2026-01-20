@@ -27,7 +27,7 @@ void Menu_Renderer::render()
     sf::Vector2u window_size = window.getSize();
 
     // map
-    float scaling_factor = std::min(((float) window_size.x / background_texture.getSize().x),
+    float scaling_factor = std::max(((float) window_size.x / background_texture.getSize().x),
                                     ((float) window_size.y / background_texture.getSize().y));
     background_sprite.setScale(scaling_factor, scaling_factor);
     sf::Vector2f map_position =

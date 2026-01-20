@@ -25,7 +25,6 @@ Http_Status Room_Service::get(std::string& in, std::string& out, std::string url
     try
     {
         room_id = std::stoi(room_id_str);
-        std::cout << "Room_id : " << room_id << " | Action :" << action << std::endl;
     }
     catch (std::exception& e)
     {
@@ -43,7 +42,6 @@ Http_Status Room_Service::get(std::string& in, std::string& out, std::string url
         {
             std::string room_state = get_room_infos(room_id, session_token);
             out                    = room_state;
-            std::cout << "Room state: " << room_state << std::endl;
         }
         catch (std::exception& e)
         {
@@ -91,7 +89,6 @@ Http_Status Room_Service::post(std::string& in, std::string& out, std::string ur
         out = "Room id not existing";
         return Http_Status::NOT_FOUND;
     }
-    std::cout << "room id : " << room_id_str << " action : " << action << std::endl;
     if (action == "/join")
     {
         try

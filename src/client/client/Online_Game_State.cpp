@@ -43,7 +43,6 @@ Online_Game_State::Online_Game_State(sf::RenderWindow&        window,
       room_id(room_id),
       session_token(session_token)
 {
-    std::cout << "Online Game State" << std::endl;
     register_thread("state_update",
                     std::thread([](client::Online_Game_State& client)
                                 { online_state_update_process(client); }, std::ref(*this)));
@@ -62,7 +61,6 @@ void Online_Game_State::handle_input(sf::Event event)
     {
         if (event.key.code == sf::Keyboard::M)
         {
-            std::cout << "Switching to Menu State" << std::endl;
             stop_thread("state_update");
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);

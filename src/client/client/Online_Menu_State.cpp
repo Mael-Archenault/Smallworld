@@ -7,7 +7,6 @@ namespace client
 
 Online_Menu_State::Online_Menu_State(sf::RenderWindow& window, std::string name) : renderer(window)
 {
-    std::cout << "Online Menu State" << std::endl;
     room_id_str       = "";
     modifying_room_id = false;
     modifying_name    = false;
@@ -20,7 +19,6 @@ void Online_Menu_State::handle_input(sf::Event event)
     {
         if (event.key.code == sf::Keyboard::Escape)
         {
-            std::cout << "Switching to Menu State" << std::endl;
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
         }
@@ -78,17 +76,16 @@ void Online_Menu_State::handle_input(sf::Event event)
 
     if (event.type == sf::Event::MouseButtonPressed)
     {
-        sf::Vector2i mouse_pos = sf::Mouse::getPosition(context->get_window());
-        std::unordered_map<std::string, sf::FloatRect> layout_infos = renderer.get_layout_infos();
+        register_click(sf::Mouse::getPosition(context->get_window()));
+        register_layout(renderer.get_layout_infos());
 
         if (!modifying_room_id && !modifying_name)
         {
-            if (layout_infos["create_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+            if (clicked_on("create_button"))
             {
                 try
                 {
                     int room_id = send_create_request();
-                    std::cout << "Created room with id: " << room_id << std::endl;
 
                     Online_Lobby_State* new_state =
                         new Online_Lobby_State(room_id, session_token, context->get_window());
@@ -97,12 +94,12 @@ void Online_Menu_State::handle_input(sf::Event event)
                 }
                 catch (std::exception& e)
                 {
-                    std::cout << e.what() << std::endl;
+                    std::cout << "Failed to create room: " << e.what() << std::endl;
                     return;
                 }
             }
 
-            if (layout_infos["join_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+            if (clicked_on("join_button"))
             {
                 if (room_id_str.empty())
                 {
@@ -113,7 +110,6 @@ void Online_Menu_State::handle_input(sf::Event event)
                 try
                 {
                     send_join_request(room_id);
-                    std::cout << "Sent join request for room id: " << room_id_str << std::endl;
 
                     Online_Lobby_State* new_state =
                         new Online_Lobby_State(room_id, session_token, context->get_window());
@@ -122,17 +118,17 @@ void Online_Menu_State::handle_input(sf::Event event)
                 }
                 catch (std::exception& e)
                 {
-                    std::cout << e.what() << std::endl;
+                    std::cout << "Failed to join room: " << e.what() << std::endl;
                     return;
                 }
             }
-            if (layout_infos["room_id_box"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+            if (clicked_on("room_id_box"))
             {
                 modifying_room_id = true;
                 return;
             }
 
-            if (layout_infos["name_box"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+            if (clicked_on("name_box"))
             {
                 modifying_name = true;
                 return;
@@ -141,14 +137,14 @@ void Online_Menu_State::handle_input(sf::Event event)
 
         if (modifying_name)
         {
-            if (!layout_infos["name_box"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+            if (!clicked_on("name_box"))
             {
                 modifying_name = false;
             }
         }
         if (modifying_room_id)
         {
-            if (!layout_infos["room_id_box"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+            if (!clicked_on("room_id_box"))
             {
                 modifying_room_id = false;
             }

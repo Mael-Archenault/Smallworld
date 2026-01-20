@@ -24,7 +24,7 @@ void lobby_update_process(Online_Lobby_State& client)
             }
             catch (const std::runtime_error& e)
             {
-                std::cout << "Error while requesting lobby state: " << e.what() << std::endl;
+                std::cout << "Failed to request lobby state: " << e.what() << std::endl;
                 // switching back to menu
 
                 client.stop_thread("lobby_update");
@@ -52,8 +52,6 @@ Online_Lobby_State::Online_Lobby_State(int room_id, std::string session_token,
       ai_adder_window_opened(false),
       selected_player_type(state::Player_Type::Random_AI)
 {
-    std::cout << "Online Lobby State" << std::endl;
-
     register_thread("lobby_update",
                     std::thread([](client::Online_Lobby_State& client)
                                 { lobby_update_process(client); }, std::ref(*this)));
@@ -145,8 +143,6 @@ void Online_Lobby_State::handle_input(sf::Event event)
                     added_ai_name = "Player" + std::to_string(player_names.size() + 1);
                 }
 
-                std::cout << "Adding player " << added_ai_name << " of type "
-                          << static_cast<int>(selected_player_type) << std::endl;
                 try
                 {
                     send_ai_creation_request(added_ai_name, selected_player_type);
@@ -157,6 +153,7 @@ void Online_Lobby_State::handle_input(sf::Event event)
                     ai_adder_window_opened = false;
                 }
                 ai_adder_window_opened = false;
+                added_ai_name.clear();
                 return;
             }
         }
@@ -198,7 +195,6 @@ void Online_Lobby_State::handle_input(sf::Event event)
 
         if (clicked_on("add_ai_button"))
         {
-            std::cout << "Clicked" << std::endl;
             ai_adder_window_opened = true;
             return;
         }
@@ -233,7 +229,6 @@ void Online_Lobby_State::render(sf::RenderWindow& window)
     }
     if (flag)
     {
-        std::cout << "Game remotely launched, switching to Online Game State" << std::endl;
         stop_thread("lobby_update");
         Online_Game_State* new_state = new Online_Game_State(
             this->context->get_window(), player_names, room_id, session_token, player_id);
@@ -272,7 +267,6 @@ void Online_Lobby_State::request_lobby_state()
 
         std::vector<std::string> players_str;
         int                      slash_pos = temp.find("/", 0);
-        std::cout << temp << std::endl;
         while (slash_pos != std::string::npos)
         {
             players_str.push_back(temp.substr(0, slash_pos));
