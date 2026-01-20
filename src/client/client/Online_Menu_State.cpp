@@ -165,7 +165,7 @@ void Online_Menu_State::render(sf::RenderWindow& window)
 
 void Online_Menu_State::request_session_token()
 {
-    sf::Http          http_client("http://" + context->get_server_ip(), 8888);
+    sf::Http          http_client("http://" + get_server_ip(), 8888);
     sf::Http::Request request("/connect");
     request.setMethod(sf::Http::Request::Post);
     request.setBody(this->context->get_name());
@@ -182,7 +182,7 @@ void Online_Menu_State::request_session_token()
 }
 int Online_Menu_State::send_create_request()
 {
-    sf::Http http_client("http://" + context->get_server_ip(), 8888);
+    sf::Http http_client("http://" + get_server_ip(), 8888);
     if (session_token.empty())
     {
         try
@@ -213,7 +213,7 @@ int Online_Menu_State::send_create_request()
 
 void Online_Menu_State::send_join_request(int room_id)
 {
-    sf::Http http_client("http://" + context->get_server_ip(), 8888);
+    sf::Http http_client("http://" + get_server_ip(), 8888);
     if (session_token.empty())
     {
         request_session_token();

@@ -45,7 +45,10 @@ Online_Lobby_State::Online_Lobby_State(int room_id, std::string session_token,
     : room_id(room_id),
       session_token(session_token),
       renderer(window, std::to_string(room_id)),
-      game_remotely_launched(false)
+      game_remotely_launched(false),
+      modifying_name(false),
+      ai_adder_window_opened(false),
+      selected_player_type(state::Player_Type::Random_AI)
 {
     std::cout << "Online Lobby State" << std::endl;
 
@@ -62,12 +65,101 @@ Online_Lobby_State::~Online_Lobby_State()
 
 void Online_Lobby_State::handle_input(sf::Event event)
 {
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::BackSpace && !added_ai_name.empty())
+        {
+            added_ai_name.pop_back();
+            return;
+        }
+        if (event.key.code == sf::Keyboard::Enter)
+        {
+            modifying_name = false;
+            return;
+        }
+
+        if (event.key.code == sf::Keyboard::Space && added_ai_name.size() < 20)
+        {
+            added_ai_name += ' ';
+            return;
+        }
+    }
+    if (event.type == sf::Event::TextEntered)
+
+    {
+        sf::Uint32 unicode = event.text.unicode;
+
+        if (modifying_name)
+        {
+            if (unicode >= 32 && unicode < 128 &&
+                added_ai_name.size() < 20)  // basic ASCII and limit to 20 chars
+            {
+                added_ai_name += static_cast<char>(unicode);
+            }
+        }
+    }
     if (event.type == sf::Event::MouseButtonPressed)
     {
-        sf::Vector2i mouse_pos = sf::Mouse::getPosition(context->get_window());
-        std::unordered_map<std::string, sf::FloatRect> layout_infos = renderer.get_layout_infos();
+        register_click(sf::Mouse::getPosition(context->get_window()));
+        register_layout(renderer.get_layout_infos());
 
-        if (layout_infos["exit_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+        if (ai_adder_window_opened)
+        {
+            if (!clicked_on("adder_window") || clicked_on("adder_window_close_button"))
+            {
+                ai_adder_window_opened = false;
+                return;
+            }
+
+            if (modifying_name && !clicked_on("adder_window_name_box"))
+            {
+                modifying_name = false;
+                return;
+            }
+            if (clicked_on("adder_window_name_box"))
+            {
+                modifying_name = true;
+                return;
+            }
+
+            if (clicked_on("adder_window_random_ai_button"))
+            {
+                selected_player_type = state::Player_Type::Random_AI;
+            }
+
+            if (clicked_on("adder_window_heuristic_ai_button"))
+            {
+                selected_player_type = state::Player_Type::Heuristic_AI;
+            }
+            if (clicked_on("adder_window_advanced_ai_button"))
+            {
+                selected_player_type = state::Player_Type::Advanced_AI;
+            }
+
+            if (clicked_on("adder_window_add_button"))
+            {
+                if (added_ai_name.empty())
+                {
+                    added_ai_name = "Player" + std::to_string(player_names.size() + 1);
+                }
+
+                std::cout << "Adding player " << added_ai_name << " of type "
+                          << static_cast<int>(selected_player_type) << std::endl;
+                try
+                {
+                    send_ai_creation_request(added_ai_name, selected_player_type);
+                }
+                catch (const std::runtime_error& e)
+                {
+                    std::cout << "Failed to add AI: " << e.what() << std::endl;
+                    ai_adder_window_opened = false;
+                }
+                ai_adder_window_opened = false;
+                return;
+            }
+        }
+
+        if (clicked_on("exit_button"))
         {
             try
             {
@@ -84,7 +176,7 @@ void Online_Lobby_State::handle_input(sf::Event event)
             this->context->change_state(new_state);
             return;
         }
-        if (layout_infos["start_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
+        if (clicked_on("start_button"))
         {
             try
             {
@@ -101,8 +193,37 @@ void Online_Lobby_State::handle_input(sf::Event event)
             this->context->change_state(new_state);
             return;
         }
-    }
 
+        if (clicked_on("add_ai_button"))
+        {
+            std::cout << "Clicked" << std::endl;
+            ai_adder_window_opened = true;
+            return;
+        }
+
+        if (clicked_on("remove_ai_button"))
+        {
+            try
+            {
+                send_ai_removal_request();
+            }
+            catch (const std::runtime_error& e)
+            {
+                std::cout << "Failed to remove AI: " << e.what() << std::endl;
+                return;
+            }
+            return;
+        }
+    }
+}
+
+void Online_Lobby_State::render(sf::RenderWindow& window)
+{
+    {
+        std::lock_guard<std::mutex> lock(get_mutex());
+        renderer.render(player_names, player_types, ai_adder_window_opened, modifying_name,
+                        added_ai_name, selected_player_type);
+    }
     bool flag;
     {
         std::lock_guard<std::mutex> lock(get_mutex());
@@ -116,19 +237,12 @@ void Online_Lobby_State::handle_input(sf::Event event)
             this->context->get_window(), player_names, room_id, session_token, player_id);
         this->context->change_state(new_state);
     }
-    // Handle input events specific to the online lobby state
-}
-
-void Online_Lobby_State::render(sf::RenderWindow& window)
-{
-    std::lock_guard<std::mutex> lock(get_mutex());
-    renderer.render(player_names);
 }
 
 void Online_Lobby_State::request_lobby_state()
 {
     // getting names of the players in the lobby
-    sf::Http          http_client("http://" + context->get_server_ip(), 8888);
+    sf::Http          http_client("http://" + get_server_ip(), 8888);
     sf::Http::Request request("/rooms/state/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Get);
     request.setField("Session-Token", session_token);
@@ -147,26 +261,38 @@ void Online_Lobby_State::request_lobby_state()
         game_remotely_launched = true;
         return;
     }
-
     {
         std::lock_guard<std::mutex> lock(get_mutex());
         player_names.clear();
-        std::stringstream ss(response.getBody());
-        std::string       t;
-        char              del = ',';
-        while (getline(ss, t, del))
+
+        std::string temp = response.getBody();
+
+        std::vector<std::string> players_str;
+        int                      slash_pos = temp.find("/", 0);
+        std::cout << temp << std::endl;
+        while (slash_pos != std::string::npos)
         {
-            player_names.push_back(t);
+            players_str.push_back(temp.substr(0, slash_pos));
+            temp      = temp.substr(slash_pos + 1);
+            slash_pos = temp.find("/", 0);
         }
         // last info is the player id
-        std::string player_id_str = player_names.back();
-        player_names.pop_back();
-        player_id = std::stoi(player_id_str);
+        std::string player_id_str = temp;
+        player_id                 = std::stoi(player_id_str);
+
+        for (int i = 0; i < players_str.size(); i++)
+        {
+            std::string player_infos = players_str.at(i);
+            int         coma_pos     = player_infos.find(",", 0);
+            player_names.push_back(player_infos.substr(0, coma_pos));
+            std::string player_type_str = player_infos.substr(coma_pos + 1);
+            player_types.push_back(static_cast<state::Player_Type>(std::stoi(player_type_str)));
+        }
     }
 }
 void Online_Lobby_State::send_start_request()
 {
-    sf::Http http_client("http://" + context->get_server_ip(), 8888);
+    sf::Http http_client("http://" + get_server_ip(), 8888);
 
     sf::Http::Request request("/game/start/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Post);
@@ -181,7 +307,7 @@ void Online_Lobby_State::send_start_request()
 
 void Online_Lobby_State::send_exit_request()
 {
-    sf::Http http_client("http://" + context->get_server_ip(), 8888);
+    sf::Http http_client("http://" + get_server_ip(), 8888);
 
     sf::Http::Request request("/rooms/exit/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Post);
@@ -194,4 +320,34 @@ void Online_Lobby_State::send_exit_request()
     }
 }
 
+void Online_Lobby_State::send_ai_creation_request(std::string name, state::Player_Type type)
+{
+    sf::Http http_client("http://" + get_server_ip(), 8888);
+
+    sf::Http::Request request("/rooms/add_ai/" + std::to_string(room_id));
+    request.setMethod(sf::Http::Request::Post);
+    request.setField("Session-Token", session_token);
+    request.setBody(std::to_string(static_cast<int>(type)) + "," + name);
+
+    sf::Http::Response response = http_client.sendRequest(request);
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to send AI creation request to server");
+    }
+}
+
+void Online_Lobby_State::send_ai_removal_request()
+{
+    sf::Http http_client("http://" + get_server_ip(), 8888);
+
+    sf::Http::Request request("/rooms/delete_ai/" + std::to_string(room_id));
+    request.setMethod(sf::Http::Request::Post);
+    request.setField("Session-Token", session_token);
+
+    sf::Http::Response response = http_client.sendRequest(request);
+    if (response.getStatus() != sf::Http::Response::Ok)
+    {
+        throw std::runtime_error("Failed to send AI removal request to server");
+    }
+}
 }  // namespace client

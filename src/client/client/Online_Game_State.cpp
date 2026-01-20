@@ -154,7 +154,7 @@ int Online_Game_State::get_player_id()
 
 int Online_Game_State::request_version_id()
 {
-    sf::Http          http_client("http://" + context->get_server_ip(), 8888);
+    sf::Http          http_client("http://" + get_server_ip(), 8888);
     sf::Http::Request request("/game/version/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Get);
     request.setField("Session-Token", session_token);
@@ -170,7 +170,7 @@ int Online_Game_State::request_version_id()
 
 void Online_Game_State::request_state(Json::Value& root)
 {
-    sf::Http          http_client("http://" + context->get_server_ip(), 8888);
+    sf::Http          http_client("http://" + get_server_ip(), 8888);
     sf::Http::Request request("/game/state/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Get);
     request.setField("Session-Token", session_token);
@@ -197,7 +197,7 @@ void Online_Game_State::request_state(Json::Value& root)
 
 void Online_Game_State::send_command(Json::Value& command_json)
 {
-    sf::Http          http_client("http://" + context->get_server_ip(), 8888);
+    sf::Http          http_client("http://" + get_server_ip(), 8888);
     sf::Http::Request request("/game/command/" + std::to_string(room_id));
     request.setMethod(sf::Http::Request::Post);
     request.setField("Session-Token", session_token);

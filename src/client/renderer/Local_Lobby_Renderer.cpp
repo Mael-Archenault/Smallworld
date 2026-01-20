@@ -5,7 +5,7 @@
 namespace renderer
 {
 Local_Lobby_Renderer::Local_Lobby_Renderer(sf::RenderWindow& window)
-    : window(window), player_adder_window(window)
+    : window(window), player_adder_window(window, true)
 {
     // load background image
     std::string file_path = std::string(RESOURCE_DIR) + "/assets/general_background_blurred.png";

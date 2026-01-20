@@ -2,7 +2,8 @@
 #include "renderer.h"
 namespace renderer
 {
-Player_Adder_Window::Player_Adder_Window(sf::RenderWindow& window) : window(window)
+Player_Adder_Window::Player_Adder_Window(sf::RenderWindow& window, bool human_player_available)
+    : window(window), human_player_available(human_player_available)
 {
     name_label.set_content("Player Name : ");
     name_label.set_colors(sf::Color(50, 50, 50), sf::Color(50, 50, 50), sf::Color::White);
@@ -10,8 +11,11 @@ Player_Adder_Window::Player_Adder_Window(sf::RenderWindow& window) : window(wind
     name_box.set_content("");
     name_box.set_colors(sf::Color::White, sf::Color(10, 10, 10), sf::Color::White);
 
-    real_player_label.set_content("Real Player");
-    real_player_label.set_colors(sf::Color::White, sf::Color(200, 200, 200), sf::Color::Black);
+    if (human_player_available)
+    {
+        real_player_label.set_content("Real Player");
+        real_player_label.set_colors(sf::Color::White, sf::Color(200, 200, 200), sf::Color::Black);
+    }
 
     random_ai_label.set_content("Random AI");
     random_ai_label.set_colors(sf::Color::White, sf::Color(200, 200, 200), sf::Color::Black);
@@ -56,7 +60,7 @@ void Player_Adder_Window::render(bool modifying_name, std::string name,
         sf::Vector2f(offset.x + box_size.x * 0.1 + button_width, offset.y + box_size.y * 0.2));
     if (modifying_name)
     {
-        name_box.set_colors(sf::Color(50, 50, 50), sf::Color(150, 150, 150), sf::Color(50, 50, 50));
+        name_box.set_colors(sf::Color::Red, sf::Color(150, 150, 150), sf::Color(50, 50, 50));
     }
     else
     {
@@ -67,19 +71,23 @@ void Player_Adder_Window::render(bool modifying_name, std::string name,
     name_box.set_character_size(button_height / 2);
     name_box.render(window);
 
-    real_player_label.set_size(sf::Vector2f(button_width, button_height));
-    real_player_label.set_position(
-        sf::Vector2f(window_size.x / 2 - button_width / 2, offset.y + box_size.y * 0.4));
-    real_player_label.set_character_size(button_height / 2);
-    if (selected_player_type == ai::Human_t)
+    if (human_player_available)
     {
-        real_player_label.set_colors(sf::Color::Black, sf::Color::White, sf::Color::Black);
+        real_player_label.set_size(sf::Vector2f(button_width, button_height));
+        real_player_label.set_position(
+            sf::Vector2f(window_size.x / 2 - button_width / 2, offset.y + box_size.y * 0.4));
+        real_player_label.set_character_size(button_height / 2);
+        if (selected_player_type == ai::Human_t)
+        {
+            real_player_label.set_colors(sf::Color::Black, sf::Color::White, sf::Color::Black);
+        }
+        else
+        {
+            real_player_label.set_colors(sf::Color::White, sf::Color(200, 200, 200),
+                                         sf::Color::Black);
+        }
+        real_player_label.render(window);
     }
-    else
-    {
-        real_player_label.set_colors(sf::Color::White, sf::Color(200, 200, 200), sf::Color::Black);
-    }
-    real_player_label.render(window);
 
     random_ai_label.set_size(sf::Vector2f(button_width, button_height));
     random_ai_label.set_position(
@@ -142,9 +150,12 @@ void Player_Adder_Window::render(bool modifying_name, std::string name,
 std::unordered_map<std::string, sf::FloatRect> Player_Adder_Window::get_layout_infos()
 {
     std::unordered_map<std::string, sf::FloatRect> rects;
-    rects["adder_window"]                     = background.getGlobalBounds();
-    rects["adder_window_name_box"]            = name_box.get_rect();
-    rects["adder_window_real_player_button"]  = real_player_label.get_rect();
+    rects["adder_window"]          = background.getGlobalBounds();
+    rects["adder_window_name_box"] = name_box.get_rect();
+    if (human_player_available)
+    {
+        rects["adder_window_real_player_button"] = real_player_label.get_rect();
+    }
     rects["adder_window_random_ai_button"]    = random_ai_label.get_rect();
     rects["adder_window_heuristic_ai_button"] = heuristic_ai_label.get_rect();
     rects["adder_window_advanced_ai_button"]  = advanced_ai_label.get_rect();
