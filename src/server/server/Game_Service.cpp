@@ -2,9 +2,9 @@
 
 #include <thread>
 
+#include "ai.h"
 #include "server.h"
 #include "state/Player_Type.h"
-#include "ai.h"
 namespace server
 {
 
@@ -34,34 +34,39 @@ void engines_process(Game_Service& service)
     }
 }
 
-
-    void ai_process_online(Game_Service& service,
-                      std::vector<state::Player_Type> player_types,std::string engine_key)
+void ai_process_online(Game_Service& service, std::vector<state::Player_Type> player_types,
+                       std::string engine_key)
 {
     // TODO add enum name of ais for switch
 
-    bool              running = true;
+    bool                                           running = true;
     std::vector<std::shared_ptr<ai::Ai_Interface>> ais;
-    for (int i = 0; i < player_types.size(); i++)
-    switch (player_types.at(i))
-    {
-        case state::Random_AI:
-            ais.emplace_back(std::make_shared<ai::Ai_Random>(service.get_engines().at(engine_key)->get_state(), i));
-            break;
-        case state::Heuristic_AI:
-            ais.emplace_back(std::make_shared<ai::Ai_Heuristic>(service.get_engines().at(engine_key)->get_state(), i));
-            break;
-        case state::Advanced_AI:
-            ais.emplace_back(std::make_shared<ai::Ai_Advanced>(service.get_engines().at(engine_key)->get_state(), i));
-            break;
-        default:
-            break;
-    }
+    for (int i = 0; i < player_types.size(); i++) switch (player_types.at(i))
+        {
+            case state::Random_AI:
+                ais.emplace_back(std::make_shared<ai::Ai_Random>(
+                    service.get_engines().at(engine_key)->get_state(), i));
+                break;
+            case state::Heuristic_AI:
+                ais.emplace_back(std::make_shared<ai::Ai_Heuristic>(
+                    service.get_engines().at(engine_key)->get_state(), i));
+                break;
+            case state::Advanced_AI:
+                ais.emplace_back(std::make_shared<ai::Ai_Advanced>(
+                    service.get_engines().at(engine_key)->get_state(), i));
+                break;
+            default:
+                break;
+        }
 
     while (running)
     {
-        for (auto ai : ais) {
-            if (!running) {break;}      // if one ai ends turn and next one would want to play
+        for (auto ai : ais)
+        {
+            if (!running)
+            {
+                break;
+            }  // if one ai ends turn and next one would want to play
             bool is_my_turn = false;
             {
                 std::lock_guard<std::mutex> lock(service.get_mutex());
@@ -87,14 +92,12 @@ void engines_process(Game_Service& service)
             }
             {
                 std::lock_guard<std::mutex> lock(service.get_mutex());
-                running = ! ai->get_state().is_game_finished();
+                running = !ai->get_state().is_game_finished();
             }
         }
         usleep(1000000);
     }
 }
-
-
 
 Game_Service::Game_Service(Room_Service& room_service)
     : Service_Interface("/game"), room_service(room_service)
@@ -160,24 +163,23 @@ Http_Status Game_Service::post(std::string& in, std::string& out, std::string ur
 
     return Http_Status::METHOD_NOT_ALLOWED;
 }
-void Game_Service::launch_game(int room_id, std::vector<std::string> player_names, std::vector<state::Player_Type>  player_types)
+void Game_Service::launch_game(int room_id, std::vector<std::string> player_names,
+                               std::vector<state::Player_Type> player_types)
 {
     {
         std::lock_guard<std::mutex> lock(mtx);
         engines.emplace(std::to_string(room_id), std::make_unique<engine::Engine>(player_names));
     }
 
-
     ais[std::to_string(room_id)] = std::thread(
-        [](Game_Service& service, std::vector<state::Player_Type> player_types, std::string engine_key)
-                    { ai_process_online(service, player_types, engine_key); },
-                    std::ref(*this), player_types, std::to_string(room_id));
-
-
+        [](Game_Service& service, std::vector<state::Player_Type> player_types,
+           std::string engine_key) { ai_process_online(service, player_types, engine_key); },
+        std::ref(*this), player_types, std::to_string(room_id));
 }
 void Game_Service::stop_game(int room_id)
 {
     std::lock_guard<std::mutex> lock(mtx);
+    // stopping engine
     engines.erase(std::to_string(room_id));
 }
 std::unordered_map<std::string, std::shared_ptr<engine::Engine>>& Game_Service::get_engines()

@@ -264,6 +264,7 @@ void Online_Lobby_State::request_lobby_state()
     {
         std::lock_guard<std::mutex> lock(get_mutex());
         player_names.clear();
+        player_types.clear();
 
         std::string temp = response.getBody();
 

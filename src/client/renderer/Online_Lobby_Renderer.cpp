@@ -88,16 +88,16 @@ void Online_Lobby_Renderer::render(std::vector<std::string>        player_names,
         std::string player_type;
         switch (player_types.at(i))
         {
-            case 0:
+            case state::Player_Type::Human:
                 player_type = " (Human)";
                 break;
-            case 1:
+            case state::Player_Type::Random_AI:
                 player_type = " (Random AI)";
                 break;
-            case 2:
+            case state::Player_Type::Heuristic_AI:
                 player_type = " (Heuristic AI)";
                 break;
-            case 3:
+            case state::Player_Type::Advanced_AI:
                 player_type = " (Advanced AI)";
                 break;
             default:

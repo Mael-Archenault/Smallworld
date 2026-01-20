@@ -2,6 +2,7 @@
 
 namespace client
 {
+
 Threaded_State_Interface::Threaded_State_Interface() {}
 
 void Threaded_State_Interface::register_thread(std::string name, std::thread thread)

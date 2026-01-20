@@ -45,7 +45,7 @@ Http_Status Service_Manager::handle_request(std::string& in, std::string& out, s
         return Http_Status::UNAUTHORIZED;
     }
 
-    Player requesting_player = player_manager.get_player(session_token);
+    player_manager.refresh_last_seen(session_token);
 
     Service_Interface* service = find_responsible_service(url);
     if (!service)

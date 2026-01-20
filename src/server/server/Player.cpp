@@ -1,3 +1,6 @@
+#include <chrono>
+#include <iostream>
+
 #include "server.h"
 
 namespace server
@@ -26,7 +29,18 @@ int Player::get_room()
 {
     return in_room;
 }
-state::Player_Type Player::get_player_type() {
+state::Player_Type Player::get_player_type()
+{
     return player_type;
+}
+
+void Player::set_last_seen(std::chrono::steady_clock::time_point time)
+{
+    last_seen = time;
+}
+
+std::chrono::steady_clock::time_point Player::get_last_seen()
+{
+    return last_seen;
 }
 }  // namespace server

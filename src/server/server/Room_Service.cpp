@@ -20,12 +20,14 @@ Http_Status Room_Service::get(std::string& in, std::string& out, std::string url
     size_t      slash_pos   = url.find('/', 1);
     std::string action      = url.substr(0, slash_pos);
     std::string room_id_str = url.substr(slash_pos + 1);
-    int room_id = 0;
-    try {
-        int room_id = std::stoi(room_id_str);
-        std::cout << "Room_id : " << room_id << "Action :" << action << std::endl;
+    int         room_id     = 0;
+    try
+    {
+        room_id = std::stoi(room_id_str);
+        std::cout << "Room_id : " << room_id << " | Action :" << action << std::endl;
     }
-    catch (std::exception& e) {
+    catch (std::exception& e)
+    {
         std::cout << "Error while getting room id: " << e.what() << std::endl;
         return Http_Status::BAD_REQUEST;
     }
@@ -117,13 +119,17 @@ Http_Status Room_Service::post(std::string& in, std::string& out, std::string ur
         }
         return Http_Status::OK;
     }
-    if (action == "/add_ai") {
-        try {
-            add_ai(room_id,session_token,in);
+    if (action == "/add_ai")
+    {
+        try
+        {
+            add_ai(room_id, session_token, in);
             return Http_Status::OK;
         }
-        catch (std::exception& e) {
-            std::cout << "Error while adding ai to room "<< room_id << ": " << e.what() << std::endl;
+        catch (std::exception& e)
+        {
+            std::cout << "Error while adding ai to room " << room_id << ": " << e.what()
+                      << std::endl;
             return Http_Status::BAD_REQUEST;
         }
     }
@@ -243,7 +249,8 @@ void Room_Service::delete_room(int room_id)
     }
 }
 
-std::pair<std::vector<std::string>, std::vector<state::Player_Type>> Room_Service::get_room_start_infos(int room_id)
+std::pair<std::vector<std::string>, std::vector<state::Player_Type>>
+Room_Service::get_room_start_infos(int room_id)
 {
     for (auto& room : rooms)
     {
@@ -280,19 +287,24 @@ Room_State Room_Service::get_room_state(int room_id)
     throw std::runtime_error("Room with id not found");
 }
 
-void Room_Service::add_ai(int room_id, std::string& session_token, std::string& in) {
-    int coma_pos = in.find(",");
-    std::string ai_type_str = in.substr(0, coma_pos);
-    std::string name = in.substr( coma_pos+1,in.back());
-    state::Player_Type ai_type = static_cast<state::Player_Type>(std::stoi(ai_type_str));
+void Room_Service::add_ai(int room_id, std::string& session_token, std::string& in)
+{
+    int                coma_pos    = in.find(",");
+    std::string        ai_type_str = in.substr(0, coma_pos);
+    std::string        name        = in.substr(coma_pos + 1, in.back());
+    state::Player_Type ai_type     = static_cast<state::Player_Type>(std::stoi(ai_type_str));
 
-    Player player = Player(name,ai_type,"");
+    Player player = Player(name, ai_type, "");
     for (auto& room : rooms)
     {
         if (room.id == room_id)
         {
-           room.add_player(player);
+            if (room.is_full())
+            {
+                throw std::runtime_error("Room is full");
+            }
+            room.add_player(player);
         }
     }
-    }
+}
 }  // namespace server

@@ -1,10 +1,46 @@
+#include <unistd.h>
+
+#include <chrono>
 #include <iostream>
+#include <mutex>
+#include <thread>
 
 #include "server.h"
 
 namespace server
 {
-Player_Manager::Player_Manager() {}
+
+void sessions_update_process(Player_Manager& manager)
+{
+    bool running = true;
+    while (running)
+    {
+        manager.remove_inactive_players();
+        usleep(15000000);  // checking every 15 seconds
+        running = manager.get_sessions_update_thread_running();
+    }
+}
+Player_Manager::Player_Manager()
+{
+    sessions_update_thread = std::thread(
+        [](Player_Manager& manager) { sessions_update_process(manager); }, std::ref(*this));
+
+    sessions_update_thread_running = true;
+    sessions_update_thread.detach();
+}
+
+Player_Manager::~Player_Manager()
+{
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        sessions_update_thread_running = false;
+    }
+
+    if (sessions_update_thread.joinable())
+    {
+        sessions_update_thread.join();
+    }
+}
 
 std::string Player_Manager::create_player(std::string name)
 {
@@ -48,5 +84,36 @@ bool Player_Manager::verify_session_token(std::string session_token)
     }
     return false;
 }
+void Player_Manager::refresh_last_seen(std::string session_token)
+{
+    for (auto& player : connected_players)
+    {
+        if (player.get_session_token() == session_token)
+        {
+            player.set_last_seen(clock.now());
+        }
+    }
+}
 
+void Player_Manager::remove_inactive_players()
+{
+    std::cout << "Cleaning" << std::endl;
+    std::lock_guard<std::mutex> lock(mtx);
+    auto                        now = clock.now();
+
+    for (auto& player : connected_players)
+    {
+        auto duration =
+            std::chrono::duration_cast<std::chrono::seconds>(now - player.get_last_seen());
+        if (duration.count() >= 5)
+        {
+            std::cout << "Removing inactive player: " << player.get_name() << std::endl;
+        }
+    }
+}
+bool Player_Manager::get_sessions_update_thread_running()
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    return sessions_update_thread_running;
+}
 }  // namespace server
