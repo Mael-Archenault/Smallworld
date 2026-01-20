@@ -14,7 +14,7 @@
 
 int main(int argc, char* argv[])
 {
-    std::string    server_ip = argv[1];
+    std::string    server_ip = (argc < 2) ? "localhost" : argv[1];
     client::Client client(server_ip);
     client.run();
 }

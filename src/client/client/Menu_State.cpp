@@ -30,7 +30,7 @@ void Menu_State::handle_input(sf::Event event)
         if (layout_infos["local_button"].contains(static_cast<sf::Vector2f>(mouse_pos)))
         {
             std::cout << "Switching to Local Lobby State" << std::endl;
-            Local_Lobby_State* new_state = new Local_Lobby_State();
+            Local_Lobby_State* new_state = new Local_Lobby_State(context->get_window());
             this->context->change_state(new_state);
             return;
         }
