@@ -12,9 +12,9 @@
 namespace ai
 {
 
-Ai_Interface::Ai_Interface(state::Game_State* state, int player_id) : id(player_id), state(state) {}
+Ai_Interface::Ai_Interface(state::Game_State state, int player_id) : id(player_id), state(state) {}
 
-std::unique_ptr<engine::Command> Ai_Interface::give_command(state::Turn_Phase phase)
+std::shared_ptr<engine::Command> Ai_Interface::give_command(state::Turn_Phase phase)
 {
     switch (phase)
     {
@@ -29,24 +29,28 @@ std::unique_ptr<engine::Command> Ai_Interface::give_command(state::Turn_Phase ph
     }
 }
 
-std::unique_ptr<engine::Command> Ai_Interface::give_command_Start()
+std::shared_ptr<engine::Command> Ai_Interface::give_command_Start()
 {
     return nullptr;
 }
 
-std::unique_ptr<engine::Command> Ai_Interface::give_command_Conquer()
+std::shared_ptr<engine::Command> Ai_Interface::give_command_Conquer()
 {
     return nullptr;
 }
 
-std::unique_ptr<engine::Command> Ai_Interface::give_command_Redeploy()
+std::shared_ptr<engine::Command> Ai_Interface::give_command_Redeploy()
 {
     return nullptr;
 }
 
-void Ai_Interface::update_state(state::Game_State* new_state)
+void Ai_Interface::update_state(state::Game_State new_state)
 {
-    this->state = new_state;
+    this->state = new_state.deep_copy();
 }
 
+state::Game_State& Ai_Interface::get_state()
+{
+    return this->state;
 }
+}  // namespace ai

@@ -4,12 +4,12 @@
 
 namespace effects
 {
-Alchemist_Power::Alchemist_Power() : Power_Description("Alchemists", 4)
+Alchemist_Power::Alchemist_Power() : Power_Description("Alchemist", 4)
 {
     effect_disabled = false;
 }
 
-int Alchemist_Power::get_bonus_rewards(state::Area* area)
+int Alchemist_Power::rewards_effect(std::vector<state::Area*> owned_areas)
 {
     if (effect_disabled)
     {
@@ -18,7 +18,7 @@ int Alchemist_Power::get_bonus_rewards(state::Area* area)
     return 2;
 }
 
-void Alchemist_Power::disable_effects(std::vector<state::Area*> areas)
+void Alchemist_Power::decline_effect(std::vector<state::Area*> owned_areas)
 {
     effect_disabled = true;
 }

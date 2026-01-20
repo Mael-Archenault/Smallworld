@@ -32,7 +32,7 @@ void online_state_update_process(client::Online_Game_State& client)
 Online_Game_State::Online_Game_State(sf::RenderWindow&        window,
                                      std::vector<std::string> player_names, int room_id,
                                      std::string session_token, int player_id)
-    : state(player_names.size(), player_names, 0),
+    : state(player_names, 0),
       renderer(state, window),
       selected_area_id(0),
       tribe_info_window_opened(false),

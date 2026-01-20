@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "ai.h"
 #include "client.h"
 
 namespace client
@@ -14,10 +15,8 @@ Local_Lobby_State::Local_Lobby_State(sf::RenderWindow& window)
     : renderer(window),
       player_adder_window_opened(false),
       modifying_name(false),
-      selected_player_type("Real Player")
+      selected_player_type(state::Player_Type::Human)
 {
-    std::cout << "Local Lobby State" << std::endl;
-    players = {{"Alice", 0}, {"Bob", 1}};
 }
 
 void Local_Lobby_State::handle_input(sf::Event event)
@@ -81,32 +80,33 @@ void Local_Lobby_State::handle_input(sf::Event event)
 
             if (clicked_on("adder_window_real_player_button"))
             {
-                selected_player_type = "Real Player";
+                selected_player_type = state::Player_Type::Human;
             }
             if (clicked_on("adder_window_random_ai_button"))
             {
-                selected_player_type = "Random AI";
+                selected_player_type = state::Player_Type::Random_AI;
             }
 
             if (clicked_on("adder_window_heuristic_ai_button"))
             {
-                selected_player_type = "Heuristic AI";
+                selected_player_type = state::Player_Type::Heuristic_AI;
             }
             if (clicked_on("adder_window_advanced_ai_button"))
             {
-                selected_player_type = "Advanced AI";
+                selected_player_type = state::Player_Type::Advanced_AI;
             }
 
             if (clicked_on("adder_window_add_button"))
             {
                 if (added_player_name.empty())
                 {
-                    added_player_name = "Player" + std::to_string(players.size() + 1);
+                    added_player_name = "Player" + std::to_string(player_names.size() + 1);
                 }
 
-                players.push_back({added_player_name, 0});
+                player_names.push_back(added_player_name);
+                player_types.push_back(selected_player_type);
                 added_player_name.clear();
-                selected_player_type       = "Real Player";
+                selected_player_type       = state::Player_Type::Human;
                 modifying_name             = false;
                 player_adder_window_opened = false;
                 return;
@@ -122,15 +122,9 @@ void Local_Lobby_State::handle_input(sf::Event event)
         if (clicked_on("start_button"))
         {
             std::cout << "Starting Local Game" << std::endl;
-            int                      nb_players = players.size();
-            std::vector<std::string> player_names;
-            for (const auto& p : players)
-            {
-                player_names.push_back(p.first);
-            }
-            engine::Engine*   engine = new engine::Engine(nb_players, player_names);
+            engine::Engine*   engine = new engine::Engine(player_names);
             Local_Game_State* new_state =
-                new Local_Game_State(this->context->get_window(), *engine);
+                new Local_Game_State(this->context->get_window(), *engine, player_types);
             this->context->change_state(new_state);
             return;
         }
@@ -145,8 +139,8 @@ void Local_Lobby_State::handle_input(sf::Event event)
 
 void Local_Lobby_State::render(sf::RenderWindow& window)
 {
-    renderer.render(players, player_adder_window_opened, modifying_name, added_player_name,
-                    selected_player_type);
+    renderer.render(player_names, player_types, player_adder_window_opened, modifying_name,
+                    added_player_name, selected_player_type);
 }
 
 }  // namespace client

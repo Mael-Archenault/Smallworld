@@ -4,6 +4,7 @@
 #include <mutex>
 #include <thread>
 
+#include "ai.h"
 #include "client.h"
 #include "engine.h"
 #include "renderer.h"
@@ -44,15 +45,74 @@ void state_update_process(client::Local_Game_State& client)
             client.update_state();
         }
 
-        usleep(100000);  // 10 updates per secound
+        usleep(100000);  // 10 updates per second
         running = client.get_running_flag("state_update");
     }
 }
 
-int                      nb_players   = 2;
-std::vector<std::string> player_names = {"Alice", "Bob"};
+void ai_process_local(client::Local_Game_State& client, std::string thread_name,
+                      state::Player_Type ai_type, int player_id)
+{
+    // TODO add enum name of ais for switch
 
-Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& engine)
+    std::string       name    = thread_name;
+    bool              running = true;
+    ai::Ai_Interface* ai;
+    switch (ai_type)
+    {
+        case ai::Ai_Random_t:
+            ai = new ai::Ai_Random(client.get_state(), player_id);
+            break;
+        case ai::Ai_Heuristic_t:
+            ai = new ai::Ai_Heuristic(client.get_state(), player_id);
+            break;
+        case ai::Ai_Advanced_t:
+            ai = new ai::Ai_Advanced(client.get_state(), player_id);
+            break;
+        default:
+            break;
+    }
+
+    while (running)
+    {
+        //     std::lock_guard<std::mutex> lock(mtx);
+        //     if (ai..is_game_finished() == true ) {
+        //         return player_id;
+        //     }
+
+        bool is_my_turn = false;
+        {
+            std::lock_guard<std::mutex> lock(client.get_mutex());
+            // update state
+            engine::Engine& engine = client.get_engine();
+
+            if (engine.get_state_version_id() != ai->get_state().get_version_id())
+            {
+                ai->update_state(engine.get_state());
+            }
+        }
+        is_my_turn = (ai->get_state().get_current_player().id == player_id);
+        // give command if needed
+
+        if (is_my_turn)
+        {
+            std::shared_ptr<engine::Command> command =
+                ai->give_command(ai->get_state().get_current_turn_phase());
+            {
+                std::lock_guard<std::mutex> lock(client.get_mutex());
+                client.get_engine().add_command(command);
+            }
+        }
+        usleep(1000000);
+        running = client.get_running_flag(name);
+    }
+}
+
+// int                      nb_players   = 2;
+// std::vector<std::string> player_names = {"Alice", "Bob"};
+
+Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& engine,
+                                   std::vector<state::Player_Type> player_types)
     : engine(engine),
       state(engine.get_state()),
       renderer(state, window),
@@ -70,18 +130,44 @@ Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& eng
         "engine_update",
         std::thread([](engine::Engine& engine, client::Local_Game_State& client)
                     { engine_process(engine, client); }, std::ref(engine), std::ref(*this)));
+    thread_names.emplace_back("engine_update");
 
     register_thread("state_update",
                     std::thread([](client::Local_Game_State& client)
                                 { state_update_process(client); }, std::ref(*this)));
+    thread_names.emplace_back("state_update");
 
-    start_thread("engine_update");
-    start_thread("state_update");
+    for (int i = 0; i < player_types.size(); i++)
+    {
+        if (player_types.at(i) == state::Player_Type::Human)
+        {
+            continue;
+        }
+
+        register_thread(
+            "ai_thread_" + std::to_string(i),
+            std::thread([](client::Local_Game_State& client, std::string thread_name,
+                           state::Player_Type ai_type, int player_id)
+                        { ai_process_local(client, thread_name, ai_type, player_id); },
+                        std::ref(*this), "ai_thread_" + std::to_string(i), player_types.at(i), i));
+        thread_names.push_back("ai_thread_" + std::to_string(i));
+    }
+
+    for (std::string& name : thread_names)
+    {
+        start_thread(name);
+    }
+    // start_thread("engine_update");
+    // start_thread("state_update");
 }
 Local_Game_State::~Local_Game_State()
 {
-    stop_thread("engine_update");
-    stop_thread("state_update");
+    for (std::string& name : thread_names)
+    {
+        stop_thread(name);
+    }
+    // stop_thread("engine_update");
+    // stop_thread("state_update");
 }
 
 void Local_Game_State::handle_input(sf::Event event)
@@ -91,8 +177,12 @@ void Local_Game_State::handle_input(sf::Event event)
         if (event.key.code == sf::Keyboard::M)
         {
             std::cout << "Switching to Menu State" << std::endl;
-            stop_thread("engine_update");
-            stop_thread("state_update");
+            for (std::string& name : thread_names)
+            {
+                stop_thread(name);
+            }
+            // stop_thread("engine_update");
+            // stop_thread("state_update");
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
         }

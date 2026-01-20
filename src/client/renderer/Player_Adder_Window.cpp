@@ -1,5 +1,5 @@
+#include "ai.h"
 #include "renderer.h"
-
 namespace renderer
 {
 Player_Adder_Window::Player_Adder_Window(sf::RenderWindow& window) : window(window)
@@ -34,7 +34,7 @@ Player_Adder_Window::Player_Adder_Window(sf::RenderWindow& window) : window(wind
 void Player_Adder_Window::handle_input(sf::Event event) {}
 
 void Player_Adder_Window::render(bool modifying_name, std::string name,
-                                 std::string selected_player_type)
+                                 state::Player_Type selected_player_type)
 {
     sf::Vector2u window_size   = window.getSize();
     float        button_width  = window_size.x / 4.f;
@@ -71,7 +71,7 @@ void Player_Adder_Window::render(bool modifying_name, std::string name,
     real_player_label.set_position(
         sf::Vector2f(window_size.x / 2 - button_width / 2, offset.y + box_size.y * 0.4));
     real_player_label.set_character_size(button_height / 2);
-    if (selected_player_type == "Real Player")
+    if (selected_player_type == ai::Human_t)
     {
         real_player_label.set_colors(sf::Color::Black, sf::Color::White, sf::Color::Black);
     }
@@ -85,7 +85,7 @@ void Player_Adder_Window::render(bool modifying_name, std::string name,
     random_ai_label.set_position(
         sf::Vector2f(window_size.x / 2 - 3.1 * button_width / 2, offset.y + box_size.y * 0.6));
     random_ai_label.set_character_size(button_height / 2);
-    if (selected_player_type == "Random AI")
+    if (selected_player_type == ai::Ai_Random_t)
     {
         random_ai_label.set_colors(sf::Color::Black, sf::Color::White, sf::Color::Black);
     }
@@ -99,7 +99,7 @@ void Player_Adder_Window::render(bool modifying_name, std::string name,
     heuristic_ai_label.set_position(
         sf::Vector2f(window_size.x / 2 - button_width / 2, offset.y + box_size.y * 0.6));
     heuristic_ai_label.set_character_size(button_height / 2);
-    if (selected_player_type == "Heuristic AI")
+    if (selected_player_type == ai::Ai_Heuristic_t)
     {
         heuristic_ai_label.set_colors(sf::Color::Black, sf::Color::White, sf::Color::Black);
     }
@@ -113,7 +113,7 @@ void Player_Adder_Window::render(bool modifying_name, std::string name,
     advanced_ai_label.set_position(
         sf::Vector2f(window_size.x / 2 + 1.1 * button_width / 2, offset.y + box_size.y * 0.6));
     advanced_ai_label.set_character_size(button_height / 2);
-    if (selected_player_type == "Advanced AI")
+    if (selected_player_type == ai::Ai_Advanced_t)
     {
         advanced_ai_label.set_colors(sf::Color::Black, sf::Color::White, sf::Color::Black);
     }

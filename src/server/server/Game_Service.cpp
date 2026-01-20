@@ -99,8 +99,7 @@ Http_Status Game_Service::post(std::string& in, std::string& out, std::string ur
 void Game_Service::launch_game(int room_id, int nb_players, std::vector<std::string> player_names)
 {
     std::lock_guard<std::mutex> lock(mtx);
-    engines.emplace(std::to_string(room_id),
-                    std::make_unique<engine::Engine>(nb_players, player_names));
+    engines.emplace(std::to_string(room_id), std::make_unique<engine::Engine>(player_names));
 }
 void Game_Service::stop_game(int room_id)
 {

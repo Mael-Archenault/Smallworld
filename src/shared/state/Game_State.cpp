@@ -7,8 +7,8 @@
 namespace state
 {
 
-Game_State::Game_State(int n_players, std::vector<std::string> names, int version_id)
-    : n_players(n_players),
+Game_State::Game_State(std::vector<std::string> names, int version_id)
+    : n_players(names.size()),
       round(1),
       map("4_players"),
       names(names),
@@ -243,7 +243,7 @@ std::vector<Player>& Game_State::get_players()
 
 Game_State Game_State::deep_copy()
 {
-    Game_State copy(n_players, names, version_id);
+    Game_State copy(names, version_id);
     copy.round              = round;
     copy.current_turn_phase = current_turn_phase;
     copy.version_id         = version_id;
@@ -422,5 +422,10 @@ int Game_State::get_version_id()
 void Game_State::new_version_id()
 {
     version_id++;
+}
+
+int Game_State::inform_rewards(int id)
+{
+    return players.at(id).inform_rewards();
 }
 }  // namespace state

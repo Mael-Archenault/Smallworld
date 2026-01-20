@@ -1,3 +1,4 @@
+#include "ai.h"
 #include "renderer.h"
 #include "resources_dir.h"
 
@@ -30,9 +31,10 @@ Local_Lobby_Renderer::Local_Lobby_Renderer(sf::RenderWindow& window)
     start_button.set_colors(sf::Color::Black, sf::Color(50, 50, 50), sf::Color::White);
 }
 
-void Local_Lobby_Renderer::render(std::vector<std::pair<std::string, int>> players,
+void Local_Lobby_Renderer::render(std::vector<std::string>        player_names,
+                                  std::vector<state::Player_Type> player_types,
                                   bool show_player_adder, bool modifying_name, std::string name,
-                                  std::string selected_player_type)
+                                  state::Player_Type selected_player_type)
 {
     window.clear(sf::Color::Black);
 
@@ -50,11 +52,11 @@ void Local_Lobby_Renderer::render(std::vector<std::pair<std::string, int>> playe
     background_sprite.setPosition(map_position);
     window.draw(background_sprite);
 
-    for (size_t i = 0; i < players.size(); ++i)
+    for (size_t i = 0; i < player_names.size(); ++i)
     {
         Text_Box    player_box;
         std::string player_type;
-        switch (players.at(i).second)
+        switch (player_types.at(i))
         {
             case 0:
                 player_type = " (Human)";
@@ -72,7 +74,7 @@ void Local_Lobby_Renderer::render(std::vector<std::pair<std::string, int>> playe
                 player_type = " (Unknown)";
                 break;
         }
-        player_box.set_content(players.at(i).first + player_type);
+        player_box.set_content(player_names.at(i) + player_type);
 
         player_box.set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
 
@@ -83,13 +85,13 @@ void Local_Lobby_Renderer::render(std::vector<std::pair<std::string, int>> playe
         player_box.render(window);
     }
 
-    if (players.size() < 4)
+    if (player_names.size() < 4)
     {
         add_button_sprite.setScale(button_height / add_button_texture.getSize().y,
                                    button_height / add_button_texture.getSize().y);
         add_button_sprite.setPosition(
             sf::Vector2f(window_size.x / 2 - button_height / 2,
-                         window_size.y / 4 + players.size() * (button_height + 10)));
+                         window_size.y / 4 + player_names.size() * (button_height + 10)));
         window.draw(add_button_sprite);
     }
     else
