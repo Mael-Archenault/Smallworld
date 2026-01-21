@@ -65,7 +65,7 @@ std::pair<int, std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcu
         float units_used = default_free_units - state.get_free_units_number(id);
 
         float cost_per_gain = units_used / money_gain;
-        if (cost_per_gain > 1.2)
+        if (cost_per_gain >= 1)
         {
             is_worth = false;
         }
