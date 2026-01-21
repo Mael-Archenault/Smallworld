@@ -58,9 +58,7 @@ std::shared_ptr<engine::Command> Ai_Heuristic::give_command_Conquer()
 
 std::shared_ptr<engine::Command> Ai_Heuristic::give_command_Redeploy()
 {
-    int                 free_units_number = state.get_free_units_number(id);
     std::vector<int>    areas             = state.get_redeployable_areas(id);
-    state::Area         current_area      = state.get_map().get_area(areas.at(0));
     std::pair<int, int> area_id_units     = {state.get_map().get_area(areas.at(0)).id,
                                              state.get_map().get_area(areas.at(0)).get_units_number()};
 

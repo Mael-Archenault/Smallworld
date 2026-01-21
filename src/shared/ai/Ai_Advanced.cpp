@@ -20,6 +20,8 @@
 #include "engine/Choose_Species_Command.h"
 #include "json/json.h"
 #define MIN_UNIT_FOR_DECLINE 5
+#define DANGER_COST_LIMIT 10
+#define BASE_COST_PRICE 2
 using namespace ai;
 
 Ai_Advanced::Ai_Advanced(state::Game_State state,int player_id) : Ai_Interface(state, player_id), engine(state, player_id) {
@@ -123,18 +125,102 @@ std::shared_ptr<engine::Command> Ai_Advanced::give_command_Conquer () {
 
 
 std::shared_ptr<engine::Command> Ai_Advanced::give_command_Redeploy (){
-    int free_units_number = state.get_free_units_number(id);
-    std::vector<int> areas = state.get_redeployable_areas(id);
-    state::Area current_area = state.get_map().get_area(areas.at(0));
-    std::pair<int,int> area_id_units = {state.get_map().get_area(areas.at(0)).id,
-                                        state.get_map().get_area(areas.at(0)).get_units_number()};
+    if (command_stack.empty()) {
+        command_stack = calcul_area_danger(state);
+    }
+    auto ret = command_stack.back();
+    command_stack.pop_back();
+    return ret;
+};
 
-    for (auto area_id : areas) {
-        if (state.get_map().get_area(area_id).get_units_number() < area_id_units.second) {
-            area_id_units = {state.get_map().get_area(areas.at(0)).id,
-                                state.get_map().get_area(areas.at(0)).get_units_number()};
+std::pair<int,bool> Ai_Advanced::dist_to_ennemies(state::Game_State state, int area_id, int cost, std::vector<std::pair<int,bool>> area_status, std::vector<std::pair<char,int>>& visited) //return the cost and if there is an ennemy of cost<=6
+{
+    int nAreas = (int)state.get_map().get_areas().size();
+    if (visited.at(area_id).first) return {visited.at(area_id).second, false};
+    visited.at(area_id).first = 1;
+
+    int token_costs = state.get_map().get_area(area_id).get_special_tokens().size();
+    int units_costs = state.get_map().get_area(area_id).get_units_number();
+    cost += token_costs + units_costs;
+    visited.at(area_id).second = cost;
+    
+    if(cost>=DANGER_COST_LIMIT)
+    {
+        return {DANGER_COST_LIMIT,false};
+    }
+    for(auto n_area : state.get_map().get_area(area_id).get_neighbors())
+    {
+        if (n_area->id < 0 || n_area->id >= nAreas) continue;
+        if(area_status.at(n_area->id).first==1)
+        {
+            return {cost,true};
+        }
+        else 
+        {
+            auto visited2 = visited;
+            auto dist = dist_to_ennemies(state, n_area->id, cost, area_status, visited2);
+            if(dist.second) return dist;
         }
     }
-    return std::make_unique<engine::Redeploy_Command>(id,area_id_units.first,1);};
+    return {cost,false};
+}
 
+std::vector<std::shared_ptr<engine::Command>> Ai_Advanced::calcul_area_danger(state::Game_State state)
+{
+    int nAreas = (int)state.get_map().get_areas().size();
+    //each area has its status, if -1, it's the owner areas, if 0, it's neutral and if 1, it's another player's area
+    std::vector<std::pair<int,bool>> area_status(nAreas, {0,false});
+    for(int area_id=0; area_id<nAreas; area_id++)
+    {
+        for(std::pair<int,int> player_id : state.get_all_player_id_money())
+        {
+            auto* tribe = state.get_map().get_area(area_id).get_owner_tribe();
+            if (tribe && tribe->get_owner() && tribe->get_owner()->id == id)
+            {
+                area_status.at(area_id).first = -1;
+                break;
+            }
+            else if(tribe && tribe->get_owner() && tribe->get_owner()->id == player_id.first)
+            {
+                area_status.at(area_id).first = 1;
+                break;
+            }
+            else
+            {
+                area_status.at(area_id).first = 0;
+            }
+        }
+    }
+    
+    //calcul the cost of each area
+    std::vector<int> area_danger(nAreas,DANGER_COST_LIMIT*2);
+    for(int area_id : state.get_redeployable_areas(id))
+    {
+        std::vector<std::pair<char,int>> visited(nAreas, {0,DANGER_COST_LIMIT});
+        area_danger.at(area_id) = dist_to_ennemies(state,area_id,0,area_status,visited).first;
+    }
 
+    auto redeploy = state.get_redeployable_areas(id);
+    int free = state.get_free_units_number(id);
+
+    std::vector<std::shared_ptr<engine::Command>> command_stack;
+    command_stack.reserve(free);
+
+    if (redeploy.empty() || nAreas == 0) return command_stack;
+
+    for (int k = 0; k < free; ++k) {
+        int best_cost = DANGER_COST_LIMIT;
+        int best_area = -1;
+        for(int area_id : redeploy){
+            if(area_danger.at(area_id)<=best_cost){
+                best_area = area_id;
+                best_cost = area_danger.at(area_id);
+            }
+        }
+        if (best_area == -1) break;
+
+        command_stack.emplace_back(std::make_shared<engine::Redeploy_Command>(id, best_area, 1));
+        area_danger.at(best_area) += 1;
+    }
+    return command_stack;
+}
