@@ -1,4 +1,4 @@
-#include "renderer.h"
+    #include "renderer.h"
 #include "resources_dir.h"
 #include "state.h"
 
@@ -17,7 +17,7 @@ Opponents_Info_Renderer::Opponents_Info_Renderer(sf::RenderWindow& window, state
     for (int i = 0; i < opponents_number; i++)
     {
         names.emplace_back();
-        names.at(i).set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color(30, 30, 30));
+        names.at(i).set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);//sf::Color(30, 30, 30));
 
         coins.emplace_back();
         coins.at(i).set_colors(sf::Color(0, 0, 0, 0), sf::Color(0, 0, 0, 0), sf::Color(30, 30, 30));

@@ -50,7 +50,7 @@ void Player_Area_Renderer::render(state::Player& player)
     sf::Vector2f position =
         sf::Vector2f(window_size.x / 2 - section_width / 2, window_size.y - section_height);
     // draw a rectangle
-    sf::RectangleShape background(sf::Vector2f(section_width, section_height));
+    background.setSize(sf::Vector2f(section_width, section_height));
 
     background.setFillColor(sf::Color(20, 20, 20));
     background.setPosition(position);

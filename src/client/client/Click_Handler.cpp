@@ -42,7 +42,7 @@ void Click_Handler::handle_click(sf::Vector2i position)
     }
 
     // click on the tribe stack
-    if (layout_infos["tribe_stack"].contains(static_cast<sf::Vector2f>(position)))
+     if (layout_infos["tribe_stack"].contains(static_cast<sf::Vector2f>(position)))
     {
         handle_tribe_stack_click(position, layout_infos["tribe_stack"]);
         return;
