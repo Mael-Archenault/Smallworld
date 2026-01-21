@@ -32,6 +32,12 @@ void Conquer_Command::execute(state::Game_State& state)
 
     if ((dice_units != -1) | (state.get_free_units_number(player_id) == 0))  // dice has been rolled : it's the last conquest
     {
+        if (state.get_players().at(player_id).get_redeployable_areas().empty()) {
+                state.get_rewards(player_id);
+                state.next_player();
+                state.set_current_turn_phase(state::Turn_Phase::START);
+            return;
+        }
         state.set_current_turn_phase(state::Turn_Phase::REDEPLOY);
         state.gather_free_units(player_id);
     }
