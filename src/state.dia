@@ -1428,13 +1428,13 @@
         </dia:composite>
         <dia:composite type="umloperation">
           <dia:attribute name="name">
-            <dia:string>#get_all_player_id_money#</dia:string>
+            <dia:string>#get_players_money#</dia:string>
           </dia:attribute>
           <dia:attribute name="stereotype">
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#std::vector&lt;std::pair&lt;int,int&gt;&gt;#</dia:string>
+            <dia:string>#std::vector&lt;std::pair&lt;std::string,int&gt;&gt;#</dia:string>
           </dia:attribute>
           <dia:attribute name="visibility">
             <dia:enum val="0"/>

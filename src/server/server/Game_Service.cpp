@@ -1,5 +1,6 @@
 #include <unistd.h>
 
+#include <iostream>
 #include <thread>
 
 #include "ai.h"
@@ -59,7 +60,7 @@ void ai_process_online(Game_Service& service, std::vector<state::Player_Type> pl
                 break;
         }
 
-    while (running)
+    while (1)
     {
         for (auto ai : ais)
         {
@@ -71,7 +72,17 @@ void ai_process_online(Game_Service& service, std::vector<state::Player_Type> pl
             {
                 std::lock_guard<std::mutex> lock(service.get_mutex());
                 // update state
-                auto engine = service.get_engines().at(engine_key);
+                std::shared_ptr<engine::Engine> engine;
+                try
+                {
+                    engine = service.get_engines().at(engine_key);
+                }
+
+                catch (std::exception& e)
+                {
+                    // stopping the ai thread if the engine has disappeared
+                    return;
+                }
 
                 if (engine->get_state_version_id() != ai->get_state().get_version_id())
                 {
@@ -90,16 +101,12 @@ void ai_process_online(Game_Service& service, std::vector<state::Player_Type> pl
                     service.get_engines().at(engine_key)->add_command(command);
                 }
             }
-            {
-                std::lock_guard<std::mutex> lock(service.get_mutex());
-                running = !ai->get_state().is_game_finished();
-            }
         }
         usleep(1000000);
     }
 }
 
-Game_Service::Game_Service(Room_Service& room_service)
+Game_Service::Game_Service(std::shared_ptr<Room_Service> room_service)
     : Service_Interface("/game"), room_service(room_service)
 {
     engines_update_thread =
@@ -148,9 +155,9 @@ Http_Status Game_Service::post(std::string& in, std::string& out, std::string ur
     if (action == "/start")
     {
         std::pair<std::vector<std::string>, std::vector<state::Player_Type>> start_infos =
-            room_service.get_room_start_infos(std::stoi(room_id_str));
+            room_service->get_room_start_infos(std::stoi(room_id_str));
         launch_game(std::stoi(room_id_str), start_infos.first, start_infos.second);
-        room_service.set_room_state(std::stoi(room_id_str), Room_State::IN_GAME);
+        room_service->set_room_state(std::stoi(room_id_str), Room_State::IN_GAME);
         return Http_Status::OK;
     }
 
@@ -181,6 +188,8 @@ void Game_Service::stop_game(int room_id)
     std::lock_guard<std::mutex> lock(mtx);
     // stopping engine
     engines.erase(std::to_string(room_id));
+
+    std::cout << "Stopped game : " << room_id << std::endl;
 }
 std::unordered_map<std::string, std::shared_ptr<engine::Engine>>& Game_Service::get_engines()
 {

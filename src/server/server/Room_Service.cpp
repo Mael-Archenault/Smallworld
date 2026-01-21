@@ -5,7 +5,10 @@ namespace server
 {
 
 Room_Service::Room_Service(Player_Manager& player_manager)
-    : Service_Interface("/rooms"), player_manager(player_manager), next_room_id(0)
+    : Service_Interface("/rooms"),
+      player_manager(player_manager),
+      game_service(nullptr),
+      next_room_id(0)
 {
     player_manager.set_room_service_reference(this);
 }
@@ -251,11 +254,16 @@ bool Room_Service::verify_room_id(int room_id)
 
 void Room_Service::delete_room(int room_id)
 {
-    for (auto it = rooms.begin(); it != rooms.end(); ++it)
+    for (int i = 0; i < rooms.size(); i++)
     {
-        if (it->id == room_id)
+        if (rooms.at(i).id == room_id)
         {
-            rooms.erase(it);
+            // removing the engine associated if the game has been launched
+            if (rooms.at(i).get_state() == Room_State::IN_GAME)
+            {
+                game_service->stop_game(room_id);
+            }
+            rooms.erase(rooms.begin() + i);
             return;
         }
     }
@@ -329,5 +337,10 @@ void Room_Service::delete_ai(int room_id, std::string session_token)
             room.remove_ai();
         }
     }
+}
+
+void Room_Service::set_ref_to_game_service(std::shared_ptr<Game_Service> game_service)
+{
+    this->game_service = game_service;
 }
 }  // namespace server

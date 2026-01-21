@@ -202,6 +202,13 @@ void Local_Game_State::render(sf::RenderWindow& window)
 {
     std::lock_guard<std::mutex> lock(get_mutex());
     renderer.render(state, state.get_current_player().id);
+
+    if (state.is_game_finished())
+    {
+        Endgame_State* new_state =
+            new Endgame_State(context->get_window(), state.get_players_money());
+        this->context->change_state(new_state);
+    }
 }
 
 int Local_Game_State::get_selected_area_id()

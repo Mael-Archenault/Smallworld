@@ -86,10 +86,11 @@ int main(int argc, char* argv[])
     server::Player_Manager  player_manager;
     server::Service_Manager service_manager(player_manager);
 
-    std::unique_ptr<server::Room_Service> room_service =
-        std::make_unique<server::Room_Service>(player_manager);
-    std::unique_ptr<server::Game_Service> game_service =
-        std::make_unique<server::Game_Service>(*room_service);
+    std::shared_ptr<server::Room_Service> room_service =
+        std::make_shared<server::Room_Service>(player_manager);
+    std::shared_ptr<server::Game_Service> game_service =
+        std::make_shared<server::Game_Service>(room_service);
+    room_service->set_ref_to_game_service(game_service);
     service_manager.register_service(std::move(room_service));
     service_manager.register_service(std::move(game_service));
 
