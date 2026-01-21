@@ -70,7 +70,8 @@ Tribe_Stack Tribe_Stack::deep_copy()
 
     for (auto tribe : in_game_tribes)
     {
-        copy.in_game_tribes.push_back(new Tribe(tribe->deep_copy()));  // first making a shallow copy
+        copy.in_game_tribes.push_back(
+            new Tribe(tribe->deep_copy()));  // first making a shallow copy
 
         // restoring species_description and power_description pointers for each tribe
         for (auto& power : copy.stack_builder.get_powers())
@@ -134,21 +135,21 @@ void Tribe_Stack::to_json(Json::Value& root)
 {
     Json::Value stack_builder_json;
     stack_builder.to_json(stack_builder_json);
-    Json::Value stack_json(Json::objectValue);
+    Json::Value stack_json(Json::arrayValue);
     for (Tribe& tribe : stack)
     {
         Json::Value tribe_json;
         tribe.to_json(tribe_json);
-        stack_json[std::to_string(tribe.id)] = tribe_json;
+        stack_json.append(tribe_json);
     }
     root["stack"] = stack_json;
 
-    Json::Value in_game_tribes_json(Json::objectValue);
+    Json::Value in_game_tribes_json(Json::arrayValue);
     for (auto& tribe : in_game_tribes)
     {
         Json::Value tribe_json;
         tribe->to_json(tribe_json);
-        in_game_tribes_json[std::to_string(tribe->id)] = tribe_json;
+        in_game_tribes_json.append(tribe_json);
     }
     root["in_game_tribes"] = in_game_tribes_json;
 }
@@ -187,7 +188,7 @@ void Tribe_Stack::from_json(Json::Value& root)
     for (const auto& tribe_json : root["in_game_tribes"])
     {
         in_game_tribes.emplace_back(new Tribe(0, new effects::Species_Description("temp", 0, 0),
-                                    new effects::Power_Description("temp", 0)));
+                                              new effects::Power_Description("temp", 0)));
         in_game_tribes.back()->from_json(const_cast<Json::Value&>(tribe_json));
         // restore species descriptions and power description
         for (auto& species : stack_builder.get_species())
