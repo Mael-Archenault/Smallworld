@@ -173,7 +173,7 @@
       "biome": "Farm",
       "specializations": [],
       "units": 0,
-      "relations": [12, 23, 25, 28, 30, 31, 37],
+      "relations": [12, 23, 25, 28, 30, 31, 33, 37],
       "borders": 0
     },
     "25": {
@@ -215,7 +215,7 @@
       "biome": "Mountains",
       "specializations": ["Mine"],
       "units": 1,
-      "relations": [28, 29, 31, 32],
+      "relations": [24, 28, 29, 31, 32],
       "borders": true
     },
     "31": {
