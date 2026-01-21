@@ -41,7 +41,7 @@ std::pair<int, std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcu
             engine.update();  // problem with state when going to Engine
             new_state = engine.get_state().deep_copy();
         }
-        catch (std::invalid_argument& e)
+        catch (std::runtime_error& e)
         {
             engine.remove_last_command();
             std::cout << e.what() << std::endl;
