@@ -92,8 +92,20 @@ void Online_Game_State::handle_input(sf::Event event)
 
 void Online_Game_State::render(sf::RenderWindow& window)
 {
-    std::lock_guard<std::mutex> lock(get_mutex());
-    renderer.render(state, player_id);
+    bool is_game_finished = false;
+    {
+        std::lock_guard<std::mutex> lock(get_mutex());
+        renderer.render(state, player_id);
+        is_game_finished = state.is_game_finished();
+    }
+
+    if (is_game_finished)
+    {
+        stop_thread("state_update");
+        Endgame_State* new_state =
+            new Endgame_State(context->get_window(), state.get_players_money());
+        this->context->change_state(new_state);
+    }
 }
 
 int Online_Game_State::get_selected_area_id()

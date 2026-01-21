@@ -19,7 +19,7 @@ Service_Interface* Service_Manager::find_responsible_service(std::string url)
     return nullptr;
 }
 
-void Service_Manager::register_service(std::unique_ptr<Service_Interface> service)
+void Service_Manager::register_service(std::shared_ptr<Service_Interface> service)
 {
     services.push_back(std::move(service));
 }
@@ -44,6 +44,8 @@ Http_Status Service_Manager::handle_request(std::string& in, std::string& out, s
     {
         return Http_Status::UNAUTHORIZED;
     }
+
+    std::cout << url << std::endl;
 
     player_manager.refresh_last_seen(session_token);
 
