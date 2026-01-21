@@ -19,14 +19,14 @@ std::unordered_map<std::string, std::function<std::shared_ptr<effects::Species_D
         {"Amazons", []() { return std::make_shared<effects::Amazons_Species>(); }},
         {"Dwarves", []() { return std::make_shared<effects::Dwarves_Species>(); }},
         {"Elves", []() { return std::make_shared<effects::Elves_Species>(); }},
-        {"Ghouls", []() { return std::make_shared<effects::Dwarves_Species>(); }},
+        //{"Ghouls", []() { return std::make_shared<effects::Dwarves_Species>(); }},
         {"Giants", []() { return std::make_shared<effects::Giants_Species>(); }},
         {"Halflings", []() { return std::make_shared<effects::Halflings_Species>(); }},
         {"Humans", []() { return std::make_shared<effects::Humans_Species>(); }},
         {"Orcs", []() { return std::make_shared<effects::Orcs_Species>(); }},
         {"Ratmen", []() { return std::make_shared<effects::Ratmen_Species>(); }},
         {"Skeletons", []() { return std::make_shared<effects::Skeletons_Species>(); }},
-        {"Sorcerers", []() { return std::make_shared<effects::Dwarves_Species>(); }},
+        //{"Sorcerers", []() { return std::make_shared<effects::Dwarves_Species>(); }},
         {"Tritons", []() { return std::make_shared<effects::Tritons_Species>(); }},
         {"Trolls", []() { return std::make_shared<effects::Trolls_Species>(); }},
         {"Wizards", []() { return std::make_shared<effects::Wizards_Species>(); }}};
@@ -35,11 +35,11 @@ std::unordered_map<std::string, std::function<std::shared_ptr<effects::Power_Des
     str_to_power = {
         {"Alchemist",
          []() { return std::make_shared<effects::Alchemist_Power>(); }},
-        {"Berserk", []() { return std::make_shared<effects::Power_Description>("Berserk", 4); }},
-        {"Bivouacking",
-         []() { return std::make_shared<effects::Power_Description>("Bivouacking", 5); }},
+        //{"Berserk", []() { return std::make_shared<effects::Power_Description>("Berserk", 4); }},
+        // {"Bivouacking",
+        //  []() { return std::make_shared<effects::Power_Description>("Bivouacking", 5); }},
         {"Commando", []() { return std::make_shared<effects::Commando_Power>(); }},
-        {"Heroic", []() { return std::make_shared<effects::Power_Description>("Heroic", 5); }},
+        //{"Heroic", []() { return std::make_shared<effects::Power_Description>("Heroic", 5); }},
         {"Hill", []() { return std::make_shared<effects::Hill_Power>(); }},
         {"Merchant", []() { return std::make_shared<effects::Merchant_Power>(); }},
         {"Mounted", []() { return std::make_shared<effects::Mounted_Power>(); }},
@@ -47,20 +47,21 @@ std::unordered_map<std::string, std::function<std::shared_ptr<effects::Power_Des
          []() { return std::make_shared<effects::Pillaging_Power>(); }},
         {"Seafaring",
          []() { return std::make_shared<effects::Seafaring_Power>(); }},
-        {"Spirit", []() { return std::make_shared<effects::Power_Description>("Spirit", 5); }},
-        {"Stout", []() { return std::make_shared<effects::Power_Description>("Stout", 4); }},
+        //{"Spirit", []() { return std::make_shared<effects::Power_Description>("Spirit", 5); }},
+        //{"Stout", []() { return std::make_shared<effects::Power_Description>("Stout", 4); }},
         {"Swamp", []() { return std::make_shared<effects::Swamp_Power>(); }},
         {"Underworld",
          []() { return std::make_shared<effects::Underworld_Power>(); }},
         {"Wealthy", []() { return std::make_shared<effects::Wealthy_Power>(); }},
 
-        {"Diplomat", []() { return std::make_shared<effects::Power_Description>("Diplomat", 5); }},
-        {"Dragon Master",
-         []() { return std::make_shared<effects::Power_Description>("Dragon Master", 5); }},
+        //{"Diplomat", []() { return std::make_shared<effects::Power_Description>("Diplomat", 5); }},
+        //{"Dragon Master",
+         //[]() { return std::make_shared<effects::Power_Description>("Dragon Master", 5); }},
         {"Flying", []() { return std::make_shared<effects::Flying_Power>(); }},
         {"Forest", []() { return std::make_shared<effects::Forest_Power>(); }},
-        {"Fortified",
-         []() { return std::make_shared<effects::Power_Description>("Fortified", 3); }}};
+        // {"Fortified",
+        //  []() { return std::make_shared<effects::Power_Description>("Fortified", 3); }}
+        };
 
 Tribe_Stack_Builder::Tribe_Stack_Builder()
 {
