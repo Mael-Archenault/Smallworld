@@ -702,6 +702,7 @@ struct stdlib_includes {
    int thread;
    int mutex;
    int random;
+    int chrono;
    int sfmlGraphics;
    int jsoncpp;
 };
@@ -748,6 +749,9 @@ void print_include_stdlib(struct stdlib_includes* si, char* name) {
         INCLUDE_STD_HEADER(memory, "std::unique_ptr", "memory")
         INCLUDE_STD_HEADER(memory, "std::shared_ptr", "memory")
         INCLUDE_STD_HEADER(memory, "std::weak_ptr", "memory")
+
+        /* Time */
+        INCLUDE_STD_HEADER(chrono, "std::chrono", "chrono")
 
         /* Randomness */
         INCLUDE_STD_HEADER(random, "std::mt19937", "random")

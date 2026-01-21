@@ -7,14 +7,14 @@
 namespace state
 {
 
-Game_State::Game_State(int n_players, std::vector<std::string> names)
-    : n_players(n_players),
+Game_State::Game_State(std::vector<std::string> names, int version_id)
+    : n_players(names.size()),
       round(1),
       map("4_players"),
       names(names),
       tribe_stack(n_players),
       current_turn_phase(Turn_Phase::START),
-      version_id(0)
+      version_id(version_id)
 
 {
     for (int i = 0; i < n_players; i++)
@@ -180,6 +180,11 @@ void Game_State::next_round()
     round++;
 }
 
+int Game_State::get_round()
+{
+    return round;
+}
+
 Map& Game_State::get_map()
 {
     return map;
@@ -226,14 +231,14 @@ bool Game_State::is_game_finished()
     return round > map.get_max_round();
 }
 
-std::vector<std::pair<int, int>> Game_State::get_all_player_id_money()
+std::vector<std::pair<std::string, int>> Game_State::get_players_money()
 {
-    std::vector<std::pair<int, int>> player_id_money;
+    std::vector<std::pair<std::string, int>> players_money;
     for (Player player : players)
     {
-        player_id_money.emplace_back(player.id, player.get_money());
+        players_money.emplace_back(player.get_name(), player.get_money());
     }
-    return player_id_money;
+    return players_money;
 }
 
 std::vector<Player>& Game_State::get_players()
@@ -243,7 +248,7 @@ std::vector<Player>& Game_State::get_players()
 
 Game_State Game_State::deep_copy()
 {
-    Game_State copy(n_players, names);
+    Game_State copy(names, version_id);
     copy.round              = round;
     copy.current_turn_phase = current_turn_phase;
     copy.version_id         = version_id;
@@ -422,5 +427,10 @@ int Game_State::get_version_id()
 void Game_State::new_version_id()
 {
     version_id++;
+}
+
+int Game_State::inform_rewards(int id)
+{
+    return players.at(id).inform_rewards();
 }
 }  // namespace state

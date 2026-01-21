@@ -23,7 +23,7 @@ Tribe_Stack_Renderer::Tribe_Stack_Renderer(sf::RenderWindow& window) : window(wi
         price_text.setFont(font);
         price_text.setString(std::to_string(i));
         price_text.setCharacterSize(32);
-        price_text.setFillColor(sf::Color::White);
+        price_text.setFillColor(sf::Color(30, 30, 30));
         prices.push_back(price_text);
     }
 

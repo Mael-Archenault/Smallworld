@@ -1,4 +1,4 @@
-#include "renderer.h"
+    #include "renderer.h"
 #include "resources_dir.h"
 #include "state.h"
 
@@ -8,18 +8,19 @@ Opponents_Info_Renderer::Opponents_Info_Renderer(sf::RenderWindow& window, state
     : window(window), players(state.get_players())
 {
     // Reserve space to avoid vector reallocation which invalidates font pointers
-    names.reserve(players.size() - 1);
-    coins.reserve(players.size() - 1);
-    active_tribes_renderers.reserve(players.size() - 1);
-    decline_tribes_renderers.reserve(players.size() - 1);
+    int opponents_number = players.size() - 1;
+    names.reserve(opponents_number);
+    coins.reserve(opponents_number);
+    active_tribes_renderers.reserve(opponents_number);
+    decline_tribes_renderers.reserve(opponents_number);
 
-    for (int i = 0; i < players.size() - 1; i++)
+    for (int i = 0; i < opponents_number; i++)
     {
         names.emplace_back();
-        names.at(i).set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);
+        names.at(i).set_colors(sf::Color::White, sf::Color(50, 50, 50), sf::Color::White);//sf::Color(30, 30, 30));
 
         coins.emplace_back();
-        coins.at(i).set_colors(sf::Color(0, 0, 0, 0), sf::Color(0, 0, 0, 0), sf::Color::White);
+        coins.at(i).set_colors(sf::Color(0, 0, 0, 0), sf::Color(0, 0, 0, 0), sf::Color(30, 30, 30));
 
         active_tribes_renderers.emplace_back();
         decline_tribes_renderers.emplace_back();
@@ -79,9 +80,9 @@ void Opponents_Info_Renderer::render_one_player_area(state::Player& player, int 
 
 void Opponents_Info_Renderer::render(state::Game_State& state, int rendering_player_id)
 {
-    position       = sf::Vector2f(4.f, window.getSize().y * 1 / 6);
+    position       = sf::Vector2f(4.f, window.getSize().y / 3 + 4);
     section_width  = window.getSize().x / 6.f;
-    section_height = window.getSize().y * (7 / 8.f - 1 / 6.f);
+    section_height = window.getSize().y * 2 / 3 - 4;
 
     sub_section_height = section_height / (players.size() - 1);
 

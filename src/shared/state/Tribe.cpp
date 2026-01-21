@@ -146,14 +146,22 @@ void Tribe::conquer(Area* attacked_area, int n_units, int dice_units, Map* map)
     // getting price for attacked area (with effects)
     std::pair<int, int> price_info =
         std::make_pair(attacked_area->id, attacked_area->get_conquest_price(*this));
-    price_info =
-        species_description
-            ->conquest_prices_effect(std::vector<std::pair<int, int>>{price_info}, owned_areas, map)
-            .at(0);
-    price_info =
-        power_description
-            ->conquest_prices_effect(std::vector<std::pair<int, int>>{price_info}, owned_areas, map)
-            .at(0);
+    auto all_prices = species_description->conquest_prices_effect(std::vector<std::pair<int, int>>{price_info}, owned_areas, map);
+    for (auto i : all_prices) {
+        if (i.first == price_info.first) {
+            price_info.second = i.second;
+            break;
+        }
+    }
+
+    all_prices = power_description->conquest_prices_effect(std::vector<std::pair<int, int>>{price_info}, owned_areas, map);
+    for (auto i : all_prices) {
+        if (i.first == price_info.first) {
+            price_info.second = i.second;
+            break;
+        }
+    }
+
     int needed_units = price_info.second;
     if (dice_units != -1)
     {

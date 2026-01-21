@@ -11,7 +11,6 @@ list(REMOVE_ITEM client_sources "${CMAKE_CURRENT_SOURCE_DIR}/main.cpp")
 
 # Build the "client" library, add required include and link against dependencies
 add_library(${lib_client_target} STATIC ${client_sources} ${jsoncpp_sources}
-        client/Client_Multithread.cpp
         client/Click_Handler_Multithread.cpp)
 add_dependencies(${lib_client_target} generate-headers)
 target_include_directories(${lib_client_target} PUBLIC
@@ -27,14 +26,6 @@ target_link_libraries(${lib_client_target} PUBLIC
 # Compile "client" executable
 set(client_target client)
 add_executable(${client_target} main.cpp)
-target_link_libraries(${client_target} ${lib_client_target})
-if(BUILD_CODE_COVERAGE)
-  add_dependencies(code-coverage ${client_target})
-endif()
-
-# Compile "client local" executable
-set(client_target client_local)
-add_executable(${client_target} main_local.cpp)
 target_link_libraries(${client_target} ${lib_client_target})
 if(BUILD_CODE_COVERAGE)
   add_dependencies(code-coverage ${client_target})

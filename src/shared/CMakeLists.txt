@@ -14,7 +14,9 @@ file(GLOB_RECURSE shared_sources *.cpp)
 add_library(${lib_shared_target} STATIC ${shared_sources} ${jsoncpp_sources}
         ai/Ai_Interface.cpp
         ai/Ai_Random.cpp
-        ai/AI_Heurisitic.cpp)
+        ai/Ai_Heurisitic.cpp
+        ai/Ai_Advanced.cpp
+        engine/Engine_Ai.cpp)
 add_dependencies(${lib_shared_target} generate-headers)
 target_include_directories(${lib_shared_target} PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}

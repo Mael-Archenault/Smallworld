@@ -21,7 +21,7 @@ void Command::set_player_id(int new_player_id)
     player_id = new_player_id;
 }
 
-std::unique_ptr<Command> Command::create_from_json(Json::Value& root)
+std::shared_ptr<Command> Command::create_from_json(Json::Value& root)
 {
     std::unique_ptr<Command> command_ptr = name_to_command[root["command_name"].asString()]();
     command_ptr->from_json(root);

@@ -10,11 +10,8 @@
 
 namespace client
 {
-Click_Handler_Multithread::Click_Handler_Multithread(Client_Multithread& client)
-    : client(client),
-      state(client.get_state()),
-      renderer(client.get_renderer()),
-      engine(client.get_engine())
+Click_Handler_Multithread::Click_Handler_Multithread(Online_Game_State& client)
+    : client(client), state(client.get_state()), renderer(client.get_renderer())
 {
 }
 
@@ -165,7 +162,7 @@ void Click_Handler_Multithread::handle_info_window_click(
                 actioning_player.id, client.get_selected_position_in_stack());
             Json::Value command_json;
             command->to_json(command_json);
-            engine.add_command(command_json);
+            client.send_command(command_json);
             renderer.close_tribe_info_window();
             client.set_tribe_info_window_state(false);
         }
@@ -196,59 +193,58 @@ void Click_Handler_Multithread::handle_button_area_click(
         int                 available_units = state.get_free_units_number(actioning_player.id);
         if (price > available_units)
         {
-            int dice_units = state.roll_dice_for_bonus_units();
-            std::cout << "No more area attackable, rolled the dice : " << dice_units << std::endl;
+            std::cout << "No more area attackable, rolled the dice." << std::endl;
             auto command = std::make_unique<engine::Conquer_Command>(
-                actioning_player.id, client.get_selected_area_id(), available_units, dice_units);
+                actioning_player.id, client.get_selected_area_id(), available_units, true);
             Json::Value command_json;
             command->to_json(command_json);
-            engine.add_command(command_json);
+            client.send_command(command_json);
         }
         else
         {
             auto command = std::make_unique<engine::Conquer_Command>(
-                actioning_player.id, client.get_selected_area_id(), price, -1);
+                actioning_player.id, client.get_selected_area_id(), price, false);
             Json::Value command_json;
             command->to_json(command_json);
-            engine.add_command(command_json);
+            client.send_command(command_json);
         }
         return;
     }
     if (layout_infos["decline_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        auto command = std::make_unique<engine::Decline_Command>(actioning_player.id);
+        auto        command = std::make_unique<engine::Decline_Command>(actioning_player.id);
         Json::Value command_json;
         command->to_json(command_json);
-        engine.add_command(command_json);
+        client.send_command(command_json);
         return;
     }
     if (layout_infos["start_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::START)
     {
-        auto command = std::make_unique<engine::Start_Conquest_Command>(actioning_player.id);
+        auto        command = std::make_unique<engine::Start_Conquest_Command>(actioning_player.id);
         Json::Value command_json;
         command->to_json(command_json);
-        engine.add_command(command_json);
+        client.send_command(command_json);
         return;
     }
     if (layout_infos["end_conquests_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::CONQUER)
     {
-        auto command = std::make_unique<engine::End_Conquer_Command>(actioning_player.id);
+        auto        command = std::make_unique<engine::End_Conquer_Command>(actioning_player.id);
         Json::Value command_json;
         command->to_json(command_json);
-        engine.add_command(command_json);
+        client.send_command(command_json);
         return;
     }
     if (layout_infos["redeploy_button"].contains(static_cast<sf::Vector2f>(position)) &&
         current_phase == state::Turn_Phase::REDEPLOY)
     {
-        auto command = std::make_unique<engine::Redeploy_Command>(
-            actioning_player.id, client.get_selected_area_id(), 1);
+        auto        command = std::make_unique<engine::Redeploy_Command>(actioning_player.id,
+                                                                         client.get_selected_area_id(), 1);
         Json::Value command_json;
         command->to_json(command_json);
-        engine.add_command(command_json);
+        client.send_command(command_json);
         return;
     }
 }
@@ -257,7 +253,6 @@ void Click_Handler_Multithread::handle_opponent_area_click(
     sf::Vector2i position, std::unordered_map<std::string, sf::FloatRect> layout_infos)
 {
     state::Player& actioning_player = state.get_players().at(client.get_player_id());
-    std::cout << "Clicked on opponent info area" << std::endl;
 
     int i = 0;
 

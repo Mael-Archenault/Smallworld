@@ -16,11 +16,11 @@ std::unordered_map<int, state::Turn_Phase> phase_command_map = {
     {End_Conquer_Command::id, state::Turn_Phase::CONQUER},
     {Redeploy_Command::id, state::Turn_Phase::REDEPLOY}};
 
-Engine::Engine(int nb_player, std::vector<std::string> names) : state(nb_player, names) {};
+Engine::Engine(std::vector<std::string> names) : state(names, 1) {};
 
-void Engine::add_command(std::unique_ptr<Command> command)
+void Engine::add_command(std::shared_ptr<Command> command)
 {
-    command_queue.push(std::move(command));
+    command_queue.push(command);
 }
 
 void Engine::update()
@@ -30,7 +30,7 @@ void Engine::update()
         return;
     }
     // take the first command
-    std::unique_ptr<Command>& command = command_queue.front();
+    std::shared_ptr<Command>& command = command_queue.front();
 
     // Verify if turn's conditions
 
@@ -69,7 +69,7 @@ int Engine::get_state_version_id()
 
 void Engine::add_command(Json::Value command_json)
 {
-    std::unique_ptr<Command> command = Command::create_from_json(command_json);
+    std::shared_ptr<Command> command = Command::create_from_json(command_json);
     command_queue.push(std::move(command));
 }
 

@@ -1,0 +1,39 @@
+
+
+
+
+### Connecting a player
+POST http://localhost:8888/connect
+
+###
+POST http://localhost:8888/rooms/create
+Session-Token: fa37JncCHryDsbza
+
+###
+POST http://localhost:8888/connect
+
+###
+POST http://localhost:8888/rooms/join/0
+Session-Token: yy4cBWDxS22JjzhM
+
+
+### 
+
+POST http://localhost:8888/game/start/0
+Session-Token: fa37JncCHryDsbza
+
+### 
+POST http://localhost:8888/game/command/0
+Session-Token: fa37JncCHryDsbza
+
+{
+    "command": "end_turn"
+}
+
+###
+GET http://localhost:8888/game/version/0
+Session-Token: fa37JncCHryDsbza
+
+###
+GET http://localhost:8888/game/state/0
+Session-Token: fa37JncCHryDsbza

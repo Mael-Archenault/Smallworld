@@ -1,151 +1,78 @@
 #include "client.h"
 
-#include <ai/Ai_Heuristic.h>
-#include <ai/Ai_Random.h>
 #include <unistd.h>
 
-#include <cmath>
-#include <fstream>
 #include <iostream>
-#include <mutex>
 
-#include "engine.h"
-extern std::mutex mtx;
 namespace client
 {
 
-Client::Client(engine::Engine& engine)
-    : window(sf::VideoMode(1720, 820), "Smallworld"),
-      state(engine.get_state()),
-      renderer(state, window),
-      engine(engine),
-      click_handler(*this)
+Client::Client(std::string server_ip)
+    : window(sf::VideoMode(1280, 720), "Smallworld"), server_ip(server_ip)
 {
-    selected_area_id         = 0;
-    tribe_info_window_opened = false;
-    renderer.set_selected_area(selected_area_id);
+    current_state = new Menu_State(window);
+    current_state->set_context(this);
+    name = "No Name";
 }
 
-int Client::run()
+sf::RenderWindow& Client::get_window()
 {
-    // first rendering
-    sf::Event e;
-    while (window.pollEvent(e))
-    {
-    }  // purge early events
+    return window;
+}
 
-    window.clear(sf::Color::Black);
-    {
-        std::lock_guard<std::mutex> lock(mtx);
-        renderer.render(state, state.get_current_player().id);
-    }
-    window.display();
+std::string Client::get_name()
+{
+    return name;
+}
 
-    sf::View view           = window.getDefaultView();  // store your base view
-    bool     mouse_clicked  = false;
-    bool     event_happened = false;
+void Client::set_name(std::string new_name)
+{
+    name = new_name;
+}
+
+void Client::run()
+{
+    sf::View view = window.getDefaultView();  // store your base view
     while (window.isOpen())
     {
-        bool is_ai_turn = false;
-
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed) window.close();
+            if (event.type == sf::Event::Closed)
+            {
+                window.close();
+            }
 
             // When window is resized:
             if (event.type == sf::Event::Resized)
             {
                 // Reset the view to match the new window size
-                event_happened = true;
                 view.setSize(event.size.width, event.size.height);
                 view.setCenter(event.size.width / 2.f, event.size.height / 2.f);
                 window.setView(view);
             }
 
-            // handle click
-
-            if (event.type == sf::Event::MouseButtonPressed && mouse_clicked == false)
-            {
-                event_happened         = true;
-                mouse_clicked          = true;
-                sf::Vector2i mouse_pos = sf::Mouse::getPosition(window);
-                // handle_mouse_click(mouse_pos);
-                {
-                    std::lock_guard<std::mutex> lock(mtx);
-                    click_handler.handle_click(mouse_pos);
-                }
-            }
-            if (event.type == sf::Event::MouseButtonReleased)
-            {
-                mouse_clicked = false;
-            }
+            current_state->handle_input(event);
         }
 
         window.clear(sf::Color::Black);
-        {
-            std::lock_guard<std::mutex> lock(mtx);
-            renderer.render(state, state.get_current_player().id);
-        }
+
+        current_state->render(window);  // modifies the window
 
         window.display();
-        event_happened = false;
         usleep(1000000 / 60);  // limit to 60 fps
     }
-    return 0;
 }
 
-int Client::get_selected_area_id()
+void Client::change_state(Client_State_Interface* new_state)
 {
-    return selected_area_id;
+    current_state = new_state;
+    current_state->set_context(this);
 }
 
-void Client::set_selected_area_id(int selected_area_id)
+std::string Client::get_server_ip()
 {
-    this->selected_area_id = selected_area_id;
-}
-int Client::get_selected_position_in_stack()
-{
-    return selected_position_in_stack;
-}
-void Client::set_selected_position_in_stack(int position)
-{
-    selected_position_in_stack = position;
+    return server_ip;
 }
 
-void Client::set_tribe_info_window_state(bool is_window_opened)
-{
-    tribe_info_window_opened = is_window_opened;
-}
-
-bool Client::get_tribe_info_window_state()
-{
-    return tribe_info_window_opened;
-}
-
-state::Game_State& Client::get_state()
-{
-    return state;
-}
-renderer::Renderer& Client::get_renderer()
-{
-    return renderer;
-}
-engine::Engine& Client::get_engine()
-{
-    return engine;
-}
-
-void Client::update_state()
-{
-    if (engine.get_state_version_id() == state.get_version_id())
-    {
-        return;
-    }
-    Json::Value root;
-    root = engine.get_state_json();
-    state.from_json(root);
-    // state = engine.get_state().deep_copy();
 }  // namespace client
-
-}
