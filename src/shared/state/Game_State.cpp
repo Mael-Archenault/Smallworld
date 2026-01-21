@@ -231,14 +231,14 @@ bool Game_State::is_game_finished()
     return round > map.get_max_round();
 }
 
-std::vector<std::pair<int, int>> Game_State::get_all_player_id_money()
+std::vector<std::pair<std::string, int>> Game_State::get_players_money()
 {
-    std::vector<std::pair<int, int>> player_id_money;
+    std::vector<std::pair<std::string, int>> players_money;
     for (Player player : players)
     {
-        player_id_money.emplace_back(player.id, player.get_money());
+        players_money.emplace_back(player.get_name(), player.get_money());
     }
-    return player_id_money;
+    return players_money;
 }
 
 std::vector<Player>& Game_State::get_players()
