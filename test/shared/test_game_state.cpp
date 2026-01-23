@@ -34,6 +34,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         BOOST_CHECK_THROW(state.go_in_decline(100), std::invalid_argument);
         BOOST_CHECK_THROW(state.take_tribe_at_position(0, 100), std::invalid_argument);
         BOOST_CHECK_THROW(state.get_redeployable_areas(100), std::invalid_argument);
+        BOOST_CHECK_THROW(state.inform_rewards(100), std::invalid_argument);
 
         // initialization testing
         BOOST_CHECK_EQUAL(state.get_n_players(), 4);
@@ -45,6 +46,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         BOOST_CHECK_EQUAL(state.get_current_turn_phase(), state::Turn_Phase::START);
         // methods testing
 
+        BOOST_CHECK_EQUAL(state.is_game_finished(), false);
         std::vector<std::pair<std::string, int>> money = state.get_players_money();
         for (int i = 0; i < 4; i++)
         {
@@ -68,6 +70,7 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         }
 
         state.conquer(0, attackable_areas.at(0).first, attackable_areas.at(0).second, 0);
+        state.inform_rewards(0);
         BOOST_CHECK_EQUAL(state.get_redeployable_areas(0).size(), 1);
         state.gather_free_units(0);
         state.redeploy_units(0, attackable_areas.at(0).first, 0);

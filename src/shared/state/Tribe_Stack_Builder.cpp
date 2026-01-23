@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <random>
 #include <unordered_map>
@@ -33,8 +34,7 @@ std::unordered_map<std::string, std::function<std::shared_ptr<effects::Species_D
 
 std::unordered_map<std::string, std::function<std::shared_ptr<effects::Power_Description>()>>
     str_to_power = {
-        {"Alchemist",
-         []() { return std::make_shared<effects::Alchemist_Power>(); }},
+        {"Alchemist", []() { return std::make_shared<effects::Alchemist_Power>(); }},
         //{"Berserk", []() { return std::make_shared<effects::Power_Description>("Berserk", 4); }},
         // {"Bivouacking",
         //  []() { return std::make_shared<effects::Power_Description>("Bivouacking", 5); }},
@@ -43,25 +43,23 @@ std::unordered_map<std::string, std::function<std::shared_ptr<effects::Power_Des
         {"Hill", []() { return std::make_shared<effects::Hill_Power>(); }},
         {"Merchant", []() { return std::make_shared<effects::Merchant_Power>(); }},
         {"Mounted", []() { return std::make_shared<effects::Mounted_Power>(); }},
-        {"Pillaging",
-         []() { return std::make_shared<effects::Pillaging_Power>(); }},
-        {"Seafaring",
-         []() { return std::make_shared<effects::Seafaring_Power>(); }},
+        {"Pillaging", []() { return std::make_shared<effects::Pillaging_Power>(); }},
+        {"Seafaring", []() { return std::make_shared<effects::Seafaring_Power>(); }},
         //{"Spirit", []() { return std::make_shared<effects::Power_Description>("Spirit", 5); }},
         //{"Stout", []() { return std::make_shared<effects::Power_Description>("Stout", 4); }},
         {"Swamp", []() { return std::make_shared<effects::Swamp_Power>(); }},
-        {"Underworld",
-         []() { return std::make_shared<effects::Underworld_Power>(); }},
+        {"Underworld", []() { return std::make_shared<effects::Underworld_Power>(); }},
         {"Wealthy", []() { return std::make_shared<effects::Wealthy_Power>(); }},
 
-        //{"Diplomat", []() { return std::make_shared<effects::Power_Description>("Diplomat", 5); }},
+        //{"Diplomat", []() { return std::make_shared<effects::Power_Description>("Diplomat", 5);
+        //}},
         //{"Dragon Master",
-         //[]() { return std::make_shared<effects::Power_Description>("Dragon Master", 5); }},
+        //[]() { return std::make_shared<effects::Power_Description>("Dragon Master", 5); }},
         {"Flying", []() { return std::make_shared<effects::Flying_Power>(); }},
         {"Forest", []() { return std::make_shared<effects::Forest_Power>(); }},
         // {"Fortified",
         //  []() { return std::make_shared<effects::Power_Description>("Fortified", 3); }}
-        };
+};
 
 Tribe_Stack_Builder::Tribe_Stack_Builder()
 {
@@ -89,11 +87,6 @@ Tribe_Stack_Builder::Tribe_Stack_Builder()
 Tribe Tribe_Stack_Builder::get_next_tribe()
 {
     std::vector<Tribe> stack;
-
-    if (available_species.empty() || available_powers.empty())
-    {
-        throw std::out_of_range("No more tribes available in the stack builder");
-    }
 
     Tribe result(n_created_tribes, available_species.at(0), available_powers.at(0));
     available_species.erase(available_species.begin());

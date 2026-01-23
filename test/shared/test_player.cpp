@@ -55,6 +55,7 @@ BOOST_AUTO_TEST_CASE(TestPlayer)
         BOOST_CHECK_EQUAL(player.get_conquest_prices(nullptr).size(), 0);
         BOOST_CHECK_EQUAL(player.get_redeployable_areas().size(), 1);
         player.redeploy_units(0, 5);
+        BOOST_CHECK_EQUAL(player.inform_rewards(), 1);
         player.get_rewards();
         BOOST_CHECK_EQUAL(player.get_money(), 6);
         player.go_in_decline();

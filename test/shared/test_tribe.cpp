@@ -46,6 +46,12 @@ BOOST_AUTO_TEST_CASE(Tribe_Test)
 
     BOOST_CHECK_THROW(tribe.remove_from_owned_areas(areas[0]), std::invalid_argument);
 
+    tribe.set_free_units_number(9);
+    BOOST_CHECK_EQUAL(tribe.get_free_units_number(), 9);
+
+    tribe.set_is_in_decline(false);
+    BOOST_CHECK_EQUAL(tribe.get_is_in_decline(), false);
+
     tribe.conquer(areas.at(0), 5, 0, nullptr);
 
     BOOST_CHECK_EQUAL(tribe.get_owned_areas().size(), 1);

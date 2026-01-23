@@ -429,8 +429,15 @@ void Game_State::new_version_id()
     version_id++;
 }
 
-int Game_State::inform_rewards(int id)
+int Game_State::inform_rewards(int player_id)
 {
-    return players.at(id).inform_rewards();
+    for (size_t i = 0; i < players.size(); i++)
+    {
+        if (players.at(i).id == player_id)
+        {
+            return players.at(i).inform_rewards();
+        }
+    }
+    throw std::invalid_argument("inform_rewards: Player id not found");
 }
 }  // namespace state

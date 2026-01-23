@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <iostream>
 #include <random>
 #include <stdexcept>
 #include <vector>
@@ -22,11 +23,6 @@ Tribe_Stack::Tribe_Stack(int n_players)
 
 Tribe* Tribe_Stack::take_tribe_at_position(int position)
 {
-    if (stack.empty())
-    {
-        throw std::out_of_range("Tribe Stack: No tribes left in the stack");
-    }
-
     if ((position < 0) | (position > 5))
     {
         throw std::out_of_range("Tribe Stack: Invalid tribe position");
@@ -135,6 +131,7 @@ void Tribe_Stack::to_json(Json::Value& root)
 {
     Json::Value stack_builder_json;
     stack_builder.to_json(stack_builder_json);
+    root["stack_builder"] = stack_builder_json;
     Json::Value stack_json(Json::arrayValue);
     for (Tribe& tribe : stack)
     {
