@@ -6,8 +6,7 @@
 class Game_State_Observer : public state::Game_State
 {
    public:
-    Game_State_Observer(int n_players, std::vector<std::string> names)
-        : state::Game_State(n_players, names) {};
+    Game_State_Observer(std::vector<std::string> names) : state::Game_State(names, 0) {};
     int get_n_players()
     {
         return n_players;
@@ -18,15 +17,11 @@ class Game_State_Observer : public state::Game_State
     }
 };
 
-BOOST_AUTO_TEST_CASE(TestStaticAssert)
-{
-    BOOST_CHECK(1);
-}
-
 BOOST_AUTO_TEST_CASE(TestGameState)
 {
     {
-        Game_State_Observer state(4, {"Alice", "Bob", "Charlie", "Diana"});
+        std::vector<std::string> names = {"Alice", "Bob", "Charlie", "Diana"};
+        Game_State_Observer      state(names);
 
         // error_testing
         BOOST_CHECK_THROW(state.gather_free_units(100), std::invalid_argument);
@@ -50,10 +45,10 @@ BOOST_AUTO_TEST_CASE(TestGameState)
         BOOST_CHECK_EQUAL(state.get_current_turn_phase(), state::Turn_Phase::START);
         // methods testing
 
-        std::vector<std::pair<int, int>> money = state.get_all_player_id_money();
+        std::vector<std::pair<std::string, int>> money = state.get_players_money();
         for (int i = 0; i < 4; i++)
         {
-            BOOST_CHECK_EQUAL(money.at(i).first, i);
+            BOOST_CHECK_EQUAL(money.at(i).first, names.at(i));
             BOOST_CHECK_EQUAL(money.at(i).second, 5);
         }
         std::vector<state::Tribe*> available_tribes = state.get_tribes_on_top();

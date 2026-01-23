@@ -15,32 +15,32 @@ BOOST_AUTO_TEST_CASE(Test_Command_Creation)
 {
     Json::Value choose_species_command_json;
     choose_species_command_json["command_name"] = "Choose_Species_Command";
-    std::unique_ptr<engine::Command> choose_species_command =
+    std::shared_ptr<engine::Command> choose_species_command =
         engine::Command::create_from_json(choose_species_command_json);
 
     Json::Value conquer_command_json;
     conquer_command_json["command_name"] = "Conquer_Command";
-    std::unique_ptr<engine::Command> conquer_command =
+    std::shared_ptr<engine::Command> conquer_command =
         engine::Command::create_from_json(conquer_command_json);
 
     Json::Value decline_command_json;
     decline_command_json["command_name"] = "Decline_Command";
-    std::unique_ptr<engine::Command> decline_command =
+    std::shared_ptr<engine::Command> decline_command =
         engine::Command::create_from_json(decline_command_json);
 
     Json::Value end_conquer_command_json;
     end_conquer_command_json["command_name"] = "End_Conquer_Command";
-    std::unique_ptr<engine::Command> end_conquer_command =
+    std::shared_ptr<engine::Command> end_conquer_command =
         engine::Command::create_from_json(end_conquer_command_json);
 
     Json::Value redeploy_command_json;
     redeploy_command_json["command_name"] = "Redeploy_Command";
-    std::unique_ptr<engine::Command> redeploy_command =
+    std::shared_ptr<engine::Command> redeploy_command =
         engine::Command::create_from_json(redeploy_command_json);
 
     Json::Value start_conquest_command_json;
     start_conquest_command_json["command_name"] = "Start_Conquest_Command";
-    std::unique_ptr<engine::Command> start_conquest_command =
+    std::shared_ptr<engine::Command> start_conquest_command =
         engine::Command::create_from_json(start_conquest_command_json);
 }
 
