@@ -1,5 +1,6 @@
-#include <iostream>
 #include <json/json.h>
+
+#include <iostream>
 #include <stdexcept>
 
 #include "engine.h"
@@ -49,10 +50,6 @@ void Redeploy_Command::to_json(Json::Value& root)
 
 void Redeploy_Command::from_json(Json::Value& root)
 {
-    if (root["command_name"] != "Redeploy_Command")
-    {
-        throw std::invalid_argument("Redeploy_Command::from_json: command_name mismatch");
-    }
     area_id     = root["area_id"].asInt();
     added_units = root["added_units"].asInt();
     set_player_id(root["player_id"].asInt());

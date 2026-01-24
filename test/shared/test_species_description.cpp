@@ -41,8 +41,10 @@ BOOST_AUTO_TEST_CASE(TestSpeciesDescription)
         BOOST_CHECK_EQUAL(species_description.rewards_effect(areas), 0);
 
         BOOST_CHECK_EQUAL(species_description.get_name(), "TestSpecies");
-    }
 
-    {
+        Json::Value root;
+        species_description.to_json(root);
+        Species_Description_Observer species_description_2("", 0, 0);
+        species_description_2.from_json(root);
     }
 }

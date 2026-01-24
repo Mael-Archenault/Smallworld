@@ -1,13 +1,48 @@
 # List of test functions
+
+## State
+
 add_custom_test(tribe)
-add_custom_test(species_description)
-add_custom_test(power_description)
 add_custom_test(player)
 add_custom_test(map)
 add_custom_test(area)
 add_custom_test(game_state)
 add_custom_test(tribe_stack)
+
+## Engine
+
 add_custom_test(engine)
+
+## Commands
+
+add_custom_test(commands)
+
+## Effects
+
+add_custom_test(species_description)
+add_custom_test(power_description)
+add_custom_test(effects_bundle)
+
+## Powers
+
+
+add_custom_test(forest_power)
+add_custom_test(hill_power)
+add_custom_test(swamp_power)
+add_custom_test(merchant_power)
+add_custom_test(pillaging_power)
+add_custom_test(mounted_power)
+add_custom_test(underworld_power)
+add_custom_test(seafaring_power)
+add_custom_test(flying_power)
+add_custom_test(commando_power)
+add_custom_test(wealthy_power)
+add_custom_test(alchemist_power)
+
+## Species
+
+
+
 add_custom_test(dwarves_species)
 add_custom_test(wizards_species)
 add_custom_test(humans_species)
@@ -20,17 +55,8 @@ add_custom_test(skeletons_species)
 add_custom_test(halflings_species)
 add_custom_test(ratmen_species)
 add_custom_test(elves_species)
-add_custom_test(effects_bundle)
-add_custom_test(commands)
-add_custom_test(forest_power)
-add_custom_test(hill_power)
-add_custom_test(swamp_power)
-add_custom_test(merchant_power)
-add_custom_test(pillaging_power)
-add_custom_test(mounted_power)
-add_custom_test(underworld_power)
-add_custom_test(seafaring_power)
-add_custom_test(flying_power)
-add_custom_test(commando_power)
-add_custom_test(wealthy_power)
+
+
+
+
 

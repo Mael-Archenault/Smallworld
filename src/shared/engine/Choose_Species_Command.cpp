@@ -1,4 +1,5 @@
 #include <json/json.h>
+
 #include <stdexcept>
 
 #include "engine.h"
@@ -41,10 +42,6 @@ void Choose_Species_Command::to_json(Json::Value& root)
 
 void Choose_Species_Command::from_json(Json::Value& root)
 {
-    if (root["command_name"] != "Choose_Species_Command")
-    {
-        throw std::invalid_argument("Choose_Species_Command::from_json: command_name mismatch");
-    }
     position = root["position"].asInt();
     set_player_id(root["player_id"].asInt());
 }

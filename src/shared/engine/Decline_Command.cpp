@@ -36,10 +36,6 @@ void Decline_Command::to_json(Json::Value& root)
 
 void Decline_Command::from_json(Json::Value& root)
 {
-    if (root["command_name"] != "Decline_Command")
-    {
-        throw std::invalid_argument("Decline_Command::from_json: command_name mismatch");
-    }
     set_player_id(root["player_id"].asInt());
 }
 

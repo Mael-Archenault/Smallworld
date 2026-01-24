@@ -27,8 +27,10 @@ BOOST_AUTO_TEST_CASE(TestPowerDescription)
         BOOST_CHECK_EQUAL(power_description.rewards_effect(areas), 0);
 
         BOOST_CHECK_EQUAL(power_description.get_name(), "TestPower");
-    }
 
-    {
+        Json::Value root;
+        power_description.to_json(root);
+        effects::Power_Description power_description_2("", 0);
+        power_description_2.from_json(root);
     }
 }

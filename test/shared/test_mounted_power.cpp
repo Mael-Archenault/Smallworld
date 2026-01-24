@@ -1,4 +1,5 @@
 #include <boost/test/unit_test.hpp>
+
 #include "effects.h"
 #include "state.h"
 
@@ -18,25 +19,19 @@ BOOST_AUTO_TEST_CASE(Test_Mounted_Power)
 
     effects::Mounted_Power mounted_power;
 
-    std::vector<std::pair<int,int>> initial_prices = {
-        {area1.id, 2},
-        {area2.id, 6},
-        {area3.id, 4},
-        {area4.id, 10}
-    };
+    std::vector<std::pair<int, int>> initial_prices = {
+        {area1.id, 2}, {area2.id, 6}, {area3.id, 4}, {area4.id, 10}};
 
-    std::vector<std::pair<int,int>> modified_prices =
+    std::vector<std::pair<int, int>> modified_prices =
         mounted_power.conquest_prices_effect(initial_prices, owned_areas, nullptr);
 
     for (auto& p : modified_prices)
     {
-        if (p.first == area1.id)
-            BOOST_CHECK_EQUAL(p.second, 1); 
-        if (p.first == area2.id)
-            BOOST_CHECK_EQUAL(p.second, 5); 
-        if (p.first == area3.id)
-            BOOST_CHECK_EQUAL(p.second, 4); 
-        if (p.first == area4.id)
-            BOOST_CHECK_EQUAL(p.second, 10); 
+        if (p.first == area1.id) BOOST_CHECK_EQUAL(p.second, 1);
+        if (p.first == area2.id) BOOST_CHECK_EQUAL(p.second, 5);
+        if (p.first == area3.id) BOOST_CHECK_EQUAL(p.second, 4);
+        if (p.first == area4.id) BOOST_CHECK_EQUAL(p.second, 10);
     }
+
+    mounted_power.decline_effect(owned_areas);
 }
