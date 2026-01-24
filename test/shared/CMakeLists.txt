@@ -56,6 +56,9 @@ add_custom_test(halflings_species)
 add_custom_test(ratmen_species)
 add_custom_test(elves_species)
 
+## Ai
+
+add_custom_test(ai)
 
 
 
