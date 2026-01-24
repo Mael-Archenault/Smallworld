@@ -12,7 +12,8 @@
 namespace ai
 {
 
-Ai_Interface::Ai_Interface(state::Game_State state, int player_id) : id(player_id), state(state) {}
+Ai_Interface::Ai_Interface(int player_id, std::vector<std::string> names) : id(player_id), state(names,0) {
+}
 
 std::shared_ptr<engine::Command> Ai_Interface::give_command(state::Turn_Phase phase)
 {

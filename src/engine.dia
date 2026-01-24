@@ -3916,13 +3916,13 @@
         <dia:point val="49.751,0.330004"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="49.701,0.280004;55.696,1.78"/>
+        <dia:rectangle val="49.701,0.280004;55.041,1.78"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
         <dia:point val="49.751,0.330004"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
-        <dia:real val="5.8950000000000005"/>
+        <dia:real val="5.2400000000000002"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
         <dia:real val="1.3999999999999999"/>
@@ -4030,16 +4030,16 @@
         <dia:point val="60.7079,21.5063"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="55.6464,0.270004;61.4579,22.3463"/>
+        <dia:rectangle val="54.9913,0.270004;61.4579,22.3463"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
         <dia:point val="60.7079,21.5063"/>
-        <dia:point val="57.8521,21.5063"/>
-        <dia:point val="57.8521,1.03"/>
-        <dia:point val="55.6964,1.03"/>
+        <dia:point val="57.5246,21.5063"/>
+        <dia:point val="57.5246,1.03"/>
+        <dia:point val="55.0413,1.03"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
@@ -4244,10 +4244,10 @@
           <dia:attribute name="parameters">
             <dia:composite type="umlparameter">
               <dia:attribute name="name">
-                <dia:string>#state#</dia:string>
+                <dia:string>#names#</dia:string>
               </dia:attribute>
               <dia:attribute name="type">
-                <dia:string>#state::Game_State&amp;#</dia:string>
+                <dia:string>#std::vector&lt;std::string&gt;#</dia:string>
               </dia:attribute>
               <dia:attribute name="value">
                 <dia:string>##</dia:string>

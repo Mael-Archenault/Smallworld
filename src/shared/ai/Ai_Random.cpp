@@ -13,7 +13,7 @@
 namespace ai
 {
 
-Ai_Random::Ai_Random(state::Game_State state, int player_id) : Ai_Interface(state, player_id) {}
+Ai_Random::Ai_Random(int player_id, std::vector<std::string> names) : Ai_Interface(player_id, names) {}
 
 std::shared_ptr<engine::Command> Ai_Random::give_command_Start()
 {
@@ -41,26 +41,20 @@ std::shared_ptr<engine::Command> Ai_Random::give_command_Conquer()
     std::random_device rd;
     std::mt19937       rng(rd());
     long               random_command = rng() % 4;
-    if (random_command == 0)
+    if (random_command == 0 and ! state.get_current_player().get_redeployable_areas().empty())
     {
         return std::make_unique<engine::End_Conquer_Command>(id);
     }
     else
     {
         auto attackable_area = state.get_conquest_prices(id);
-        int  random_area_id  = attackable_area.at(rng() % attackable_area.size()).first;
-        for (auto area : attackable_area)
-        {
-            if (area.first == random_area_id)
-            {
-                int required_units  = area.second;
-                int available_units = state.get_free_units_number(id);
+        state::Area random_area  = state.get_map().get_area(attackable_area.at(rng() % attackable_area.size()).first);
+        int required_units  = random_area.get_conquest_price(*state.get_current_player().get_tribes().first);
+        int available_units = state.get_free_units_number(id);
 
-                return std::make_unique<engine::Conquer_Command>(
-                    id, random_area_id, std::min(required_units, available_units),
-                    required_units > available_units);
-            }
-        }
+        return std::make_unique<engine::Conquer_Command>(
+            id, random_area.id, std::min(required_units, available_units),
+            required_units > available_units);
     }
 }
 

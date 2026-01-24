@@ -36,7 +36,7 @@ void Engine::update()
 
     if (state.get_current_player().id != command->player_id)
     {
-        throw std::runtime_error("It's not the player's turn!");
+        throw std::runtime_error("It's not the player's turn!, player "+std::to_string(state.get_current_player().id)+" tried.");
     }
 
     if (phase_command_map[command->get_id()] != state.get_current_turn_phase())

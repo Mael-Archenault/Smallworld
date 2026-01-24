@@ -13,7 +13,7 @@
 namespace ai
 {
 
-Ai_Heuristic::Ai_Heuristic(state::Game_State state, int player_id) : Ai_Interface(state, player_id)
+Ai_Heuristic::Ai_Heuristic(int player_id, std::vector<std::string> names) : Ai_Interface(player_id, names)
 {
 }
 
