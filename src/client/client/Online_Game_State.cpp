@@ -64,6 +64,7 @@ void Online_Game_State::handle_input(sf::Event event)
             stop_thread("state_update");
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
+            delete this;
         }
     }
 
@@ -93,18 +94,21 @@ void Online_Game_State::handle_input(sf::Event event)
 void Online_Game_State::render(sf::RenderWindow& window)
 {
     bool is_game_finished = false;
+    std::vector<std::pair<std::string,int>> players_money;
     {
         std::lock_guard<std::mutex> lock(get_mutex());
         renderer.render(state, player_id);
         is_game_finished = state.is_game_finished();
+        players_money = state.get_players_money();
     }
 
     if (is_game_finished)
     {
         stop_thread("state_update");
         Endgame_State* new_state =
-            new Endgame_State(context->get_window(), state.get_players_money());
+            new Endgame_State(context->get_window(), players_money);
         this->context->change_state(new_state);
+        delete this;
     }
 }
 

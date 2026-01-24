@@ -46,15 +46,15 @@ void ai_process_online(Game_Service& service, std::vector<state::Player_Type> pl
         {
             case state::Random_AI:
                 ais.emplace_back(std::make_shared<ai::Ai_Random>(
-                    service.get_engines().at(engine_key)->get_state(), i));
+                    i, service.get_engines().at(engine_key)->get_state().names));
                 break;
             case state::Heuristic_AI:
                 ais.emplace_back(std::make_shared<ai::Ai_Heuristic>(
-                    service.get_engines().at(engine_key)->get_state(), i));
+                    i, service.get_engines().at(engine_key)->get_state().names));
                 break;
             case state::Advanced_AI:
                 ais.emplace_back(std::make_shared<ai::Ai_Advanced>(
-                    service.get_engines().at(engine_key)->get_state(), i));
+                    i, service.get_engines().at(engine_key)->get_state().names));
                 break;
             default:
                 break;

@@ -116,14 +116,16 @@ void Local_Lobby_State::handle_input(sf::Event event)
         {
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
+            delete this;
             return;
         }
         if (clicked_on("start_button"))
         {
             engine::Engine*   engine = new engine::Engine(player_names);
-            Local_Game_State* new_state =
-                new Local_Game_State(this->context->get_window(), *engine, player_types);
+            Local_Game_State* new_state = new Local_Game_State
+                (this->context->get_window(), *engine, player_types);
             this->context->change_state(new_state);
+            delete this;
             return;
         }
         if (clicked_on("add_button"))

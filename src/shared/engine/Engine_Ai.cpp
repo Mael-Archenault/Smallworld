@@ -5,7 +5,7 @@
 #include "Engine_Ai.h"
 namespace engine
 {
-Engine_Ai::Engine_Ai(state::Game_State& state) : Engine(state.names)
+Engine_Ai::Engine_Ai(std::vector<std::string> names) : Engine(names)
 {
     this->state = state.deep_copy();
 }

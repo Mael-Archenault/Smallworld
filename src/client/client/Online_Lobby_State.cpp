@@ -31,6 +31,7 @@ void lobby_update_process(Online_Lobby_State& client)
                 Online_Menu_State* new_state =
                     new Online_Menu_State(client.context->get_window(), client.context->get_name());
                 client.context->change_state(new_state);
+                delete &client;
                 return;
             }
         }
@@ -173,6 +174,7 @@ void Online_Lobby_State::handle_input(sf::Event event)
             Online_Menu_State* new_state =
                 new Online_Menu_State(context->get_window(), context->get_name());
             this->context->change_state(new_state);
+            delete this;
             return;
         }
         if (clicked_on("start_button"))
@@ -190,6 +192,7 @@ void Online_Lobby_State::handle_input(sf::Event event)
             Online_Game_State* new_state = new Online_Game_State(
                 this->context->get_window(), player_names, room_id, session_token, player_id);
             this->context->change_state(new_state);
+            delete this;
             return;
         }
 
@@ -233,6 +236,7 @@ void Online_Lobby_State::render(sf::RenderWindow& window)
         Online_Game_State* new_state = new Online_Game_State(
             this->context->get_window(), player_names, room_id, session_token, player_id);
         this->context->change_state(new_state);
+        delete this;
     }
 }
 

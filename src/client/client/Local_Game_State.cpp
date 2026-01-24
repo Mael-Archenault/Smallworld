@@ -61,13 +61,13 @@ void ai_process_local(client::Local_Game_State& client, std::string thread_name,
     switch (ai_type)
     {
         case ai::Ai_Random_t:
-            ai = new ai::Ai_Random(client.get_state(), player_id);
+            ai = new ai::Ai_Random(player_id, client.get_state().names);
             break;
         case ai::Ai_Heuristic_t:
-            ai = new ai::Ai_Heuristic(client.get_state(), player_id);
+            ai = new ai::Ai_Heuristic( player_id, client.get_state().names);
             break;
         case ai::Ai_Advanced_t:
-            ai = new ai::Ai_Advanced(client.get_state(), player_id);
+            ai = new ai::Ai_Advanced(player_id, client.get_state().names);
             break;
         default:
             break;
@@ -103,7 +103,7 @@ void ai_process_local(client::Local_Game_State& client, std::string thread_name,
                 client.get_engine().add_command(command);
             }
         }
-        usleep(1000000);
+        usleep(100000);
         running = client.get_running_flag(name);
     }
 }
@@ -141,7 +141,7 @@ Local_Game_State::Local_Game_State(sf::RenderWindow& window, engine::Engine& eng
         {
             continue;
         }
-
+        has_human_player = false;
         register_thread(
             "ai_thread_" + std::to_string(i),
             std::thread([](client::Local_Game_State& client, std::string thread_name,
@@ -174,10 +174,10 @@ void Local_Game_State::handle_input(sf::Event event)
             {
                 stop_thread(name);
             }
-            // stop_thread("engine_update");
-            // stop_thread("state_update");
+
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
+            delete this;
         }
     }
 
@@ -200,14 +200,22 @@ void Local_Game_State::handle_input(sf::Event event)
 
 void Local_Game_State::render(sf::RenderWindow& window)
 {
-    std::lock_guard<std::mutex> lock(get_mutex());
-    renderer.render(state, state.get_current_player().id);
-
-    if (state.is_game_finished())
+    bool is_game_finished = false;
+    std::vector<std::pair<std::string,int>> players_money;
     {
+        std::lock_guard<std::mutex> lock(get_mutex());
+        renderer.render(state, state.get_current_player().id);
+        is_game_finished = state.is_game_finished();
+        players_money = state.get_players_money();
+    }
+
+    if (is_game_finished)
+    {
+        stop_thread("state_update");
         Endgame_State* new_state =
-            new Endgame_State(context->get_window(), state.get_players_money());
+            new Endgame_State(context->get_window(), players_money);
         this->context->change_state(new_state);
+        delete this;
     }
 }
 

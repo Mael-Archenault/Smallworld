@@ -241,6 +241,19 @@ std::vector<std::pair<std::string, int>> Game_State::get_players_money()
     return players_money;
 }
 
+int Game_State::get_winner_id()
+{
+    std::pair<int,int> winner_id_money = {-1,0};
+    for (Player player : players)
+    {
+        if (player.get_money() > winner_id_money.second) {
+            winner_id_money.second = player.get_money();
+            winner_id_money.first = player.id;
+        }
+    }
+    return winner_id_money.first;
+}
+
 std::vector<Player>& Game_State::get_players()
 {
     return players;

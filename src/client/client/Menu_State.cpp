@@ -20,6 +20,7 @@ void Menu_State::handle_input(sf::Event event)
             Online_Menu_State* new_state =
                 new Online_Menu_State(context->get_window(), context->get_name());
             this->context->change_state(new_state);
+            delete this;
             return;
         }
 
@@ -27,6 +28,7 @@ void Menu_State::handle_input(sf::Event event)
         {
             Local_Lobby_State* new_state = new Local_Lobby_State(context->get_window());
             this->context->change_state(new_state);
+            delete this;
             return;
         }
     }

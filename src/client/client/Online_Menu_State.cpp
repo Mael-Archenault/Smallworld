@@ -21,6 +21,7 @@ void Online_Menu_State::handle_input(sf::Event event)
         {
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
+            delete this;
         }
 
         if (modifying_room_id)
@@ -90,6 +91,7 @@ void Online_Menu_State::handle_input(sf::Event event)
                     Online_Lobby_State* new_state =
                         new Online_Lobby_State(room_id, session_token, context->get_window());
                     this->context->change_state(new_state);
+                    delete this;
                     return;
                 }
                 catch (std::exception& e)
@@ -114,6 +116,7 @@ void Online_Menu_State::handle_input(sf::Event event)
                     Online_Lobby_State* new_state =
                         new Online_Lobby_State(room_id, session_token, context->get_window());
                     this->context->change_state(new_state);
+                    delete this;
                     return;
                 }
                 catch (std::exception& e)

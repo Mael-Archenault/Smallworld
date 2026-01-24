@@ -27,6 +27,7 @@ void Endgame_State::handle_input(sf::Event event)
         {
             Menu_State* new_state = new Menu_State(this->context->get_window());
             this->context->change_state(new_state);
+            delete this;
         }
     }
 }
