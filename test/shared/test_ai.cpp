@@ -14,8 +14,8 @@ BOOST_AUTO_TEST_CASE(TestStaticAssert)
 
 BOOST_AUTO_TEST_CASE(Test_Ai)
 {
-    std::vector<state::Player_Type> ais = {state::Heuristic_AI,state::Advanced_AI};
-    int number_of_games = 10;
+    std::vector<state::Player_Type> ais = {state::Random_AI,state::Heuristic_AI,state::Advanced_AI};
+    int number_of_games = 1;
 
     std::vector<std::string> ais_names = {};
     int player_id = 0;
@@ -43,6 +43,7 @@ BOOST_AUTO_TEST_CASE(Test_Ai)
 
     for (int i = 0; i < number_of_games; i++) {
         win_count.at(play_ai(ais,ais_names)) += 1;
+        std::cout << "Finished game " << i << std::endl;
     }
 
     for (int i = 0; i < win_count.size(); i++) {
