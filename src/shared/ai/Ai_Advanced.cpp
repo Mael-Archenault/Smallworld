@@ -6,19 +6,14 @@
 
 #include <engine/Conquer_Command.h>
 #include <engine/Decline_Command.h>
-#include <engine/End_Conquer_Command.h>
 #include <engine/Redeploy_Command.h>
 #include <engine/Start_Conquest_Command.h>
-#include <sys/stat.h>
 
 #include <algorithm>
-#include <boost/smart_ptr/make_shared_object.hpp>
 #include <iostream>
 #include <memory>
-#include <stack>
 
 #include "engine/Choose_Species_Command.h"
-#include "json/json.h"
 #include "random"
 
 using namespace ai;
