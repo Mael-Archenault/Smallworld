@@ -42,8 +42,17 @@ Tout l'intérêt du jeu réside dans la capacité à changer d'espèce au bon mo
 
 
 ### 1.3 Conception Logiciel
-Présenter ici les packages de votre solution, ainsi que leurs dépendances.
-
+Dépendances :
+- git
+- dia
+- cmake
+- g++
+- lcov
+- gcovr
+- libxml2-dev
+- libsfml-dev
+- libboost-test-dev
+- microhttpd-dev
 
 ## 2 Description et conception des états
 
@@ -310,28 +319,28 @@ une intelligence minimale aléatoire ;
 
 une intelligence basée sur des heuristiques simples ;
 
-une intelligence avancée reposant sur JE SAIS PAS ENCORE A MODIFIER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!.
+une intelligence avancée reposant sur un arbre de recherche maximisant son gain par tour.
 
 
 #### 5.1.1 Intelligence minimale
 
 L’intelligence minimale correspond à une IA aléatoire. Elle ne cherche pas à optimiser ses décisions et se contente de produire des commandes valides du point de vue des règles du jeu. Ses décisions sont donc prises indépendamment les unes des autres, sans planification ni évaluation globale de la situation.
-Pour perdre contre cette IA il faut soit être extrêmement malchanceux soit très nul.
+Pour perdre contre cette IA, il faut soit être extrêmement malchanceux soit très nul.
 
 
 ##### Phase Start
 
-Cette phase très simple s'occupe des actions faisable en début de tour.
+Cette phase très simple s'occupe des actions faisables en début de tour.
 
 - Si l'IA ne possède pas de tribu active, elle choisit aléatoirement une espèce parmi les 5 accessibles dans la pile de jeu.
-- Le cas échéant, elle choisi aléatoirement entre la phase de conquête et passer en déclin (Si elle passe en déclin c'est comme si elle avait passé son tour)
+- Le cas échéant, elle choisit aléatoirement entre la phase de conquête et passer en déclin (Si elle passe en déclin, c'est comme si elle avait passé son tour).
 
 
 ##### Phase Conquer
 
 Cette phase s'occupe des actions possibles une fois entré en phase conquête.
 
-- Avec une certaine probabilité, l’IA met fin à la phase de conquête. Ici la probabilité n'est pas 1 chance sur deux comme pour la phase start pour des soucis d'équilibrage (On peut conquérir plusieurs area dans un tour de jeu et arrêter sa conquête sans avoir "écoulé" ses free units n'est jamais avantageux.)
+- Avec une certaine probabilité, l’IA met fin à la phase de conquête. Ici la probabilité n'est pas une chance sur deux comme pour la phase start pour des soucis d'équilibrage (On peut conquérir plusieurs area dans un tour de jeu et arrêter sa conquête sans avoir "écoulé" ses free units n'est jamais avantageux.)
 
 - Dans le cas contraire, elle sélectionne aléatoirement une région attaquable.
 
@@ -340,13 +349,13 @@ Cette phase s'occupe des actions possibles une fois entré en phase conquête.
 
 ##### Phase Redeploy
 
-Après la conquête il faut défendre les areas conquises et c'est la phase redeploy qui va gérer ça.
+Après la conquête, il faut défendre les areas conquises et c'est la phase redeploy qui va gérer ça.
 
 - Une région redéployable est choisie aléatoirement.
 
-- Un nombre d’unités aléatoire y est redéployé.
+- Un nombre d’unités aléatoire y est redéployé parmi les unités disponibles.
 
-- Lorsque l’IA ne dispose plus d’unités libres, elle génère une commande de redéploiement avec un nombre volontairement invalide d’unités(Une valeur beaucoup trop grande). Cette commande est interprétée par le moteur comme une fin de tour.
+- Lorsque l’IA ne dispose plus d’unités libres, le tour prend fin.
 
 Grâce à ces phases, on s'assure que l'IA envoie des commandes valides. Évidemment les décisions aléatoires seront dans la plupart des cas très peu optimales.
 Cette IA garantit que toutes les actions sont valides, mais peut produire des décisions fortement sous-optimales.
@@ -374,7 +383,7 @@ L’intelligence heuristique introduit des règles déterministes simples. Elle 
 
 - L’attaque est lancée avec le nombre d’unités approprié.
 
-L'approche de cette heuristique est simple : maximiser les gains immédiats, mais sans gestion des tours suivants et donc des potentielles conséquences de ces choix.
+L'approche de cette heuristique est simple : maximiser les gains immédiats, mais sans gestion des tours suivants et donc des potentielles conséquences de ces choix, elle ne prend pas non plus en compte les effet de sa tribu lors du choix de la zone à conquérir.
 
 
 ##### Phase Redeploy
@@ -402,7 +411,7 @@ Pour ce faire, l’IA s’appuie sur un moteur dédié (Engine_Ai), fonctionnant
 
 - L’état résultant est évalué, puis utilisé comme point de départ pour les explorations suivantes 
 
-- la récursion s’arrête lorsqu'il n’y a plus d’unités libres, lorsque la phase de redéploiement est atteinte ou lorsqu'une conquête est jugée non rentable
+- la récursion s’arrête lorsqu'il n’y a plus d’unités libres, lorsque la phase de redéploiement est atteinte, lorsqu'une conquête est jugée non rentable (afin de ne pas explorer les pistes trop mauvaises), or lorsque la profondeur atteint une valeur définit (par souci de complexité).
 
 Chaque branche explorée est associée à une valeur numérique représentant le gain estimé, ainsi qu’à la séquence de commandes permettant d’atteindre cet état.
 
@@ -410,7 +419,7 @@ Chaque branche explorée est associée à une valeur numérique représentant le
 Une partie importante de cette IA repose sur la fonction d’évaluation ainsi que sur les critères d’arrêt de l’exploration.
 Lors du tout premier appel de l’algorithme, l’IA mémorise plusieurs informations de référence issues de l’état courant du joueur comme la quantité d’or disponible et le nombre d’unités libres. Ces valeurs servent de référence de comparaison tout au long de l’exploration de l’arbre de recherche.
 
-À chaque étape, après la simulation d’une conquête, l’état obtenu est analysé afin de déterminer si la poursuite de l’exploration est pertinente via une valeur. Cette valeur représente le rapport suivant :  units_used / money_gain  qui est le rapport du coût sur le gain. C'est là que ça devient compliqué avec notre jeu car certain pouvoir ont des effets n'impactant pas le coût ni l'argent gagné donc nous avons dû mettre un nombre magique sachant que quand aucune spécifité n'est présente, ce rapport vaut 2 (il faut 2 unités pour conquérir une zone vide et une zone rapporte une pièce). Ce rapport peut monter à 3 ou plus en fonction de la présence d'une montagne ou de troupe ennemies sur la zone. À l'inverse, un rapport de 1 ou 0.5 peut être présent quand on a un pouvoir donnant plus de pièces. En bref, on ne peut pas quantifier un rapport idéal car c'est trop variable et dépendant de nos pouvoirs. Ce qu'il faut comprendre c'est que plus ce rapport est faible, plus l'IA sera rapide car elle n'aura pas besoin d'évaluer les cas au-dessus de ce rapport.
+À chaque étape, après la simulation d’une conquête, l’état obtenu est analysé afin de déterminer si la poursuite de l’exploration est pertinente via une valeur. Cette valeur représente le rapport suivant :  units_used / money_gain qui est le rapport du coût sur le gain. C'est là que ça devient compliqué avec notre jeu, car certain pouvoir ont des effets n'impactant pas le coût ni l'argent gagné donc nous avons dû mettre un nombre magique sachant que quand aucune spécifité n'est présente, ce rapport vaut 2 (il faut 2 unités pour conquérir une zone vide et une zone rapporte une pièce). Ce rapport peut monter à 3 ou plus en fonction de la présence d'une montagne ou de troupe ennemies sur la zone. À l'inverse, un rapport de 1 ou 0.5 peut être présent quand on a un pouvoir donnant plus de pièces. En bref, on ne peut pas quantifier un rapport idéal car c'est trop variable et dépendant de nos pouvoirs. Ce qu'il faut comprendre c'est que plus ce rapport est faible, plus l'IA sera rapide car elle n'aura pas besoin d'évaluer les cas au-dessus de ce rapport.
 
 Si le gain estimé est jugé trop faible au regard des ressources dépensées, la branche correspondante est donc considérée comme non rentable. Dans ce cas, l’exploration récursive est interrompue prématurément pour cette branche, ce qui permet d’éviter des simulations inutiles et de limiter la taille de l’arbre exploré. 
 On a ici un compromis entre exhaustivité et performance, en concentrant l’exploration sur les potentiels meilleurs scénarios.
@@ -419,10 +428,11 @@ Lorsque l’exploration d’une branche s’arrête, l’état simulé est éval
 
 Ce système d’évaluation progressive, couplé à des critères d’arrêt explicites, permet à l’intelligence artificielle de raisonner sur plusieurs coups à l’avance tout en conservant un temps de calcul plus faible. Malgré cela pour certaine espèce et pouvoir, le temps de calcul reste trop long passant d'une dizaine de secondes à une dizaine de minutes (voir plus).
 
+C'est pourquoi nous avons rajouté une limite en profondeur dans la recherche afin que les combinaisons les plus couteuses en temps de calcul conservent un temps raisonnable (quelques secondes). 
 
 Certaines conquêtes ne peuvent pas être réalisées de manière déterministe lorsque le nombre d’unités engagées est inférieur au coût requis. Dans ce cas, le moteur de jeu impose le recours à un lancer de dé afin de déterminer si la conquête aboutit. Ce dé est composé de six faces, dont trois faces vides, une face donnant un bonus de 1, une face donnant un bonus de 2 et une face donnant un bonus de 3. Le résultat du lancer ajoute "virtuellement" des troupes d'attaques et donc conditionne directement la réussite ou l’échec de la conquête.
 
-Dans le cadre de l’intelligence artificielle basée sur les arbres de recherche, il n’est pas envisageable de simuler exhaustivement tous les résultats possibles de ces lancers de dés, car cela entraînerait une explosion combinatoire du nombre de branches à explorer sachant qu'elle met déjà beaucoup de temps à trouver le meilleur coup.
+Dans le cadre de l’intelligence artificielle basée sur les arbres de recherche, il est donc nécessaire de pondérer le gain lorsque le dé est utilisé.
 
 Lorsque la conquête nécessite un certain nombre d’unités supplémentaires, l’IA évalue la probabilité que le lancer de dé fournisse un bonus suffisant pour combler ce manque. Cette probabilité est directement liée à la distribution des faces du dé et au nombre d’unités manquantes() :
 
@@ -432,12 +442,14 @@ Lorsque la conquête nécessite un certain nombre d’unités supplémentaires, 
 C'est de là que vienne le 0.5,1/3 et 1/6 dans la méthode units_to_proba(int units).
 
 Enfin, à l’issue de l’exploration l’IA conserve la séquence de commandes correspondant au meilleur gain estimé.
-Cette séquence est stockée dans une pile interne et est consommée lors des appels successifs à give_command_Conquer. Nous avons bien finalement une seule commande à la fois, mais avec tout les autres cas moins intéressant calculées en amont.
+Cette séquence est stockée dans une pile interne et est consommée lors des appels successifs à give_command_Conquer. Nous avons bien finalement une seule commande à la fois, mais correspondant aux meilleurs coups trouvés.
 
 
 ##### Phase Start
 
-Pour l'instant il n'y a pas de méthode plus sophistiquée que l'intelligence heuristique pour la phase start. La seule chose qui change est le seuil d'unité restante pour partir en déclin qui cette fois dépend de la taille du nombre d'unité de base.
+Pour l'instant, il n'y a pas de méthode plus sophistiquée que l'intelligence heuristique pour la phase start. La seule chose qui change est le seuil d'unité restante pour partir en déclin qui cette fois dépend de la taille du nombre d'unité de base.
+
+Il pourrait y avoir simulation d'un tour de jeu avec chaque espèce de la tribe_stack, afin de voir le gain réaliser sur 1 tour. Cela aurait cependant l'inconvénient de favoriser les tribus à gains d'argent (particulièrement ceux immédiats), par rapport aux tribus ayants des bonus défensifs.
 
 ##### Phase Conquer
 
@@ -446,9 +458,9 @@ Les appels suivants retournent successivement les commandes pré-calculées jusq
 
 ##### Phase Redeploy
 
-Cette phase est complexe à optimiser car il s'agit de la défense et qu'elle dépend de ce que les attaquants font et ont. Pour optimiser cette phase nous ne pouvons pas prendre tout en compte sous peine de devoir attendre trop longtemps pour une réponse. Le principe est le suivant :
-
-ATTENDRE QUE CA SOIT PLUS CLAIR
+Cette phase suit actuellement le redéployment de l'IA Heuristique.  
+Nous avions travaillé sur une version prenant en compte la distance en coups en unité pour les adversaires non trop lointain (3 case maximum) afin de redéployer en priorité sur les areas proches d'eux.
+Cette version n'est pas aboutie.
 
 
 
@@ -460,7 +472,7 @@ Chaque IA manipule donc exclusivement :
 
 - Une copie locale de l’état du jeu (state::Game_State),
 
-- Un ensemble de commandes issues du moteur (engine::Command),
+- Un ensemble de commandes à envoyer au moteur (engine::Command),
 
 - Un moteur de simulation dédié (pour l'IA avancée).
 
@@ -476,7 +488,7 @@ Cette interface impose notamment l’implémentation de méthodes correspondant 
 
 - give_command_Redeploy
 
-Chaque méthode de l’IA (give_command_Start, give_command_Conquer, give_command_Redeploy) retourne une commande unique, encapsulée dans un std::shared_ptr<engine::Command>. L’utilisation d’un shared pointer répond à une problématique qu'on a rencontrée pendant le développement.
+Chaque méthode de l’IA (give_command_Start, give_command_Conquer, give_command_Redeploy) retourne une commande unique, encapsulée dans un std::shared_ptr\<engine::Command>. L’utilisation d’un shared pointer répond à une problématique qu'on a rencontré pendant le développement.
 
 Lorsqu’une commande est générée, elle peut être manipulée ou évaluée à différents niveaux du code avant d’être transmise au moteur global (Engine). Par exemple, certaines fonctions intermédiaires peuvent créer ou copier des commandes pour tester différents scénarios ou pour préparer la prochaine action du joueur. Le shared_ptr permet de maintenir la commande en vie tant que n’importe quel niveau du programme y fait référence, sans risque qu’elle soit détruite prématurément lorsque la fonction qui l’a créée retourne.
 En somme cela nous permet de garantir une gestion mémoire et partagé entre les différents niveaux du code.
