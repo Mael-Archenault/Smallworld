@@ -41,7 +41,7 @@ Chaque joueur peut, s'il le veut, abandonner son espèce actuelle et en prendre 
 Tout l'intérêt du jeu réside dans la capacité à changer d'espèce au bon moment, et à choisir la bonne combinaison espèce/pouvoir parmi celles proposées.
 
 
-### 1.3 Conception Logiciel
+### 1.3 Conception Logicielle
 Dépendances :
 - git
 - dia
@@ -60,7 +60,7 @@ Dépendances :
 
 L’état global du jeu est centralisé dans la classe Game_State, qui contient toutes les informations nécessaires pour décrire la partie à un instant donné :
 
-- la carte (Map) contenant l’ensemble des informations sur les zones de la carte avec ses specificités ainsi que les troupes des joueurs,
+- la carte (Map) contenant l’ensemble des informations sur les zones de la carte avec ses specificités ainsi que les troupes des joueurs 
 - la liste des joueurs (Player),
 - les tribus (combinaison d'espèce et de pouvoir) disponibles via une pile (Tribe_Stack),
 - des paramètres de gestion de tour comme le nombre de joueur actif ainsi que le nombre de rounds.
@@ -68,11 +68,13 @@ L’état global du jeu est centralisé dans la classe Game_State, qui contient 
 Chaque Player représente un joueur de la partie et possède :
 
 - un identifiant unique,
-- un ensemble de tribus actives qu’il contrôle,
-- un compteur de points de victoire accumulés,
+- un nom
+- un emplacement pour une tribu active,
+- un emplacement pour une tribu en déclin
+- une quantité d'argent,
 - les méthodes associées à la conquête ou au déploiement d’unités.
 
-Une Tribe correspond à la combinaison d’une espèce et d’un pouvoir spécial, ce qui définit les capacités et bonus de la tribu. Chaque tribu possède :
+Une Tribe correspond à la combinaison d’une espèce et d’un pouvoir spécial, ce qui définit les capacités et bonus de la tribu. Chaque Tribe possède :
 
 - un nombre d’unités disponibles,
 - des descriptions (Species_Description, Power_Description) déterminant ses effets,
@@ -87,11 +89,23 @@ Les zones (Area) modélisent les régions de la carte. Elles contiennent :
 
 L’ensemble de ces zones est géré par la classe Map, qui stocke leur liste et permet le chargement depuis un fichier JSON (utilisé pour initialiser la carte).
 
-Enfin, les effets spéciaux sont gérés par la hiérarchie Effects_Bundle :
+Les pouvoirs spéciaux peuvent être déclenchés à différents moments du tour (début de tour, conquête, redéploiement, etc.). Nous avons donc choisi de créer une interface Effects_Bundle qui définit les fonctions abstraites suivantes :
+- first_gather_effect
+- conquest_prices_effect
+- conquest_effect
+- second_gather_effect
+- redeploy_effect
+- rewards_effect
+- lose_effect
+- decline_effect
+- disappearing_effect
 
-- La classe abstraite Effects_Bundle définit une interface générique (apply_first_round_effect, apply_conquest_effect, etc.).
-- Des classes concrètes comme Dwarf_Effects_Bundle, Ratmen_Effects_Bundle ou Giant_Effects_Bundle héritent de cette interface pour appliquer des bonus spécifiques. Il est important de préciser que le diagramme UML actuel ne contient pas toutes les classes concrètes car chacune d'entre-elles "viole" les règles du jeu ce qui complique leur implémentation.
+Dans la grande majorité des cas, ces fonctions n'ont aucun effet. Les pouvoirs et espèces surchargent ces méthodes pour ajouter les effets qui les concernent (Exemple: les nains modifient le rewards_effect).
 
+Les classes concrètes de pouvoirs et d'espèces héritent des Power_Description et Species_Description, qui héritent elle-mêmes de l'Effect_Bundle.
+
+
+![Diagramme des classes d'effets](./img/effects.png)
 
 ### 2.2 Conception logicielle
 
@@ -101,7 +115,7 @@ L’organisation suit une approche orientée objet modulaire (plus que cruciale 
 - Game_State joue le rôle de façade, offrant un point d’entrée unique pour manipuler l’état global du jeu.
 - Map et Area forment le modèle spatial, décrivant la topologie/état physique du monde.
 - Player et Tribe constituent le modèle des acteurs de ce monde, reliés entre eux par composition.
-- Species_Description, Power_Description et Effects_Bundle réalisent le modèle des caractéristiques et utilisent une hiérarchie d’héritage pour encapsuler les comportements spécifiques à chaque race ou pouvoir.
+
 
 L'architecture du système centralise l'état global du jeu dans la classe Game_State, qui regroupe toutes les informations essentielles pour décrire la partie à un moment donné ce qui en fait une facade qui sera utile pour la suite. La carte (Map) agrège plusieurs zones (Area) connectées entre elles, offrant ainsi une structure modulaire qui reflète la topologie du monde de jeu. Cette modulation potentielle est importante car la map n'est pas un objet fixé sans modification. Des special token venant de pouvoir de classe modifient cette map. La classe contient également la liste des joueurs (Player), ainsi que les tribus, qui combinent espèces et pouvoirs, accessibles via une pile (Tribe_Stack). En outre, des paramètres de gestion des tours, tels que le nombre de joueurs actifs et le nombre de rounds, sont également inclus, garantissant une interface pour la manipulation de l'état du jeu. La hiérarchie d'Effects_Bundle encapsule divers comportements d'effets appliqués aux tribus, permettant une flexibilité dans la gestion des capacités spécifiques comme vu précedemment.
 
@@ -126,7 +140,7 @@ Il peut :
 
 Cette conception permet une séparation claire entre la logique du jeu et les actions du joueur qui par ailleurs rend le projet facilement testable via des tests unitaires.
 
-### 2.5 Ressources
+### 2.5 Diagramme UML
 
 ![Diagramme des classes_d'état](./img/state.png)
 
@@ -136,10 +150,14 @@ Cette conception permet une séparation claire entre la logique du jeu et les ac
 ### 3.1 Stratégie de rendu d'un état
 
 Le jeu possède différentes structures assez différentes à afficher:
-- **la carte de jeu** : Map
-- **les pions posés sur les territoires** : Units, Special_Tokens, etc ...
-- **la pioche d'espèce** : Tribe_Stack
-- **la main du joueur** : Money, Free_Units, Tribes
+
+- **la carte de jeu** : Map 
+
+- **les pions posés sur les territoires** : Units, Special_Tokens, etc ... 
+
+- **la pioche d'espèce** : Tribe_Stack 
+
+- **la main du joueur** : Money, Free_Units, Tribes 
 
 Pour afficher ces différentes structures, nous avons choisi de créer une classe Renderer qui va s'occuper de tout le rendu graphique du jeu. Cette classe va utiliser la bibliothèque SFML pour afficher les différentes structures du jeu.
 
@@ -201,6 +219,10 @@ Cette classe est responsable du rendu de la pioche d'espèces. Elle utilise la c
 La classe Tribe_Stack_Renderer possède une référence vers la Tribe_Stack qu'elle affiche.
 
 Ce moteur de rendu afficher les 6 tribus de la pioche auquel le joueur a accès. Il ajoute à leur côté le prix de retrait de la tribu.
+
+### Autres
+Le rendu principal intègre aussi des éléments d'interface utilisateur comme des boutons, des textes, etc ... Ces éléments sont gérés directement dans différentes classes comme Area_Info_Renderer (affichage des informations d'une zone) ou encore l'Overlay_Renderer (affichage de surlignages sur la carte).
+
 
 ### Renderer  
 
@@ -537,23 +559,195 @@ Lors de la simulation, certaines commandes peuvent s’avérer invalides (par ex
 
 Ce mécanisme permet à l’IA avancée de rester robuste face aux cas limites sans compromettre l’ensemble de la recherche.
 
-<!-- 
-### 5.5 Conception logicielle: extension pour la parallélisation
 
 
-## 6 Modularisation
-Cette section se concentre sur la répartition des différents modules du jeu dans différents processus. Deux niveaux doivent être considérés. Le premier est la répartition des modules sur différents threads. Notons bien que ce qui est attendu est un parallélisation maximale des traitements: il faut bien démontrer que l'intersection des processus communs ou bloquant est minimale. Le deuxième niveau est la répartition des modules sur différentes machines, via une interface réseau. Dans tous les cas, motivez vos choix, et indiquez également les latences qui en résulte.
 
-### 6.1 Organisation des modules
 
-#### 6.1.1 Répartition sur différents threads
+## 6 Client
 
-#### 6.1.2 Répartition sur différentes machines
+### 6.1 Rôle du client
 
-### 6.2 Conception logiciel
+Jusqu'à maintenant, nous avons principalement discuté de la structure interne du jeu, en mettant l'accent sur la gestion de l'état, le moteur de jeu, le rendu graphique et l'intelligence artificielle. Cependant, pour permettre aux joueurs d'interagir avec le jeu, nous devons également développer un client.
+Le client a pour rôle de fournir une interface utilisateur graphique (GUI) qui permet aux joueurs de visualiser l'état du jeu, d'envoyer des commandes au moteur de jeu et de recevoir des mises à jour en temps réel.
 
-### 6.3 Conception logiciel: extension réseau
+Il est important de comprendre comment nous avons choisi de structurer le jeu.
 
-### 6.4 Conception logiciel: client Android
+- L'engine possède une instance du Game_State qui représente l'état global du jeu. Celui-ci est mis à jour régulièrement grâce aux commandes envoyées par le client.
+- Le client possède une copie locale du Game_State, et un renderer qui s'occupe d'afficher cet état à l'écran.
 
-Illustration 4: Diagramme de classes pour la modularisation -->
+Le fonctionnement du client repose sur une boucle simple.
+1. Récupération des évenements utilisateur (clics, touches, etc.) et actions en conséquence
+2. Synchronisation de l'état du jeu avec celui de l'engine
+3. Rendu de l'état du jeu à l'écran
+
+Ces trois instructions permettent de créer une interface interactive où le joueur peut voir les changements dans le jeu en temps réel et interagir avec eux.
+
+### 6.2 Description structurelle
+#### 6.2.1 Gestion des évenements utilisateur
+Pour gérer les évenements utilisateur, le client utilise la bibliothèque SFML qui fournit des outils pour capturer les entrées clavier et souris. Les évènements (les clics de souris dans notre cas) sont envoyés dans la classe Click_Handler qui va analyser la position du clic et déterminer quelle action doit être effectuée en fonction de l'état actuel du jeu.
+Le Click_Handler peut effectuer différentes actions :
+- Sélectionner une zone de la carte
+- Ouvrir une fenêtre d'information pour les tribus
+- Envoyer une commande au moteur de jeu
+- etc...
+
+#### 6.2.2 Mise à jour de l'état du jeu
+
+Le client possède une instance du Game_State. Il est important de garder cette instance à jour pour que le rendu soit correct. Pour cela, le client fait une deep copy du state à l'intérieur de l'engine à chaque itération de la boucle principale. Ainsi, le client possède toujours une copie locale de l'état du jeu qui est synchronisée avec l'état global géré par le moteur de jeu.
+
+La deep copy assure que le client ne modifie pas directement l'état global du jeu, ce qui pourrait entraîner des incohérences. Au lieu de cela, le client envoie des commandes au moteur de jeu pour effectuer des actions, et le moteur met à jour l'état global en conséquence.
+
+#### 6.2.3 Rendu de l'état du jeu
+
+Le rendu de l'état du jeu est effectué par la classe Renderer, qui utilise les différentes classes de rendu décrites précédemment (Map_Renderer, Player_Area_Renderer, Tribe_Stack_Renderer, etc.). Le Renderer prend la copie locale du Game_State et affiche les différentes composantes du jeu à l'écran.
+
+### 6.3 Machine a états
+
+Dans un jeu, on doit souvent être capable de gérer différents écrans (menu principal, écran de jeu, écran de pause, etc.). Pour cela, nous avons implémenté une machine à états dans le client. Cette machine a état permet différent types de jeu (mode solo, mode multijoueur, etc.) et le choix des caractéristiques des joueurs.
+
+Pour un jeu local, les états sont :
+1. Menu_State
+2. Local_Lobby_State
+3. Local_Game_State
+4. Endgame_State
+5. Menu_State
+
+Pour un jeu multijoueur, les états sont : 
+
+1. Menu_State
+2. Online_Menu_State
+3. Online_Lobby_State
+4. Online_Game_State 
+5. Endgame_State
+6. Menu_State
+
+Pour simplifier la gestion des clicks et des threads dans les états qui en ont besoin, des interfaces ont été créées : Clickable_State_Interface et Threaded_State_Interface.
+
+Pour chaque, état, une classe dérivée de State_Interface est créée. Chaque état implémente les méthodes suivantes :
+ - handle_input
+ - render
+
+Pour simplifier les étapes de rendering, Chaque état possède son propre renderer qui s'occupe d'afficher l'état à l'écran.
+
+![Diagramme UML des différents renderers](./img/state_renderers.png)
+
+### 6.4 Diagramme UML
+
+![Diagramme de classes du client](./img/client.png)
+
+## 7 Multithreading
+### 7.1 Rôle du multithreading
+Afin de préparer l'implémentation du mode multijoueur en ligne, nous avons dû adapter notre architecture logicielle pour supporter le multithreading. Le but est de permettre au client et au serveur de fonctionner simultanément sans bloquer l'interface utilisateur.
+
+### 7.2 Séparation Engine/Client
+Pour cela, nous avons séparé le moteur de jeu (Engine) du client. Le moteur de jeu s'exécute dans un thread séparé, tandis que le client s'occupe de l'interface utilisateur dans le thread principal. 
+
+Le thread de l'engine, dans sa boucle principale, effectue les opérations suivantes :
+1. Traite les commandes reçues du client
+2. Met à jour l'état du jeu
+
+Le thread du client, dans sa boucle principale, effectue les opérations suivantes :
+
+1. Récupère les évenements utilisateur
+2. Synchronise l'état du jeu avec celui de l'engine
+3. Rend l'état du jeu à l'écran
+
+(Ce sont les mêmes étapes que précédemment)
+
+Cette séparation permet au client de rester réactif même lorsque le moteur de jeu effectue des calculs intensifs.
+Cela permet aussi d'avoir des fréquences de fonctionnement différentes entre le client et le serveur. Par exemple, le client peut fonctionner à 60 FPS pour un rendu fluide, tandis que le serveur peut fonctionner à une fréquence plus basse pour économiser des ressources.
+### 7.3 Amélioration du client
+Pour améliorer la réactivité du client, nous avons décidé de séparer les tâches du client en 2 threads distincts :
+
+- un thread de synchronisation du Game_State
+- un thread de gestion d'évènements utilisateur et de rendu
+
+Cela permet notamment d'éviter que le rendu soit bloqué par la synchronisation de l'état du jeu (qui peut prendre un peu de temps)
+
+### 7.5 Jeu des IA
+
+Nous avons aussi décidé de faire tourner les IA dans des threads séparés. Chaque IA possède son propre thread qui s'occupe de générer les commandes à envoyer au moteur de jeu. De cette manière, nous n'avons pas de blocage du client lorsque l'IA effectue des calculs intensifs (notamment pour l'IA avancée).
+
+### 7.5 Difficultés et solutions
+
+La principale difficulté rencontrée lors de l'implémentation du multithreading a été la gestion de la synchronisation entre les threads. Pour éviter les conditions de course et garantir la cohérence des données, nous avons utilisé des mutex pour protéger l'accès aux ressources partagées (notamment le Game_State).
+
+Il est très important pourchacun des threads de ne pas bloquer trop longtemps un mutex, sinon cela peut entraîner des ralentissements et une mauvaise réactivité de l'interface utilisateur.
+
+## 8 Serveur
+
+### 8.1 Rôle du serveur
+Le serveur a pour rôle de gérer les parties multijoueurs en ligne. Il reçoit les commandes des clients, met à jour l'état du jeu en conséquence, et envoie les mises à jour aux clients connectés.
+### 8.2 Fonctionnalités principales
+
+Le serveur que nous avons développé possède les fonctionnalités suivantes :
+- gestion des connexions des clients
+- gestion des lobbies de jeu
+- gestion des parties multijoueurs
+### 8.3 Conception logicielle
+
+Notre server fonctionne grâce à la librairie microhttpd qui permet de gérer les connexions HTTP de manière simple et efficace. Le serveur écoute les requêtes des clients, traite les commandes reçues, et envoie les réponses appropriées.
+
+Pour faciliter la gestion des requêtes une architecture de "service" a été mise en place. Chaque service est responsable d'un type de requête spécifique. Dans notre cas, nous en avons deux :
+
+- room_service pour la gestion des lobbies
+- game_service pour la gestion des parties
+
+Lorsqu'une requête arrive au serveur, le Service_Manager la redirige vers le service approprié en fonction de l'URL de la requête.
+
+- /rooms/... -> envoyée au room_service
+
+- /game/.... -> envoyée au game_service
+
+La route est alors analysée par le service pour déterminer l'action à effectuer (création de lobby, connexion à un lobby, envoi de commande de jeu, etc.), le corps de la requête est récupéré et analysé (format JSON), puis l'action est effectuée en conséquence.
+
+#### 8.3.1 Gestion des connexions
+
+Le serveur gère les connexions des clients en utilisant des identifiants uniques pour chaque joueur. Lorsqu'un client se connecte au serveur, un nouvel identifiant est généré et envoyé au client. Cet identifiant est ensuite utilisé pour authentifier les requêtes du client.
+Cela permet de définir quelles sont les actions que le client peut effectuer (par exemple, un client ne peut pas envoyer de commande de jeu s'il n'est pas connecté à un lobby).
+
+Pour obtenir un identifiant, le client doit envoyer une requête à la route suivante :
+- /connect : connexion au serveur et obtention d'un identifiant unique
+
+
+#### 8.3.2 Gestion de lobby
+Le serveur gère les lobbies de jeu, où les joueurs peuvent se connecter, choisir leurs paramètres de jeu, et attendre que tous les joueurs soient prêts avant de démarrer la partie. Une fois la partie lancée, le lobby est associé à une instance du moteur de jeu (Engine) qui gère l'état de la partie.
+
+L'ensemble des routes disponibles à cet effet :
+- /rooms/create : création d'un nouveau lobby
+- /rooms/join/{room_id} : rejoindre un lobby existant
+- /rooms/start/{room_id} : démarrer une partie
+- /rooms/state/{room_id} : récupérer l'état d'un lobby
+- /rooms/add_ai/{room_id} : ajouter une IA à un lobby
+- /rooms/delete_ai/{room_id} : retirer une IA d'un lobby
+
+
+#### 8.3.3 Gestion des parties
+
+Le serveur gère les parties multijoueurs en ligne. Chaque partie est associée à une instance du moteur de jeu (Engine) qui gère l'état de la partie. Le serveur reçoit les commandes des clients, puis les transmet au moteur de jeu.
+
+Ensemble des routes disponibles à cet effet :
+
+- /game/command/{room_id} : envoyer une commande de jeu
+- /game/state/{room_id} : récupérer l'état courant du jeu
+- /game/version/{room_id} : récupérer la version courante de l'état du jeu
+
+#### 8.3.4 Ajout du multithreading
+
+Pour gérer efficacement les multiples connexions des clients et les différentes parties en cours, le serveur utilise le multithreading. Les différents threads sont les suivants :
+- un thread principal qui écoute les connexions entrantes et redirige les requêtes vers les services appropriés (thread créé par microhttpd)
+- un thread d'update de tous les engines
+- un thread de nettoyage des clients inactifs
+- un thread d'IA pour chaque partie contenant des IA
+
+### 8.5 Modifications du Client
+
+Pour permettre au client de communiquer avec le serveur, nous avons dû apporter quelques modifications à l'architecture du client. Notamment, nous avons ajouté une couche de communication réseau qui s'occupe d'envoyer les requêtes HTTP au serveur et de recevoir les réponses.
+
+Pour pouvoir envoyer les commandes et recevoir un état du jeu, nous avons dû ajouter des méthodes de sérialisation/désérialisation JSON dans les classes concernées (Game_State, Command, etc.). Cela permet de convertir les objets C++ en format JSON pour les envoyer au serveur, et de convertir les réponses JSON du serveur en objets C++.
+
+Le rendering dans le client a aussi été modifié pour que chaque joueur ait une vue qui soit "centrée" sur lui-même. Cela permet à chaque joueur de voir son propre état de jeu, sans avoir accès aux informations des autres joueurs (comme leurs tribus, leurs unités, etc.).
+
+### 8.4 Diagramme UML
+
+![Diagramme de classes du server](./img/server.png)
