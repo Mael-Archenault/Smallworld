@@ -123,8 +123,8 @@ BOOST_AUTO_TEST_CASE(Test_Room_Service)
     player_manager.refresh_last_seen(owner_session_token);
     player_manager.refresh_last_seen(joiner_session_token);
 
-    room_service->get_room_start_infos(room_id);  // should throw since room is deleted
-    room_service->set_room_state(room_id, server::Room_State::IN_GAME);
+    room_service->get_room_start_infos(room_id);
+    room_service->set_room_state(room_id, server::Room_State::WAITING);
     // Testing room deletion when owner exits
 
     status = room_service->post(in, out, "/exit/" + std::to_string(room_id), owner_session_token);

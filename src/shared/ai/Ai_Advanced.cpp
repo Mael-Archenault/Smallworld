@@ -12,10 +12,10 @@
 #include <sys/stat.h>
 
 #include <algorithm>
+#include <boost/smart_ptr/make_shared_object.hpp>
 #include <iostream>
 #include <memory>
 #include <stack>
-#include <boost/smart_ptr/make_shared_object.hpp>
 
 #include "engine/Choose_Species_Command.h"
 #include "json/json.h"
@@ -23,7 +23,8 @@
 
 using namespace ai;
 
-Ai_Advanced::Ai_Advanced(int player_id, std::vector<std::string> names): Ai_Interface(player_id, names), engine(names)
+Ai_Advanced::Ai_Advanced(int player_id, std::vector<std::string> names)
+    : Ai_Interface(player_id, names), engine(names)
 {
     command_stack = {};
 }
@@ -70,7 +71,7 @@ std::pair<int, std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcu
         }
     }
 
-    if (is_worth == false || depth == 3 || engine.get_state().get_free_units_number(id) == 0 ||
+    if (is_worth == false || depth == 2 || engine.get_state().get_free_units_number(id) == 0 ||
         engine.get_state().get_current_turn_phase() == state::REDEPLOY)
     {
         current_best_node_value_command.first = engine.get_state().inform_rewards(id);
@@ -88,7 +89,7 @@ std::pair<int, std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcu
 
         std::pair<float, std::vector<std::shared_ptr<engine::Command>>> new_node_value_command =
             calcul_stack(engine.get_state().deep_copy(), new_command, depth + 1, default_money,
-                default_free_units);
+                         default_free_units);
         engine.set_state(new_state);  // To move ?
 
         if (required_units - available_units > 0)
@@ -100,8 +101,10 @@ std::pair<int, std::vector<std::shared_ptr<engine::Command>>> Ai_Advanced::calcu
                                    unit_to_proba(required_units - available_units);
         }
 
-        if (new_node_value_command.first > current_best_node_value_command.first) {
-            current_best_node_value_command = {new_node_value_command.first,new_node_value_command.second};
+        if (new_node_value_command.first > current_best_node_value_command.first)
+        {
+            current_best_node_value_command = {new_node_value_command.first,
+                                               new_node_value_command.second};
         }
     }
 
