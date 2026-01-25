@@ -40,7 +40,6 @@ void ai_process_online(Game_Service& service, std::vector<state::Player_Type> pl
 {
     // TODO add enum name of ais for switch
 
-    bool                                           running = true;
     std::vector<std::shared_ptr<ai::Ai_Interface>> ais;
     for (int i = 0; i < player_types.size(); i++) switch (player_types.at(i))
         {
@@ -60,29 +59,18 @@ void ai_process_online(Game_Service& service, std::vector<state::Player_Type> pl
                 break;
         }
 
-    while (1)
+    bool running = true;
+    while (running)
     {
         for (auto ai : ais)
         {
-            if (!running)
-            {
-                break;
-            }  // if one ai ends turn and next one would want to play
             bool is_my_turn = false;
             {
                 std::lock_guard<std::mutex> lock(service.get_mutex());
                 // update state
                 std::shared_ptr<engine::Engine> engine;
-                try
-                {
-                    engine = service.get_engines().at(engine_key);
-                }
 
-                catch (std::exception& e)
-                {
-                    // stopping the ai thread if the engine has disappeared
-                    return;
-                }
+                engine = service.get_engines().at(engine_key);
 
                 if (engine->get_state_version_id() != ai->get_state().get_version_id())
                 {
@@ -103,6 +91,7 @@ void ai_process_online(Game_Service& service, std::vector<state::Player_Type> pl
             }
         }
         usleep(1000000);
+        running = service.get_ai_running_flag(std::stoi(engine_key));
     }
 }
 
@@ -163,8 +152,26 @@ Http_Status Game_Service::post(std::string& in, std::string& out, std::string ur
 
     if (action == "/command")
     {
-        int room_id = std::stoi(room_id_str);
-        add_command_to_game(room_id, in);
+        int room_id;
+        try
+        {
+            room_id = std::stoi(room_id_str);
+        }
+        catch (std::exception& e)
+        {
+            return Http_Status::BAD_REQUEST;
+        }
+
+        try
+        {
+            add_command_to_game(room_id, in);
+        }
+
+        catch (std::exception& e)
+        {
+            return Http_Status::BAD_REQUEST;
+        }
+
         return Http_Status::OK;
     }
 
@@ -182,13 +189,27 @@ void Game_Service::launch_game(int room_id, std::vector<std::string> player_name
         [](Game_Service& service, std::vector<state::Player_Type> player_types,
            std::string engine_key) { ai_process_online(service, player_types, engine_key); },
         std::ref(*this), player_types, std::to_string(room_id));
+    ais_running_flags[std::to_string(room_id)] = true;
 }
 void Game_Service::stop_game(int room_id)
 {
-    std::lock_guard<std::mutex> lock(mtx);
-    // stopping engine
-    engines.erase(std::to_string(room_id));
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        ais_running_flags[std::to_string(room_id)] = false;
+    }
+    // stopping ai_thread
+    if (ais.at(std::to_string(room_id)).joinable())
+    {
+        ais.at(std::to_string(room_id)).join();
+    }
+    {
+        std::lock_guard<std::mutex> lock(mtx);
+        engines.erase(std::to_string(room_id));
+        ais.erase(std::to_string(room_id));
+        ais_running_flags.erase(std::to_string(room_id));
+    }
 
+    // stopping engine
     std::cout << "Stopped game : " << room_id << std::endl;
 }
 std::unordered_map<std::string, std::shared_ptr<engine::Engine>>& Game_Service::get_engines()
@@ -226,5 +247,11 @@ bool Game_Service::get_engines_thread_flag()
 {
     std::lock_guard<std::mutex> lock(mtx);
     return engines_update_running;
+}
+
+bool Game_Service::get_ai_running_flag(int room_id)
+{
+    std::lock_guard<std::mutex> lock(mtx);
+    return ais_running_flags[std::to_string(room_id)];
 }
 }  // namespace server

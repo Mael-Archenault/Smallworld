@@ -16,17 +16,15 @@ void sessions_update_process(Player_Manager& manager)
     while (running)
     {
         manager.remove_inactive_players();
-        usleep(15000000);  // checking every 5 seconds
+        usleep(5000000);  // checking every 5 seconds
         running = manager.get_sessions_update_thread_running();
     }
 }
 Player_Manager::Player_Manager() : room_service(nullptr)
 {
-    sessions_update_thread = std::thread(
+    sessions_update_thread_running = true;  // mark running before starting the thread
+    sessions_update_thread         = std::thread(
         [](Player_Manager& manager) { sessions_update_process(manager); }, std::ref(*this));
-
-    sessions_update_thread_running = true;
-    sessions_update_thread.detach();
 }
 
 Player_Manager::~Player_Manager()
@@ -47,6 +45,7 @@ std::string Player_Manager::create_player(std::string name)
     std::string session_token = generate_session_token();
     connected_players.push_back(Player(name, state::Human, session_token));
     std::cout << "Created player: " << connected_players.back().get_name() << std::endl;
+    refresh_last_seen(session_token);
     return session_token;
 }
 

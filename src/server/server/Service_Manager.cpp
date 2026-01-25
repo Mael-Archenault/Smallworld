@@ -54,20 +54,17 @@ Http_Status Service_Manager::handle_request(std::string& in, std::string& out, s
     }
     // remove prefix from url
     std::string action = url.substr(service->get_root_prefix().size());
-    if (service)
+
+    if (method == "GET")
     {
-        if (method == "GET")
-        {
-            Http_Status status = service->get(in, out, action, session_token);
-            return status;
-        }
-        if (method == "POST")
-        {
-            Http_Status status = service->post(in, out, action, session_token);
-            return status;
-        }
-        return Http_Status::METHOD_NOT_ALLOWED;
+        Http_Status status = service->get(in, out, action, session_token);
+        return status;
     }
-    return Http_Status::NOT_FOUND;
+    if (method == "POST")
+    {
+        Http_Status status = service->post(in, out, action, session_token);
+        return status;
+    }
+    return Http_Status::METHOD_NOT_ALLOWED;
 }
 }  // namespace server
