@@ -16,11 +16,6 @@ Room_Service::Room_Service(Player_Manager& player_manager)
 Http_Status Room_Service::get(std::string& in, std::string& out, std::string url,
                               std::string session_token)
 {
-    if (url.find("/state/") != 0)
-    {
-        return Http_Status::BAD_REQUEST;
-    }
-
     size_t      slash_pos   = url.find('/', 1);
     std::string action      = url.substr(0, slash_pos);
     std::string room_id_str = url.substr(slash_pos + 1);
@@ -53,7 +48,7 @@ Http_Status Room_Service::get(std::string& in, std::string& out, std::string url
         }
         return Http_Status::OK;
     }
-    return Http_Status::BAD_REQUEST;
+    return Http_Status::METHOD_NOT_ALLOWED;
 }
 
 Http_Status Room_Service::post(std::string& in, std::string& out, std::string url,
@@ -75,17 +70,21 @@ Http_Status Room_Service::post(std::string& in, std::string& out, std::string ur
         return Http_Status::CREATED;
     }
 
-    // if (url.find("/join/") != 0 && url.find("/exit/") != 0 )
-    // {
-    //     return Http_Status::BAD_REQUEST;
-    // }
-
     // action on a specific room -> /join/{id} or /exit/{id}
 
     size_t      slash_pos   = url.find('/', 1);
     std::string action      = url.substr(0, slash_pos);
     std::string room_id_str = url.substr(slash_pos + 1);
-    int         room_id     = std::stoi(room_id_str);
+    int         room_id;
+    try
+    {
+        room_id = std::stoi(room_id_str);
+    }
+    catch (std::exception& e)
+    {
+        std::cout << "Error while getting room id: " << e.what() << std::endl;
+        return Http_Status::BAD_REQUEST;
+    }
 
     if (verify_room_id(room_id) == false)
     {
@@ -124,7 +123,7 @@ Http_Status Room_Service::post(std::string& in, std::string& out, std::string ur
     {
         try
         {
-            add_ai(room_id, in);
+            add_ai(room_id, session_token, in);
             return Http_Status::OK;
         }
         catch (std::exception& e)
@@ -138,7 +137,7 @@ Http_Status Room_Service::post(std::string& in, std::string& out, std::string ur
     {
         try
         {
-            delete_ai(room_id, in);
+            delete_ai(room_id, session_token);
             return Http_Status::OK;
         }
         catch (std::exception& e)
@@ -307,12 +306,26 @@ Room_State Room_Service::get_room_state(int room_id)
     throw std::runtime_error("Room with id not found");
 }
 
-void Room_Service::add_ai(int room_id, std::string& in)
+void Room_Service::add_ai(int room_id, std::string session_token, std::string& in)
 {
-    int                coma_pos    = in.find(",");
-    std::string        ai_type_str = in.substr(0, coma_pos);
-    std::string        name        = in.substr(coma_pos + 1, in.back());
-    state::Player_Type ai_type     = static_cast<state::Player_Type>(std::stoi(ai_type_str));
+    for (auto& room : rooms)
+    {
+        if (room.id == room_id)
+        {
+            if (room.get_owner().get_session_token() != session_token)
+            {
+                throw std::runtime_error("Only the room owner can add an AI");
+            }
+        }
+    }
+    int         coma_pos    = in.find(",");
+    std::string ai_type_str = in.substr(0, coma_pos);
+    std::string name        = in.substr(coma_pos + 1, in.back());
+    if (ai_type_str != "0" && ai_type_str != "1" && ai_type_str != "2" && ai_type_str != "3")
+    {
+        throw std::runtime_error("AI type not valid");
+    }
+    state::Player_Type ai_type = static_cast<state::Player_Type>(std::stoi(ai_type_str));
 
     Player player = Player(name, ai_type, "");
     for (auto& room : rooms)
@@ -334,6 +347,10 @@ void Room_Service::delete_ai(int room_id, std::string session_token)
     {
         if (room.id == room_id)
         {
+            if (room.get_owner().get_session_token() != session_token)
+            {
+                throw std::runtime_error("Only the room owner can remove an AI");
+            }
             room.remove_ai();
         }
     }
