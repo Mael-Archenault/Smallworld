@@ -7,7 +7,8 @@ header-includes:
 ---
 
 
-# Projet Logiciel Transversal: SmallWorld
+# Projet Logiciel Transversal: Smallworld
+
 ---
 
 #### Julien METZELARD – Tarek TALSI – Maël ARCHENAULT – Victor MOREL
@@ -43,6 +44,7 @@ Tout l'intérêt du jeu réside dans la capacité à changer d'espèce au bon mo
 
 ### 1.3 Conception Logicielle
 Dépendances :
+
 - git
 - dia
 - cmake
@@ -90,6 +92,7 @@ Les zones (Area) modélisent les régions de la carte. Elles contiennent :
 L’ensemble de ces zones est géré par la classe Map, qui stocke leur liste et permet le chargement depuis un fichier JSON (utilisé pour initialiser la carte).
 
 Les pouvoirs spéciaux peuvent être déclenchés à différents moments du tour (début de tour, conquête, redéploiement, etc.). Nous avons donc choisi de créer une interface Effects_Bundle qui définit les fonctions abstraites suivantes :
+
 - first_gather_effect
 - conquest_prices_effect
 - conquest_effect
@@ -206,6 +209,7 @@ Cette classe est responsable du rendu de la main d'un joueur donné. Elle utilis
 La classe Player_Area_Renderer possède une référence vers la Map qu'elle affiche.
 
 Trois choses sont affichées par ce moteur de rendu:
+
 - l'argent du joueur
 - les unités libres du joueur
 - les tribus que le joueur possède (dont celles en déclin)
@@ -278,6 +282,7 @@ A l'aide de la classe Renderer, il est possible de rendre l'état complet du jeu
 Le moteur de jeu (« Engine ») est la couche responsable de l'exécution des actions des joueurs sur l'état de la partie (`state::Game_State`). Il ne contient pas la logique métier des règles (qui reste dans `Game_State`, `Area`, `Player`, etc.), mais orchestre l'application ordonnée des commandes produites par l'interface joueur, l'IA ou les tests.
 
 Principales responsabilités :
+
 - recevoir et mettre en file (FIFO) des commandes via `add_command()` ;
 - valider la légitimité d'une commande par rapport à l'état courant (joueur courant, phase de tour, présence d'une tribu active, ...);
 - exécuter la commande en appelant `command->execute(state)` ;
@@ -531,9 +536,7 @@ Chaque appel à une méthode give_command_* :
 Aucune mémoire des décisions précédentes n’est conservée, en dehors de l’état du jeu lui-même. Cela rend ces IA rapides mais prédictible ou incohérente.
 
 La différence entre ces deux IA réside uniquement dans la politique de décision, et non dans l’architecture logicielle.
-<!-- 
-### 5.3 Conception logicielle: extension pour l'IA composée 
--->
+
 
 ### 5.4 Conception logicielle: extension pour IA avancée
 
@@ -558,10 +561,6 @@ Ce choix architectural permet de respecter l’interface du moteur (une commande
 Lors de la simulation, certaines commandes peuvent s’avérer invalides (par exemple en raison d’un état intermédiaire incohérent). Ces erreurs sont capturées via des exceptions levées par le moteur de simulation. Lorsqu'une exception est levée, la commande fautive est retirée et donc la branche correspondante a cette commande est abandonnée. L'exploration se poursuit alors sur les autres branches
 
 Ce mécanisme permet à l’IA avancée de rester robuste face aux cas limites sans compromettre l’ensemble de la recherche.
-
-
-
-
 
 ## 6 Client
 
