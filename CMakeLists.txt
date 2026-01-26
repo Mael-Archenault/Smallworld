@@ -139,7 +139,7 @@ add_custom_target(copy_resources ALL
 )
 
 # Rapport generation
-add_subdirectory(rapport)
+#add_subdirectory(rapport)
 
 # Unit tests
 # Set BUILD_TESTING to OFF in CMakeCache to disable tests
