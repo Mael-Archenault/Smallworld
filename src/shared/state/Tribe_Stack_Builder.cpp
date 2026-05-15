@@ -5,6 +5,7 @@
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <algorithm>
 #include <memory>
 #include <random>
 #include <unordered_map>
